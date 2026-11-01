@@ -29,3 +29,8 @@ def db_path() -> Path:
 
 def raw_dir() -> Path:
     return data_dir() / "raw"
+
+
+def digests_dir() -> Path:
+    """`MACROWEB_DIGESTS_DIR` overrides `<repo>/digests` (tests point it at a temp dir)."""
+    return Path(os.environ.get("MACROWEB_DIGESTS_DIR", ROOT / "digests")).expanduser()

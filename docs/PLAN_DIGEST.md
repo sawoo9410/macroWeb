@@ -87,4 +87,5 @@ robots·유료 벽 우회 금지·커뮤니티 개인정보 저장 금지·발�
 ## 17. 이 세션이 바꾼 것 (ADR 요약)
 - ADR-0001 Claude Code 사실 검증: 훅 이벤트명 ✅, Stop 출력은 `systemMessage` ✏️, 에이전트 `tools:` 에 `Bash(…)` 패턴 불가 → permissions 로 ✏️, `--permission-prompts none` 추가 ✅, `--bare` 는 구독 불가 ⚠️, 단가 전부 하락 ✏️, macOS 에 flock 없음 → mkdir 락 ✏️, plist 경로 실제 경로로 ✏️.
 - ADR-0002 주간 실행기 = `claude -p` 구독 OAuth (Agent SDK 는 API 키 정책). API 월 예상 ≈ $9.
+- ADR-0004 (Phase 1) 수집 계층: migration 0002(스케줄 상태·fetch_log·simhash), 어댑터=순수 파서 + 실제 응답 픽스처 + 골든, 내용 주소화 raw, SimHash ≤3(패러프레이즈 ≈6 측정), 적응 주기·백오프, 키 없는 FRED/Stooq/BLS/Reddit 은 위장 없이 비활성.
 - ADR-0003 레포 위치 `/Users/seosang-u/projects/finance/macroWeb`, 원격 `github.com/sawoo9410/macroWeb`(**PUBLIC** — QUESTIONS Q1), `MACROWEB_PLAN_v0.3.md` → `PLAN.md`, Python 3.12.16(uv).

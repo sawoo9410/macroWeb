@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns="http://purl.org/rss/1.0/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <channel rdf:about="https://asia.nikkei.com/rss/feed/nar" xml:lang="en-GB">
+    <title>Nikkei Asia</title>
+    <link>https://asia.nikkei.com/</link>
+    <description/>
+    <items>
+      <rdf:Seq>
+        <rdf:li resource="https://asia.nikkei.com/business/technology/artificial-intelligence/ai-dubbing-to-help-japanese-companies-expand-global-outreach"/>
+        <rdf:li resource="https://asia.nikkei.com/spotlight/your-week-in-asia/indonesia-gdp-us-midterm-elections-hong-kong-financial-summit"/>
+        <rdf:li resource="https://asia.nikkei.com/business/energy/pakistan-refineries-report-1-860-jump-in-profit-amid-war-windfall2"/>
+        <rdf:li resource="https://asia.nikkei.com/spotlight/comment/after-us-midterms-democracy-will-face-test-of-ability-to-self-correct"/>
+        <rdf:li resource="https://asia.nikkei.com/politics/thai-reformists-became-too-technocratic-party-ex-leader-pita-says"/>
+        <rdf:li resource="https://asia.nikkei.com/business/companies/japan-bamboo-chopsticks-catch-on-in-south-korea"/>
+        <rdf:li resource="https://asia.nikkei.com/life-arts/life/on-india-s-east-coast-tidepooling-inspires-marine-conservation"/>
+        <rdf:li resource="https://asia.nikkei.com/business/markets/property/china-mega-complex-in-dalian-puts-spotlight-on-investment-push"/>
+        <rdf:li resource="https://asia.nikkei.com/opinion/time-for-japan-to-develop-people-who-can-sell-content"/>
+        <rdf:li resource="https://asia.nikkei.com/business/markets/bonds/yen-bond-offerings-hit-record-16bn-as-ai-funding-race-reaches-japan"/>
+        <rdf:li resource="https://asia.nikkei.com/business/markets/property/japan-weighs-taxing-real-estate-rental-operators-living-overseas"/>
+        <rdf:li resource="https://asia.nikkei.com/business/health-care/japan-s-foreign-caregivers-face-exam-hurdle-as-grace-period-ends"/>
+        <rdf:li resource="https://asia.nikkei.com/business/food-beverage/thai-highland-tribe-coffee-brews-following-at-home-and-in-tokyo"/>
+        <rdf:li resource="https://asia.nikkei.com/spotlight/society/fatal-dog-attacks-test-hong-kong-s-ambitions-for-a-pet-friendly-economy"/>
+        <rdf:li resource="https://asia.nikkei.com/spotlight/comment/thailand-looks-west-after-30-years-of-struggles-over-dawei"/>
+        <rdf:li resource="https://asia.nikkei.com/spotlight/my-personal-history/what-lies-ahead-stephen-schwarzman-30"/>
+        <rdf:li resource="https://asia.nikkei.com/business/food-beverage/yakitori-chicken-from-japan-takes-a-stab-at-the-philippines-the-land-of-jollibee"/>
+        <rdf:li resource="https://asia.nikkei.com/business/automobiles/electric-vehicles/foxconn-unveils-3-evs-to-grow-contract-manufacturing-business"/>
+        <rdf:li resource="https://asia.nikkei.com/business/technology/japan-miner-to-address-labor-crunch-with-self-driving-dump-trucks"/>
+        <rdf:li resource="https://asia.nikkei.com/business/retail/uniqlo-shakes-up-china-strategy-with-focus-on-store-profitability"/>
+        <rdf:li resource="https://asia.nikkei.com/spotlight/supply-chain/japan-s-murata-to-invest-6.3bn-in-capacitor-production-for-ai-over-5-years"/>
+        <rdf:li resource="https://asia.nikkei.com/business/health-care/japan-s-omron-eyes-india-as-export-base-for-blood-pressure-monitors"/>
+        <rdf:li resource="https://asia.nikkei.com/spotlight/supply-chain/japan-s-sojitz-to-import-rare-earth-yttrium-from-malaysia"/>
+        <rdf:li resource="https://asia.nikkei.com/business/tech/semiconductors/memory-chip-makers-outearn-alphabet-other-tech-giants-on-ai-demand"/>
+        <rdf:li resource="https://asia.nikkei.com/business/business-deals/daiwa-fund-buy-of-blackstone-tokyo-office-complex-include-retail-digital-securities"/>
+        <rdf:li resource="https://asia.nikkei.com/spotlight/cryptocurrencies/binance-suspends-withdrawals-and-freezes-funds-after-6.3bn-hack"/>
+        <rdf:li resource="https://asia.nikkei.com/business/transportation/toyota-and-waymo-to-roll-out-driverless-robotaxis-in-japan-in-2027"/>
+        <rdf:li resource="https://asia.nikkei.com/business/technology/artificial-intelligence/japan-asks-anthropic-openai-for-more-access-to-advanced-models"/>
+        <rdf:li resource="https://asia.nikkei.com/business/tech/semiconductors/kioxia-net-profit-to-surge-15-fold-to-8.7bn-this-quarter"/>
+        <rdf:li resource="https://asia.nikkei.com/business/companies/chinese-shipping-coal-stocks-outperform-ai-as-earnings-outlooks-diverge"/>
+        <rdf:li resource="https://asia.nikkei.com/politics/who-fell-and-who-rose-at-china-s-fifth-plenum"/>
+        <rdf:li resource="https://asia.nikkei.com/politics/philippine-muslim-region-elects-chief-minister-in-historic-vote"/>
+        <rdf:li resource="https://asia.nikkei.com/economy/un-retains-bangladesh-and-nepal-s-least-developed-country-status"/>
+        <rdf:li resource="https://asia.nikkei.com/economy/bank-of-japan/boj-chief-ueda-says-2-inflation-goal-not-yet-sustainably-achieved"/>
+        <rdf:li resource="https://asia.nikkei.com/business/technology/foxconn-chief-downplays-ai-bubble-concerns-sees-strong-2027-growth"/>
+        <rdf:li resource="https://asia.nikkei.com/politics/u.s.-midterm-elections/trump-holds-off-overcapacity-tariffs-as-us-midterms-near"/>
+        <rdf:li resource="https://asia.nikkei.com/economy/bank-of-japan/boj-to-accelerate-etf-sales-more-than-doubling-pace-from-january"/>
+        <rdf:li resource="https://asia.nikkei.com/editor-s-picks/editor-in-chief-s-picks/editor-s-choice-what-the-us-midterms-mean-for-asia"/>
+        <rdf:li resource="https://asia.nikkei.com/business/markets/commodities/india-s-gold-imports-down-81-global-prices-could-be-impacted"/>
+        <rdf:li resource="https://asia.nikkei.com/editor-s-picks/interview/japan-has-no-time-to-lose-to-avert-a-healthcare-crisis-minister-says"/>
+        <rdf:li resource="https://asia.nikkei.com/photos/in-focus-ninja-hit-the-mark-with-foreign-tourists"/>
+        <rdf:li resource="https://asia.nikkei.com/business/markets/china-debt-crunch/pag-to-buy-51-of-china-evergrande-services-arm-for-510m"/>
+        <rdf:li resource="https://asia.nikkei.com/politics/defense/inside-the-world-s-largest-overseas-us-military-base"/>
+        <rdf:li resource="https://asia.nikkei.com/editor-s-picks/interview/japan-s-marubeni-looks-to-profit-from-bottlenecks-arising-from-ai-boom"/>
+        <rdf:li resource="https://asia.nikkei.com/business/technology/vietnam-drone-intrusions-prompt-airport-safety-response-nationwide"/>
+        <rdf:li resource="https://asia.nikkei.com/spotlight/comment/takaichi-s-g7-no-show-risks-undermining-japan-s-interests"/>
+        <rdf:li resource="https://asia.nikkei.com/business/health-care/malaysia-s-ihh-healthcare-to-double-hospital-beds-near-singapore"/>
+        <rdf:li resource="https://asia.nikkei.com/business/aerospace-defense-industries/japan-prepares-for-commercial-drone-flocks-after-operating-limit-lifted"/>
+        <rdf:li resource="https://asia.nikkei.com/business/tech/semiconductors/intel-shares-sink-more-than-20-as-pc-slowdown-stretches-into-2027"/>
+        <rdf:li resource="https://asia.nikkei.com/spotlight/my-personal-history/family-stephen-schwarzman-29"/>
+      </rdf:Seq>
+    </items>
+  </channel>
+  <item rdf:about="https://asia.nikkei.com/business/technology/artificial-intelligence/ai-dubbing-to-help-japanese-companies-expand-global-outreach">
+    <title><![CDATA[AI dubbing to help Japanese companies expand global outreach]]></title>
+    <link>https://asia.nikkei.com/business/technology/artificial-intelligence/ai-dubbing-to-help-japanese-companies-expand-global-outreach</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/spotlight/your-week-in-asia/indonesia-gdp-us-midterm-elections-hong-kong-financial-summit">
+    <title><![CDATA[Indonesia GDP, US midterm elections, Hong Kong financial summit]]></title>
+    <link>https://asia.nikkei.com/spotlight/your-week-in-asia/indonesia-gdp-us-midterm-elections-hong-kong-financial-summit</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/energy/pakistan-refineries-report-1-860-jump-in-profit-amid-war-windfall2">
+    <title><![CDATA[Pakistan refineries report 1,860% jump in profit amid war windfall]]></title>
+    <link>https://asia.nikkei.com/business/energy/pakistan-refineries-report-1-860-jump-in-profit-amid-war-windfall2</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/spotlight/comment/after-us-midterms-democracy-will-face-test-of-ability-to-self-correct">
+    <title><![CDATA[After US midterms, democracy will face test of ability to self-correct]]></title>
+    <link>https://asia.nikkei.com/spotlight/comment/after-us-midterms-democracy-will-face-test-of-ability-to-self-correct</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/politics/thai-reformists-became-too-technocratic-party-ex-leader-pita-says">
+    <title><![CDATA[Thai reformists became too technocratic, party ex-leader Pita says]]></title>
+    <link>https://asia.nikkei.com/politics/thai-reformists-became-too-technocratic-party-ex-leader-pita-says</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/companies/japan-bamboo-chopsticks-catch-on-in-south-korea">
+    <title><![CDATA[Japan bamboo chopsticks catch on in South Korea]]></title>
+    <link>https://asia.nikkei.com/business/companies/japan-bamboo-chopsticks-catch-on-in-south-korea</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/life-arts/life/on-india-s-east-coast-tidepooling-inspires-marine-conservation">
+    <title><![CDATA[On India's east coast, tidepooling inspires marine conservation]]></title>
+    <link>https://asia.nikkei.com/life-arts/life/on-india-s-east-coast-tidepooling-inspires-marine-conservation</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/markets/property/china-mega-complex-in-dalian-puts-spotlight-on-investment-push">
+    <title><![CDATA[China mega complex in Dalian puts spotlight on investment push]]></title>
+    <link>https://asia.nikkei.com/business/markets/property/china-mega-complex-in-dalian-puts-spotlight-on-investment-push</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/opinion/time-for-japan-to-develop-people-who-can-sell-content">
+    <title><![CDATA[Time for Japan to develop people who can sell content]]></title>
+    <link>https://asia.nikkei.com/opinion/time-for-japan-to-develop-people-who-can-sell-content</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/markets/bonds/yen-bond-offerings-hit-record-16bn-as-ai-funding-race-reaches-japan">
+    <title><![CDATA[Yen bond offerings hit record $16bn as AI funding race reaches Japan]]></title>
+    <link>https://asia.nikkei.com/business/markets/bonds/yen-bond-offerings-hit-record-16bn-as-ai-funding-race-reaches-japan</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/markets/property/japan-weighs-taxing-real-estate-rental-operators-living-overseas">
+    <title><![CDATA[Japan weighs taxing real estate rental operators living overseas]]></title>
+    <link>https://asia.nikkei.com/business/markets/property/japan-weighs-taxing-real-estate-rental-operators-living-overseas</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/health-care/japan-s-foreign-caregivers-face-exam-hurdle-as-grace-period-ends">
+    <title><![CDATA[Japan's foreign caregivers face exam hurdle as grace period ends]]></title>
+    <link>https://asia.nikkei.com/business/health-care/japan-s-foreign-caregivers-face-exam-hurdle-as-grace-period-ends</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/food-beverage/thai-highland-tribe-coffee-brews-following-at-home-and-in-tokyo">
+    <title><![CDATA[Thai highland tribe coffee brews following at home and in Tokyo]]></title>
+    <link>https://asia.nikkei.com/business/food-beverage/thai-highland-tribe-coffee-brews-following-at-home-and-in-tokyo</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/spotlight/society/fatal-dog-attacks-test-hong-kong-s-ambitions-for-a-pet-friendly-economy">
+    <title><![CDATA[Fatal dog attacks test Hong Kong's ambitions for a pet-friendly economy]]></title>
+    <link>https://asia.nikkei.com/spotlight/society/fatal-dog-attacks-test-hong-kong-s-ambitions-for-a-pet-friendly-economy</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/spotlight/comment/thailand-looks-west-after-30-years-of-struggles-over-dawei">
+    <title><![CDATA[Thailand looks west after 30 years of struggles over Dawei]]></title>
+    <link>https://asia.nikkei.com/spotlight/comment/thailand-looks-west-after-30-years-of-struggles-over-dawei</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/spotlight/my-personal-history/what-lies-ahead-stephen-schwarzman-30">
+    <title><![CDATA[What Lies Ahead: Stephen Schwarzman (30)]]></title>
+    <link>https://asia.nikkei.com/spotlight/my-personal-history/what-lies-ahead-stephen-schwarzman-30</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/food-beverage/yakitori-chicken-from-japan-takes-a-stab-at-the-philippines-the-land-of-jollibee">
+    <title><![CDATA[Yakitori chicken from Japan takes a stab at the Philippines, the land of Jollibee]]></title>
+    <link>https://asia.nikkei.com/business/food-beverage/yakitori-chicken-from-japan-takes-a-stab-at-the-philippines-the-land-of-jollibee</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/automobiles/electric-vehicles/foxconn-unveils-3-evs-to-grow-contract-manufacturing-business">
+    <title><![CDATA[Foxconn unveils 3 EVs to grow contract manufacturing business]]></title>
+    <link>https://asia.nikkei.com/business/automobiles/electric-vehicles/foxconn-unveils-3-evs-to-grow-contract-manufacturing-business</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/technology/japan-miner-to-address-labor-crunch-with-self-driving-dump-trucks">
+    <title><![CDATA[Japan miner to address labor crunch with self-driving dump trucks]]></title>
+    <link>https://asia.nikkei.com/business/technology/japan-miner-to-address-labor-crunch-with-self-driving-dump-trucks</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/retail/uniqlo-shakes-up-china-strategy-with-focus-on-store-profitability">
+    <title><![CDATA[Uniqlo shakes up China strategy with focus on store profitability]]></title>
+    <link>https://asia.nikkei.com/business/retail/uniqlo-shakes-up-china-strategy-with-focus-on-store-profitability</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/spotlight/supply-chain/japan-s-murata-to-invest-6.3bn-in-capacitor-production-for-ai-over-5-years">
+    <title><![CDATA[Japan's Murata to invest $6.3bn in capacitor production for AI over 5 years]]></title>
+    <link>https://asia.nikkei.com/spotlight/supply-chain/japan-s-murata-to-invest-6.3bn-in-capacitor-production-for-ai-over-5-years</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/health-care/japan-s-omron-eyes-india-as-export-base-for-blood-pressure-monitors">
+    <title><![CDATA[Japan's Omron eyes India as export base for blood pressure monitors]]></title>
+    <link>https://asia.nikkei.com/business/health-care/japan-s-omron-eyes-india-as-export-base-for-blood-pressure-monitors</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/spotlight/supply-chain/japan-s-sojitz-to-import-rare-earth-yttrium-from-malaysia">
+    <title><![CDATA[Japan's Sojitz to import rare earth yttrium from Malaysia]]></title>
+    <link>https://asia.nikkei.com/spotlight/supply-chain/japan-s-sojitz-to-import-rare-earth-yttrium-from-malaysia</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/tech/semiconductors/memory-chip-makers-outearn-alphabet-other-tech-giants-on-ai-demand">
+    <title><![CDATA[Memory chip makers outearn Alphabet, other tech giants on AI demand]]></title>
+    <link>https://asia.nikkei.com/business/tech/semiconductors/memory-chip-makers-outearn-alphabet-other-tech-giants-on-ai-demand</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/business-deals/daiwa-fund-buy-of-blackstone-tokyo-office-complex-include-retail-digital-securities">
+    <title><![CDATA[Daiwa fund buy of Blackstone Tokyo office complex include retail digital securities]]></title>
+    <link>https://asia.nikkei.com/business/business-deals/daiwa-fund-buy-of-blackstone-tokyo-office-complex-include-retail-digital-securities</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/spotlight/cryptocurrencies/binance-suspends-withdrawals-and-freezes-funds-after-6.3bn-hack">
+    <title><![CDATA[Binance suspends withdrawals and freezes funds after $6.3bn hack]]></title>
+    <link>https://asia.nikkei.com/spotlight/cryptocurrencies/binance-suspends-withdrawals-and-freezes-funds-after-6.3bn-hack</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/transportation/toyota-and-waymo-to-roll-out-driverless-robotaxis-in-japan-in-2027">
+    <title><![CDATA[Toyota and Waymo to roll out driverless robotaxis in Japan in 2027]]></title>
+    <link>https://asia.nikkei.com/business/transportation/toyota-and-waymo-to-roll-out-driverless-robotaxis-in-japan-in-2027</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/technology/artificial-intelligence/japan-asks-anthropic-openai-for-more-access-to-advanced-models">
+    <title><![CDATA[Japan asks Anthropic, OpenAI for more access to advanced models]]></title>
+    <link>https://asia.nikkei.com/business/technology/artificial-intelligence/japan-asks-anthropic-openai-for-more-access-to-advanced-models</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/tech/semiconductors/kioxia-net-profit-to-surge-15-fold-to-8.7bn-this-quarter">
+    <title><![CDATA[Kioxia net profit to surge 15-fold to $8.7bn this quarter]]></title>
+    <link>https://asia.nikkei.com/business/tech/semiconductors/kioxia-net-profit-to-surge-15-fold-to-8.7bn-this-quarter</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/companies/chinese-shipping-coal-stocks-outperform-ai-as-earnings-outlooks-diverge">
+    <title><![CDATA[Chinese shipping, coal stocks outperform AI as earnings outlooks diverge]]></title>
+    <link>https://asia.nikkei.com/business/companies/chinese-shipping-coal-stocks-outperform-ai-as-earnings-outlooks-diverge</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/politics/who-fell-and-who-rose-at-china-s-fifth-plenum">
+    <title><![CDATA[Who fell and who rose at China's fifth plenum]]></title>
+    <link>https://asia.nikkei.com/politics/who-fell-and-who-rose-at-china-s-fifth-plenum</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/politics/philippine-muslim-region-elects-chief-minister-in-historic-vote">
+    <title><![CDATA[Philippine Muslim region elects chief minister in historic vote]]></title>
+    <link>https://asia.nikkei.com/politics/philippine-muslim-region-elects-chief-minister-in-historic-vote</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/economy/un-retains-bangladesh-and-nepal-s-least-developed-country-status">
+    <title><![CDATA[UN retains Bangladesh and Nepal's least developed country status]]></title>
+    <link>https://asia.nikkei.com/economy/un-retains-bangladesh-and-nepal-s-least-developed-country-status</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/economy/bank-of-japan/boj-chief-ueda-says-2-inflation-goal-not-yet-sustainably-achieved">
+    <title><![CDATA[BOJ chief Ueda says 2% inflation goal not yet sustainably achieved]]></title>
+    <link>https://asia.nikkei.com/economy/bank-of-japan/boj-chief-ueda-says-2-inflation-goal-not-yet-sustainably-achieved</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/technology/foxconn-chief-downplays-ai-bubble-concerns-sees-strong-2027-growth">
+    <title><![CDATA[Foxconn chief downplays AI bubble concerns, sees strong 2027 growth]]></title>
+    <link>https://asia.nikkei.com/business/technology/foxconn-chief-downplays-ai-bubble-concerns-sees-strong-2027-growth</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/politics/u.s.-midterm-elections/trump-holds-off-overcapacity-tariffs-as-us-midterms-near">
+    <title><![CDATA[Trump holds off overcapacity tariffs as US midterms near]]></title>
+    <link>https://asia.nikkei.com/politics/u.s.-midterm-elections/trump-holds-off-overcapacity-tariffs-as-us-midterms-near</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/economy/bank-of-japan/boj-to-accelerate-etf-sales-more-than-doubling-pace-from-january">
+    <title><![CDATA[BOJ to accelerate ETF sales, more than doubling pace from January]]></title>
+    <link>https://asia.nikkei.com/economy/bank-of-japan/boj-to-accelerate-etf-sales-more-than-doubling-pace-from-january</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/editor-s-picks/editor-in-chief-s-picks/editor-s-choice-what-the-us-midterms-mean-for-asia">
+    <title><![CDATA[Editor's Choice: What the US midterms mean for Asia]]></title>
+    <link>https://asia.nikkei.com/editor-s-picks/editor-in-chief-s-picks/editor-s-choice-what-the-us-midterms-mean-for-asia</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/markets/commodities/india-s-gold-imports-down-81-global-prices-could-be-impacted">
+    <title><![CDATA[India's gold imports down 81%; global prices could be impacted]]></title>
+    <link>https://asia.nikkei.com/business/markets/commodities/india-s-gold-imports-down-81-global-prices-could-be-impacted</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/editor-s-picks/interview/japan-has-no-time-to-lose-to-avert-a-healthcare-crisis-minister-says">
+    <title><![CDATA[Japan has 'no time to lose' to avert a healthcare crisis, minister says]]></title>
+    <link>https://asia.nikkei.com/editor-s-picks/interview/japan-has-no-time-to-lose-to-avert-a-healthcare-crisis-minister-says</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/photos/in-focus-ninja-hit-the-mark-with-foreign-tourists">
+    <title><![CDATA[In Focus: Ninja hit the mark with foreign tourists]]></title>
+    <link>https://asia.nikkei.com/photos/in-focus-ninja-hit-the-mark-with-foreign-tourists</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/markets/china-debt-crunch/pag-to-buy-51-of-china-evergrande-services-arm-for-510m">
+    <title><![CDATA[PAG to buy 51% of China Evergrande services arm for $510m]]></title>
+    <link>https://asia.nikkei.com/business/markets/china-debt-crunch/pag-to-buy-51-of-china-evergrande-services-arm-for-510m</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/politics/defense/inside-the-world-s-largest-overseas-us-military-base">
+    <title><![CDATA[Inside the world's largest overseas US military base]]></title>
+    <link>https://asia.nikkei.com/politics/defense/inside-the-world-s-largest-overseas-us-military-base</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/editor-s-picks/interview/japan-s-marubeni-looks-to-profit-from-bottlenecks-arising-from-ai-boom">
+    <title><![CDATA[Japan's Marubeni looks to profit from bottlenecks arising from AI boom]]></title>
+    <link>https://asia.nikkei.com/editor-s-picks/interview/japan-s-marubeni-looks-to-profit-from-bottlenecks-arising-from-ai-boom</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/technology/vietnam-drone-intrusions-prompt-airport-safety-response-nationwide">
+    <title><![CDATA[Vietnam drone intrusions prompt airport safety response nationwide]]></title>
+    <link>https://asia.nikkei.com/business/technology/vietnam-drone-intrusions-prompt-airport-safety-response-nationwide</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/spotlight/comment/takaichi-s-g7-no-show-risks-undermining-japan-s-interests">
+    <title><![CDATA[Takaichi's G7 no-show risks undermining Japan's interests]]></title>
+    <link>https://asia.nikkei.com/spotlight/comment/takaichi-s-g7-no-show-risks-undermining-japan-s-interests</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/health-care/malaysia-s-ihh-healthcare-to-double-hospital-beds-near-singapore">
+    <title><![CDATA[Malaysia's IHH Healthcare to double hospital beds near Singapore]]></title>
+    <link>https://asia.nikkei.com/business/health-care/malaysia-s-ihh-healthcare-to-double-hospital-beds-near-singapore</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/aerospace-defense-industries/japan-prepares-for-commercial-drone-flocks-after-operating-limit-lifted">
+    <title><![CDATA[Japan prepares for commercial drone flocks after operating limit lifted]]></title>
+    <link>https://asia.nikkei.com/business/aerospace-defense-industries/japan-prepares-for-commercial-drone-flocks-after-operating-limit-lifted</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/business/tech/semiconductors/intel-shares-sink-more-than-20-as-pc-slowdown-stretches-into-2027">
+    <title><![CDATA[Intel shares sink more than 20% as PC slowdown stretches into 2027]]></title>
+    <link>https://asia.nikkei.com/business/tech/semiconductors/intel-shares-sink-more-than-20-as-pc-slowdown-stretches-into-2027</link>
+  </item>
+  <item rdf:about="https://asia.nikkei.com/spotlight/my-personal-history/family-stephen-schwarzman-29">
+    <title><![CDATA[Family: Stephen Schwarzman (29)]]></title>
+    <link>https://asia.nikkei.com/spotlight/my-personal-history/family-stephen-schwarzman-29</link>
+  </item>
+</rdf:RDF>

@@ -1,0 +1,10 @@
+{
+ "source_id": "stooq_csv",
+ "url": "https://stooq.com/q/d/l/?s=^spx&i=d",
+ "final_url": "https://stooq.com/q/d/l/?s=^spx&i=d",
+ "status": 200,
+ "content_type": "text/html; charset=utf-8",
+ "fetched_at": "2026-11-01T15:36:05+00:00",
+ "size": 796,
+ "parser": "stooq_csv_v1"
+}

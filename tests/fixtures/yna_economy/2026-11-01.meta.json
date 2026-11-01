@@ -1,0 +1,10 @@
+{
+ "source_id": "yna_economy",
+ "url": "https://www.yna.co.kr/rss/economy.xml",
+ "final_url": "https://www.yna.co.kr/rss/economy.xml",
+ "status": 200,
+ "content_type": "application/xml;charset=UTF-8",
+ "fetched_at": "2026-11-01T15:35:57+00:00",
+ "size": 99216,
+ "parser": "rss_default"
+}

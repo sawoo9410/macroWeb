@@ -1,0 +1,33 @@
+{
+ "n_items": 0,
+ "n_market": 24,
+ "market_keys": [
+  "COT:BTC:COMM_NET",
+  "COT:BTC:NONCOMM_NET",
+  "COT:BTC:OI",
+  "COT:DX:COMM_NET",
+  "COT:DX:NONCOMM_NET",
+  "COT:DX:OI",
+  "COT:ES:COMM_NET",
+  "COT:ES:NONCOMM_NET",
+  "COT:ES:OI",
+  "COT:EUR:COMM_NET",
+  "COT:EUR:NONCOMM_NET",
+  "COT:EUR:OI",
+  "COT:GC:COMM_NET",
+  "COT:GC:NONCOMM_NET",
+  "COT:GC:OI",
+  "COT:JPY:COMM_NET",
+  "COT:JPY:NONCOMM_NET",
+  "COT:JPY:OI",
+  "COT:NQ:COMM_NET",
+  "COT:NQ:NONCOMM_NET",
+  "COT:NQ:OI",
+  "COT:TY:COMM_NET",
+  "COT:TY:NONCOMM_NET",
+  "COT:TY:OI"
+ ],
+ "first_items": [],
+ "feed_window_known": false,
+ "notes": []
+}

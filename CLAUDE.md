@@ -1,7 +1,7 @@
 # MacroWeb — 거미줄
 
 목적: 매일 수집·검증·그래프 갱신, 매주 거시 인사이트 리포트 발행. **`PLAN.md`(v0.3)가 단일 진실원(SSOT)**이다.
-현재 Phase: **0 스캐폴딩** → 기계용 상태는 `docs/phase_status.json`, 사람용 요약은 `docs/PLAN_DIGEST.md`(세션 시작 시 먼저 읽을 것).
+현재 Phase: **1 수집 MVP** → 기계용 상태는 `docs/phase_status.json`, 사람용 요약은 `docs/PLAN_DIGEST.md`(세션 시작 시 먼저 읽을 것).
 PLAN과 ADR(`docs/decisions/`)이 충돌하면 ADR이 이긴다(충돌 사실을 ADR에 명시).
 
 ## 명령어
@@ -17,7 +17,9 @@ PLAN과 ADR(`docs/decisions/`)이 충돌하면 ADR이 이긴다(충돌 사실을
 | 소스 목록 / 실제 요청 검증 | `uv run macroweb source list` · `uv run macroweb source probe --all` |
 | Phase DoD 상태 보기/갱신 | `uv run macroweb phase show` · `uv run macroweb phase set 0.make-doctor done` |
 | launchd plist 문법+로드 확인(잡을 남기지 않음) | `make launchd-dryrun` |
-| 파이프라인 단계 (Phase별로 구현) | `uv run macroweb collect --date YYYY-MM-DD` · `normalize` · `extract` · `verify` · `graph` · `digest` · `weekly` · `monthly` |
+| **수집 틱 (Phase 1 구현됨)** | `uv run macroweb collect` (`--source <id>` · `--force` · `--no-bodies`) · 통계 재생성 `uv run macroweb stats --date YYYY-MM-DD` |
+| 픽스처 캡처 / 골든 갱신·검사 | `uv run macroweb source capture <id>` · `uv run macroweb source golden --write` · `uv run macroweb source golden` |
+| 이후 단계 (Phase 2+ 스텁) | `uv run macroweb extract` · `verify` · `graph` · `digest` · `quality` · `weekly` · `monthly` |
 
 ## 세션 운영 규칙 (PLAN §0.1 요약)
 

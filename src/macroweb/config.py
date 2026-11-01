@@ -42,6 +42,7 @@ class Source(Strict):
     auth_env: str | None = None
     probe_url: str | None = None
     params: dict[str, Any] = Field(default_factory=dict)
+    fetch_body: bool = False  # 본문(trafilatura) 수집 여부 — paywall 소스는 무시
     notes: str | None = None
 
     @model_validator(mode="after")

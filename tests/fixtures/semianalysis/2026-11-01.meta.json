@@ -1,0 +1,10 @@
+{
+ "source_id": "semianalysis",
+ "url": "https://semianalysis.com/feed/",
+ "final_url": "https://semianalysis.com/feed/",
+ "status": 200,
+ "content_type": "application/rss+xml; charset=UTF-8",
+ "fetched_at": "2026-11-01T15:35:59+00:00",
+ "size": 801798,
+ "parser": "rss_default"
+}

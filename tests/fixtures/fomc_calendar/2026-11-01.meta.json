@@ -1,0 +1,10 @@
+{
+ "source_id": "fomc_calendar",
+ "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+ "final_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+ "status": 200,
+ "content_type": "text/html",
+ "fetched_at": "2026-11-01T15:35:30+00:00",
+ "size": 166350,
+ "parser": "fomc_calendar_v1"
+}

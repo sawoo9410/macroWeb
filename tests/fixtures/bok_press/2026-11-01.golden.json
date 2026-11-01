@@ -1,0 +1,30 @@
+{
+ "n_items": 100,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "2026년 9월 금융기관 가중평균금리",
+   "url": "https://www.bok.or.kr/portal/bbs/B0000501/view.do?nttId=11066053&menuNo=200690",
+   "published_at": "2026-10-29T03:00:00+00:00",
+   "lang": "ko",
+   "has_summary": true
+  },
+  {
+   "title": "2026년 10월 기업경기조사 결과 및 경제심리지수(ESI)",
+   "url": "https://www.bok.or.kr/portal/bbs/B0000501/view.do?nttId=11066009&menuNo=200690",
+   "published_at": "2026-10-28T21:00:00+00:00",
+   "lang": "ko",
+   "has_summary": true
+  },
+  {
+   "title": "2026년 3/4분기 실질 국내총생산(속보)",
+   "url": "https://www.bok.or.kr/portal/bbs/B0000501/view.do?nttId=11065944&menuNo=200690",
+   "published_at": "2026-10-26T23:00:00+00:00",
+   "lang": "ko",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

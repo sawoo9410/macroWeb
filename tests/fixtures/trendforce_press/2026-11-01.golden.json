@@ -1,0 +1,30 @@
+{
+ "n_items": 5,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "New MacBook Pro Enters Market; Global OLED Notebook Shipments Forecast to Grow Over 40% YoY in 2027, Says TrendForce",
+   "url": "https://www.trendforce.com/presscenter/news/20261029-13287.html",
+   "published_at": "2026-10-29T00:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "AI Inference Drives CPU and DDR5 Demand, with High-Capacitance MLCC Shortages Expected to Persist Through 1H27, Says Tre",
+   "url": "https://www.trendforce.com/presscenter/news/20261029-13284.html",
+   "published_at": "2026-10-29T00:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "iPhone Duo Launch Sparks Strong Demand, but Fold-Area Structural Reliability and Hardware–Software Integration Remain Ch",
+   "url": "https://www.trendforce.com/presscenter/news/20261028-13282.html",
+   "published_at": "2026-10-28T00:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

@@ -1,0 +1,10 @@
+{
+ "source_id": "arstechnica",
+ "url": "https://feeds.arstechnica.com/arstechnica/index",
+ "final_url": "https://feeds.arstechnica.com/arstechnica/index",
+ "status": 200,
+ "content_type": "text/xml; charset=utf-8",
+ "fetched_at": "2026-11-01T15:36:03+00:00",
+ "size": 76705,
+ "parser": "rss_default"
+}

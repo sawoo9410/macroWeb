@@ -1,5 +1,5 @@
 {
-  "current_phase": 0,
+  "current_phase": 1,
   "updated": "2026-11-02",
   "phases": {
     "0": {
@@ -85,17 +85,20 @@
         {
           "id": "sources-20",
           "text": "sources.yaml 20개 (T0 8·T1 6·T2 3·T3 3) 어댑터 + 픽스처 + 골든",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-02"
         },
         {
           "id": "raw-snapshot",
           "text": "raw 스냅샷 gzip + meta(url, status, fetched_at, sha256, etag)",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-02"
         },
         {
           "id": "dedupe",
           "text": "URL 정규화 + SimHash 중복제거 (임계는 200쌍 라벨로 보정)",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-02"
         },
         {
           "id": "market-data",
@@ -105,11 +108,22 @@
         {
           "id": "scheduler",
           "text": "30분 틱 스케줄러 + 소스별 적응 주기 + 이벤트 모드",
+          "done": true,
+          "done_at": "2026-11-02"
+        },
+        {
+          "id": "launchd-collect",
+          "text": "launchd collect(30분 틱) 설치 — 실제 로드",
           "done": false
         },
         {
-          "id": "launchd-install",
-          "text": "launchd collect/daily 설치 + pmset",
+          "id": "launchd-daily",
+          "text": "launchd daily(07:00) 설치 — extract/verify/digest 가 스텁이 아닐 때(Phase 2)",
+          "done": false
+        },
+        {
+          "id": "pmset-wake",
+          "text": "pmset 깨우기 설정 (sudo, 사용자 직접) — QUESTIONS Q6",
           "done": false
         },
         {
@@ -120,7 +134,8 @@
         {
           "id": "collect-stats",
           "text": "일일 수집 통계 md",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-02"
         }
       ]
     },

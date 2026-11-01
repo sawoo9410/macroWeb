@@ -1,0 +1,30 @@
+{
+ "n_items": 50,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "AI dubbing to help Japanese companies expand global outreach",
+   "url": "https://asia.nikkei.com/business/technology/artificial-intelligence/ai-dubbing-to-help-japanese-companies-expand-global-outreach",
+   "published_at": null,
+   "lang": "en",
+   "has_summary": false
+  },
+  {
+   "title": "Indonesia GDP, US midterm elections, Hong Kong financial summit",
+   "url": "https://asia.nikkei.com/spotlight/your-week-in-asia/indonesia-gdp-us-midterm-elections-hong-kong-financial-summit",
+   "published_at": null,
+   "lang": "en",
+   "has_summary": false
+  },
+  {
+   "title": "Pakistan refineries report 1,860% jump in profit amid war windfall",
+   "url": "https://asia.nikkei.com/business/energy/pakistan-refineries-report-1-860-jump-in-profit-amid-war-windfall2",
+   "published_at": null,
+   "lang": "en",
+   "has_summary": false
+  }
+ ],
+ "feed_window_known": false,
+ "notes": []
+}

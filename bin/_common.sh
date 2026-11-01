@@ -22,8 +22,14 @@ macroweb_lock() {
   trap macroweb_unlock EXIT
 }
 
-macroweb_fail() {  # job rerun-command
-  local job="$1" rerun="$2"
-  uv run macroweb notify --level error --job "$job" --tail 3 --rerun "$rerun" || true
+macroweb_fail() {  # job rerun-command — 알림은 잡당 6시간에 1번 (30분 틱이 연속 실패해도 알림 폭주 방지)
+  local job="$1" rerun="$2" stamp="logs/$job.last_notify" now
+  now=$(date +%s)
+  if [ ! -f "$stamp" ] || [ $(( now - $(stat -f %m "$stamp") )) -gt 21600 ]; then
+    uv run macroweb notify --level error --job "$job" --tail 3 --rerun "$rerun" || true
+    touch "$stamp"
+  else
+    echo "[$job] failed (notification suppressed; last alert <6h ago)" >&2
+  fi
   exit 1
 }

@@ -1,0 +1,10 @@
+{
+ "source_id": "calculated_risk",
+ "url": "https://www.calculatedriskblog.com/feeds/posts/default",
+ "final_url": "http://feeds.feedburner.com/CalculatedRisk",
+ "status": 200,
+ "content_type": "text/xml; charset=utf-8",
+ "fetched_at": "2026-11-01T15:36:03+00:00",
+ "size": 118147,
+ "parser": "rss_default"
+}

@@ -1,0 +1,10 @@
+{
+ "source_id": "hankyung_economy",
+ "url": "https://www.hankyung.com/feed/economy",
+ "final_url": "https://www.hankyung.com/feed/economy",
+ "status": 200,
+ "content_type": "text/xml;charset=UTF-8",
+ "fetched_at": "2026-11-01T15:35:57+00:00",
+ "size": 17416,
+ "parser": "rss_default"
+}

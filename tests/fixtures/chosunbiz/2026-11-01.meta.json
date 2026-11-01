@@ -1,0 +1,10 @@
+{
+ "source_id": "chosunbiz",
+ "url": "https://biz.chosun.com/arc/outboundfeeds/rss/?outputType=xml",
+ "final_url": "https://biz.chosun.com/arc/outboundfeeds/rss/?outputType=xml",
+ "status": 200,
+ "content_type": "application/xml; charset=utf-8",
+ "fetched_at": "2026-11-01T15:35:57+00:00",
+ "size": 429744,
+ "parser": "rss_default"
+}

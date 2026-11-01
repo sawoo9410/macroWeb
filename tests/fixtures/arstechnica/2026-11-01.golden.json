@@ -1,0 +1,30 @@
+{
+ "n_items": 20,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "Seabirds racing home over the ocean can get jet-lagged",
+   "url": "https://arstechnica.com/science/2026/10/seabirds-racing-home-over-the-ocean-can-get-jet-lagged/",
+   "published_at": "2026-10-31T11:15:26+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "The FDA wants to pull its approval of a drug. It’s not so easy.",
+   "url": "https://arstechnica.com/science/2026/10/the-fda-wants-to-pull-its-approval-of-a-drug-its-not-so-easy/",
+   "published_at": "2026-10-31T11:02:34+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Once again, NASA is asking for ideas to rescue Hubble from certain death",
+   "url": "https://arstechnica.com/space/2026/10/think-you-can-save-the-hubble-space-telescope-nasa-wants-to-know/",
+   "published_at": "2026-10-31T00:07:22+00:00",
+   "lang": "en",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

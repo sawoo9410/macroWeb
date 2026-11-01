@@ -1,0 +1,30 @@
+{
+ "n_items": 30,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "Presidential Message on All Saints’ Day",
+   "url": "https://www.whitehouse.gov/briefings-statements/2026/11/presidential-message-on-all-saints-day-3b81/",
+   "published_at": "2026-11-01T15:24:46+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Presidential Message on Reformation Day",
+   "url": "https://www.whitehouse.gov/briefings-statements/2026/10/presidential-message-on-reformation-day/",
+   "published_at": "2026-10-31T13:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "WHAT THEY ARE SAYING: President Trump Puts America’s Fishermen First and Secures American Seafood Dominance",
+   "url": "https://www.whitehouse.gov/releases/2026/10/what-they-are-saying-president-trump-puts-americas-fishermen-first-and-secures-american-seafood-dominance/",
+   "published_at": "2026-10-30T20:28:51+00:00",
+   "lang": "en",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

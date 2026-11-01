@@ -1,0 +1,10 @@
+{
+ "source_id": "ecb_press",
+ "url": "https://www.ecb.europa.eu/rss/press.html",
+ "final_url": "https://www.ecb.europa.eu/rss/press.html",
+ "status": 200,
+ "content_type": "application/rss+xml",
+ "fetched_at": "2026-11-01T15:44:29+00:00",
+ "size": 5813,
+ "parser": "rss_default"
+}

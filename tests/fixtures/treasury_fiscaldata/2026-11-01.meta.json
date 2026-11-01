@@ -1,0 +1,10 @@
+{
+ "source_id": "treasury_fiscaldata",
+ "url": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page[size]=10",
+ "final_url": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page[size]=10",
+ "status": 200,
+ "content_type": "application/json",
+ "fetched_at": "2026-11-01T15:48:24+00:00",
+ "size": 4899,
+ "parser": "fiscaldata_v1"
+}

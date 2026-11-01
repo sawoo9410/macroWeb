@@ -1,0 +1,30 @@
+{
+ "n_items": 10,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "Apple’s new earnings era begins at a critical time for Big Tech",
+   "url": "https://www.marketwatch.com/story/apples-new-earnings-era-begins-at-a-critical-time-for-big-tech-2236a44e?mod=mw_rss_topstories",
+   "published_at": "2026-11-01T15:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "This is the biggest threat to the AI-powered bull market",
+   "url": "https://www.marketwatch.com/story/this-is-the-biggest-threat-to-the-ai-powered-bull-market-e757ca37?mod=mw_rss_topstories",
+   "published_at": "2026-11-01T14:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "America is doing better than you think. Your algorithm is just hiding it.",
+   "url": "https://www.marketwatch.com/story/america-is-doing-better-than-you-think-your-algorithm-is-just-hiding-it-7dbdecff?mod=mw_rss_topstories",
+   "published_at": "2026-11-01T13:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

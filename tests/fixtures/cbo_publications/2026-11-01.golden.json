@@ -1,0 +1,30 @@
+{
+ "n_items": 30,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "H.R. 9640, Earth MRI Reauthorization Act of 2026",
+   "url": "https://www.cbo.gov/publication/62857",
+   "published_at": "2026-10-30T19:44:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "H.R. 2306, Adams Memorial-Great American Heroes Act",
+   "url": "https://www.cbo.gov/publication/62823",
+   "published_at": "2026-10-30T19:38:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "S. 3371, National Museum of the Blind People’s Movement Act",
+   "url": "https://www.cbo.gov/publication/62894",
+   "published_at": "2026-10-30T19:35:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

@@ -1,0 +1,30 @@
+{
+ "n_items": 15,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "Federal Reserve issues FOMC statement",
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+   "published_at": "2026-10-28T18:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+   "published_at": "2026-10-13T18:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Minutes of the Federal Open Market Committee, September 15-16, 2026",
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261007a.htm",
+   "published_at": "2026-10-07T18:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

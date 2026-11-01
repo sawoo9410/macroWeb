@@ -1,0 +1,30 @@
+{
+ "n_items": 20,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "Federal Reserve Board announces approval of application by The Bank of Nova Scotia",
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261029a.htm",
+   "published_at": "2026-10-29T20:30:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Federal Reserve issues FOMC statement",
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+   "published_at": "2026-10-28T18:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Federal Reserve Board announces termination of enforcement actions with Gardner Bancshares, Inc. and Small Business Bank",
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261016a.htm",
+   "published_at": "2026-10-16T15:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

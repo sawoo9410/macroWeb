@@ -1,0 +1,30 @@
+{
+ "n_items": 25,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "This is the End and a New Beginning",
+   "url": "http://www.calculatedriskblog.com/2026/01/this-is-end-and-new-beginning.html",
+   "published_at": "2026-01-12T13:21:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Sunday Night Futures",
+   "url": "http://www.calculatedriskblog.com/2026/01/sunday-night-futures_11.html",
+   "published_at": "2026-01-12T00:50:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Hotels: Occupancy Rate Increased 4.4% Year-over-year",
+   "url": "http://www.calculatedriskblog.com/2026/01/hotels-occupancy-rate-increased-44-year.html",
+   "published_at": "2026-01-11T13:12:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

@@ -1,0 +1,30 @@
+{
+ "n_items": 30,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "Euro zone economy slows to 0.4% growth in Q3 as crisis-hit France contracts",
+   "url": "https://www.cnbc.com/2026/10/30/euro-zone-gdp-france.html",
+   "published_at": "2026-10-30T11:16:46+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "European Central Bank keeps key interest rate on hold at 2.5%",
+   "url": "https://www.cnbc.com/2026/10/29/european-central-bank-interest-rates.html",
+   "published_at": "2026-10-29T14:48:01+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Third-quarter U.S. GDP increases a better-than-expected 3.4% as September inflation accelerates",
+   "url": "https://www.cnbc.com/2026/10/29/pce-inflation-report-september-2026-.html",
+   "published_at": "2026-10-29T18:06:31+00:00",
+   "lang": "en",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

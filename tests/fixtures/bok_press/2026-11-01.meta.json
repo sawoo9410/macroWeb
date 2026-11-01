@@ -1,0 +1,10 @@
+{
+ "source_id": "bok_press",
+ "url": "https://www.bok.or.kr/portal/bbs/B0000501/news.rss?menuNo=200690",
+ "final_url": "https://www.bok.or.kr/portal/bbs/B0000501/news.rss?menuNo=200690",
+ "status": 200,
+ "content_type": "application/xml;charset=UTF-8",
+ "fetched_at": "2026-11-01T15:35:56+00:00",
+ "size": 170740,
+ "parser": "rss_default"
+}

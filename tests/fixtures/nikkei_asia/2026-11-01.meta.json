@@ -1,0 +1,10 @@
+{
+ "source_id": "nikkei_asia",
+ "url": "https://asia.nikkei.com/rss/feed/nar",
+ "final_url": "https://asia.nikkei.com/rss/feed/nar",
+ "status": 200,
+ "content_type": "application/rss+xml",
+ "fetched_at": "2026-11-01T15:35:58+00:00",
+ "size": 25428,
+ "parser": "rss_default"
+}

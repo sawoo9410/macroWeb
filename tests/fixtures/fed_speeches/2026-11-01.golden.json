@@ -1,0 +1,30 @@
+{
+ "n_items": 15,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "Bowman, Supervisory Modernization After Silicon Valley Bank",
+   "url": "https://www.federalreserve.gov/newsevents/speech/bowman20261014a.htm",
+   "published_at": "2026-10-15T02:55:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Waller, The Signaling Value of the Summary of Economic Projections",
+   "url": "https://www.federalreserve.gov/newsevents/speech/waller20261008a.htm",
+   "published_at": "2026-10-08T08:30:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Bowman, Modernizing the Regulatory and Supervisory Landscape",
+   "url": "https://www.federalreserve.gov/newsevents/speech/bowman20261006a.htm",
+   "published_at": "2026-10-06T14:45:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

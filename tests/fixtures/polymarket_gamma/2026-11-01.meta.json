@@ -1,0 +1,10 @@
+{
+ "source_id": "polymarket_gamma",
+ "url": "https://gamma-api.polymarket.com/markets?limit=200&closed=false&active=true&order=volume24hr&ascending=false",
+ "final_url": "https://gamma-api.polymarket.com/markets?limit=200&closed=false&active=true&order=volume24hr&ascending=false",
+ "status": 200,
+ "content_type": "application/json",
+ "fetched_at": "2026-11-01T15:53:01+00:00",
+ "size": 715431,
+ "parser": "polymarket_v1"
+}

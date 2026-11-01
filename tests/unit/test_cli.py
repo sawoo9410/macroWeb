@@ -28,7 +28,7 @@ def test_db_init_then_doctor_quick_json_has_no_fail() -> None:
 
 def test_phase_show_and_stage_stubs() -> None:
     assert runner.invoke(app, ["phase", "show"]).exit_code == 0
-    r = runner.invoke(app, ["collect", "--date", "2026-11-01"])
+    r = runner.invoke(app, ["extract", "--date", "2026-11-01"])
     assert r.exit_code == 3
     assert runner.invoke(app, ["source", "list"]).exit_code == 0
     assert runner.invoke(app, ["cost"]).exit_code == 0

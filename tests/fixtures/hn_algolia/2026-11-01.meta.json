@@ -1,0 +1,10 @@
+{
+ "source_id": "hn_algolia",
+ "url": "https://hn.algolia.com/api/v1/search_by_date?tags=story&numericFilters=points>5&query=nvidia",
+ "final_url": "https://hn.algolia.com/api/v1/search_by_date?tags=story&numericFilters=points%3E5&query=nvidia",
+ "status": 200,
+ "content_type": "application/json",
+ "fetched_at": "2026-11-01T15:48:26+00:00",
+ "size": 23597,
+ "parser": "hn_algolia_v1"
+}

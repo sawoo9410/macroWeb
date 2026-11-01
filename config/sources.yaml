@@ -15,6 +15,7 @@ sources:
     parser: rss_default
     rate_limit_s: 5
     stratum: S-T0-STMT
+    fetch_body: true
   - id: fed_speeches
     name: Federal Reserve speeches & testimony
     tier: 0
@@ -27,6 +28,7 @@ sources:
     parser: rss_default
     rate_limit_s: 5
     stratum: S-T0-LONG
+    fetch_body: true
   - id: fomc_calendar
     name: FOMC meeting calendar, statements, minutes index
     tier: 0
@@ -39,6 +41,7 @@ sources:
     parser: fomc_calendar_v1
     rate_limit_s: 5
     stratum: S-T0-STMT
+    fetch_body: true
   - id: fred_api
     name: FRED API (DFF, DGS2, DGS10, T10Y2Y, CPIAUCSL, PCEPILFE, PAYEMS, UNRATE, DTWEXBGS, WALCL, RRPONTSYD, WTREGEN, BAMLH0A0HYM2, VIXCLS, DCOILBRENTEU)
     tier: 0
@@ -46,6 +49,7 @@ sources:
     url: https://api.stlouisfed.org/fred/series/observations
     probe_url: https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&file_type=json
     auth_env: FRED_API_KEY
+    notes: "키 없는 fredgraph.csv 경로는 수집기 UA 에 응답하지 않는다(타임아웃) — API 키 입력 후 활성 수집. 그 전엔 어댑터만"
     lang: en
     country: US
     topics: [rates, inflation, liquidity, dollar, data]
@@ -54,6 +58,7 @@ sources:
     stratum: S-DATA
     params:
       series: [DFF, DGS2, DGS10, T10Y2Y, CPIAUCSL, PCEPILFE, PAYEMS, UNRATE, DTWEXBGS, WALCL, RRPONTSYD, WTREGEN, BAMLH0A0HYM2, VIXCLS, DCOILBRENTEU]
+      lookback_days: 800
   - id: bls_release_schedule
     name: BLS news release schedule (CPI/PPI/NFP dates)
     tier: 0
@@ -72,7 +77,7 @@ sources:
     name: Treasury FiscalData API (debt, TGA, auctions)
     tier: 0
     kind: api
-    url: https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?page[size]=1
+    url: https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page[size]=10
     lang: en
     country: US
     topics: [fiscal, treasury, data]
@@ -92,6 +97,11 @@ sources:
     parent_org: bank-of-korea
     parser: ecos_v1
     stratum: S-DATA
+    params:
+      lookback_days: 400
+      stats:   # ⚠️ 통계표·항목 코드는 ECOS 키 입력 후 첫 수집에서 검증
+        - {stat: 722Y001, cycle: D, item: "0101000", name: base_rate}
+        - {stat: 731Y001, cycle: D, item: "0000001", name: usdkrw}
   - id: bok_press
     name: 한국은행 보도자료
     tier: 0
@@ -104,6 +114,7 @@ sources:
     parser: rss_default
     rate_limit_s: 5
     stratum: S-T0-STMT
+    fetch_body: true
   - id: dart_api
     name: DART Open API 공시 (삼성전자·SK하이닉스·어보브반도체 등)
     tier: 0
@@ -145,6 +156,7 @@ sources:
     parser: rss_default
     rate_limit_s: 5
     stratum: S-T0-STMT
+    fetch_body: true
   - id: cbo_publications
     name: CBO publications
     tier: 0
@@ -157,6 +169,32 @@ sources:
     parser: rss_default
     rate_limit_s: 10
     stratum: S-T0-LONG
+    fetch_body: true
+  - id: fed_press_monetary
+    name: Federal Reserve press releases — monetary policy only (FOMC statements, implementation notes)
+    tier: 0
+    kind: rss
+    url: https://www.federalreserve.gov/feeds/press_monetary.xml
+    lang: en
+    country: US
+    topics: [fed, rates, fomc]
+    parent_org: federal-reserve
+    parser: rss_default
+    rate_limit_s: 5
+    stratum: S-T0-STMT
+    fetch_body: true
+  - id: ecb_press
+    name: ECB press releases
+    tier: 0
+    kind: rss
+    url: https://www.ecb.europa.eu/rss/press.html
+    lang: en
+    country: EU
+    topics: [ecb, rates, policy]
+    parent_org: ecb
+    parser: rss_default
+    rate_limit_s: 5
+    stratum: S-T0-STMT
   # ---------------- T1 통신사·주요지 ----------------
   - id: yna_economy
     name: 연합뉴스 경제
@@ -263,6 +301,7 @@ sources:
     parser: trendforce_press_v1
     rate_limit_s: 10
     stratum: S-T2
+    fetch_body: true
   - id: semianalysis
     name: SemiAnalysis (무료 공개분)
     tier: 2
@@ -313,23 +352,27 @@ sources:
     name: Polymarket Gamma API (Fed/election markets)
     tier: 3
     kind: api
-    url: https://gamma-api.polymarket.com/markets?limit=5&closed=false
+    url: https://gamma-api.polymarket.com/markets?limit=200&closed=false&active=true&order=volume24hr&ascending=false
     lang: en
     topics: [prediction_market, fed, election]
     parent_org: polymarket
     parser: polymarket_v1
     stratum: S-DATA
+    params:
+      keywords: [fed, fomc, rate cut, rate hike, interest rate, inflation, cpi, recession, senate, house, midterm, balance of power, tariff, nvidia, bitcoin, iran, hormuz, oil, korea]
     notes: 가격은 사실, 결과는 아님 (§4.1)
   - id: kalshi_markets
     name: Kalshi trade API (markets)
     tier: 3
     kind: api
-    url: https://api.elections.kalshi.com/trade-api/v2/markets?limit=5
+    url: https://api.elections.kalshi.com/trade-api/v2/markets
     lang: en
     topics: [prediction_market, fed, election]
     parent_org: kalshi
     parser: kalshi_v1
     stratum: S-DATA
+    params:   # /series?category=Economics 로 2026-11-02 확인한 시리즈 티커 (각각 한 요청, status=open)
+      series_tickers: [KXFEDDECISION, KXFED, KXFEDHIKE, KXFEDCUT, KXRATEHIKE, KXFEDDISSENT, KXDOTPLOT, KXTERMINALRATE, KXFEDFUNDSYEAR, KXCPI, KXCPIYOY, KXCPICORE, KXPCECORE, KXPAYROLLS, KXU3, KXRECSSNBER, KXBALANCESHEET, KXCBDECISIONKOREA]
   - id: cme_fedwatch
     name: CME FedWatch (JS 렌더 — Playwright)
     tier: 3
@@ -354,6 +397,16 @@ sources:
     parser: cftc_cot_v1
     rate_limit_s: 10
     stratum: S-DATA
+    params:
+      markets:   # deafut.txt 의 Market_and_Exchange_Names 정확 일치 → 키 접미사
+        "E-MINI S&P 500 - CHICAGO MERCANTILE EXCHANGE": ES
+        "NASDAQ MINI - CHICAGO MERCANTILE EXCHANGE": NQ
+        "UST 10Y NOTE - CHICAGO BOARD OF TRADE": TY
+        "USD INDEX - ICE FUTURES U.S.": DX
+        "BITCOIN - CHICAGO MERCANTILE EXCHANGE": BTC
+        "GOLD - COMMODITY EXCHANGE INC.": GC
+        "JAPANESE YEN - CHICAGO MERCANTILE EXCHANGE": JPY
+        "EURO FX - CHICAGO MERCANTILE EXCHANGE": EUR
   - id: stooq_csv
     name: Stooq daily CSV (글로벌 지수 백업 — ^spx, ^sox 등)
     tier: 3
@@ -365,17 +418,21 @@ sources:
     parser: stooq_csv_v1
     rate_limit_s: 5
     stratum: S-DATA
+    enabled: false
+    notes: "2026-11-02 캡처 시 CSV 대신 JavaScript 작업증명 봇 검사 페이지가 왔다. 우회하지 않는다 — 글로벌 지수 백업은 Phase 1 market-data 단계에서 FDR/FRED 로 대체"
   # ---------------- T4 커뮤니티 (심리 온도계, 본문 저장 안 함) ----------------
   - id: hn_algolia
     name: Hacker News Algolia API
     tier: 4
     kind: api
-    url: https://hn.algolia.com/api/v1/search?query=nvidia&tags=story
+    url: https://hn.algolia.com/api/v1/search_by_date?tags=story&numericFilters=points>5
     lang: en
     topics: [sentiment, ai, semis]
     parent_org: ycombinator
     parser: hn_algolia_v1
     stratum: S-T4
+    params:
+      queries: [nvidia, "federal reserve", semiconductor, "data center"]
   - id: reddit_stocks
     name: Reddit r/stocks (new, JSON)
     tier: 4

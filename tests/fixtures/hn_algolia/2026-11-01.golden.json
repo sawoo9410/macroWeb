@@ -1,0 +1,30 @@
+{
+ "n_items": 20,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "Show HN: Vela, a New Linux Desktop Environment",
+   "url": "https://velade.org/blog/vela-0-1/",
+   "published_at": "2026-11-01T00:36:10+00:00",
+   "lang": "en",
+   "has_summary": false
+  },
+  {
+   "title": "Chinese AI chipmaker Iluvatar CoreX says new GPU matches Nvidia's H200",
+   "url": "https://www.scmp.com/tech/tech-war/article/3372598/ai-chipmaker-iluvatar-corex-says-new-gpu-matches-nvidias-h200-home-grown-push-accelerates",
+   "published_at": "2026-10-30T20:36:37+00:00",
+   "lang": "en",
+   "has_summary": false
+  },
+  {
+   "title": "Alleged Chinese spy had 'close relationship' with Nvidia boss Jensen Huang",
+   "url": "https://nypost.com/2026/10/29/business/alleged-chinese-spy-had-close-relationship-with-nvidia-boss-jensen-huang-report/",
+   "published_at": "2026-10-29T17:43:48+00:00",
+   "lang": "en",
+   "has_summary": false
+  }
+ ],
+ "feed_window_known": false,
+ "notes": []
+}

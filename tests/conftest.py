@@ -13,6 +13,7 @@ def _isolated_data_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     data = tmp_path / "data"
     data.mkdir()
     monkeypatch.setenv("MACROWEB_DATA_DIR", str(data))
+    monkeypatch.setenv("MACROWEB_DIGESTS_DIR", str(tmp_path / "digests"))
     for var in (
         "ANTHROPIC_API_KEY",
         "ANTHROPIC_AUTH_TOKEN",

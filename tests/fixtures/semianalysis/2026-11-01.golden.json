@@ -1,0 +1,30 @@
+{
+ "n_items": 10,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "xAI’s Colossus 2 – First Gigawatt Datacenter In The World, Unique RL Methodology, Capital Raise",
+   "url": "https://semianalysis.com/2025/09/16/xais-colossus-2-first-gigawatt-datacenter/",
+   "published_at": "2025-09-16T17:38:01+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Another Giant Leap: The Rubin CPX Specialized Accelerator & Rack",
+   "url": "https://semianalysis.com/2025/09/10/another-giant-leap-the-rubin-cpx-specialized-accelerator-rack/",
+   "published_at": "2025-09-10T19:57:18+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Huawei Ascend Production Ramp: Die Banks, TSMC Continued Production, HBM is The Bottleneck",
+   "url": "https://semianalysis.com/2025/09/08/huawei-ascend-production-ramp/",
+   "published_at": "2025-09-08T09:54:57+00:00",
+   "lang": "en",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

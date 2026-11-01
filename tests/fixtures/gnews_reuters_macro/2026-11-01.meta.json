@@ -1,0 +1,10 @@
+{
+ "source_id": "gnews_reuters_macro",
+ "url": "https://news.google.com/rss/search?q=site:reuters.com+(Fed+OR+Treasury+OR+semiconductor+OR+tariff)&hl=en-US&gl=US&ceid=US:en",
+ "final_url": "https://news.google.com/rss/search?q=site:reuters.com+(Fed+OR+Treasury+OR+semiconductor+OR+tariff)&hl=en-US&gl=US&ceid=US:en",
+ "status": 200,
+ "content_type": "application/xml; charset=utf-8",
+ "fetched_at": "2026-11-01T15:35:58+00:00",
+ "size": 127866,
+ "parser": "gnews_rss_v1"
+}

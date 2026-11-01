@@ -1,0 +1,10 @@
+{
+ "source_id": "kalshi_markets",
+ "url": "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXFEDDECISION&status=open&limit=100",
+ "final_url": "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXFEDDECISION&status=open&limit=100",
+ "status": 200,
+ "content_type": "application/json",
+ "fetched_at": "2026-11-01T15:51:12+00:00",
+ "size": 88561,
+ "parser": "kalshi_v1"
+}

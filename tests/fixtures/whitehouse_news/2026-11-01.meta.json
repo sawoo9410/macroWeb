@@ -1,0 +1,10 @@
+{
+ "source_id": "whitehouse_news",
+ "url": "https://www.whitehouse.gov/news/feed/",
+ "final_url": "https://www.whitehouse.gov/news/feed/",
+ "status": 200,
+ "content_type": "application/rss+xml; charset=UTF-8",
+ "fetched_at": "2026-11-01T15:35:56+00:00",
+ "size": 561038,
+ "parser": "rss_default"
+}

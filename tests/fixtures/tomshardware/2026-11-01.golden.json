@@ -1,0 +1,30 @@
+{
+ "n_items": 50,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "Brazilian lawyers busted for attempting to manipulate court's AI with prompt injection hidden in filing",
+   "url": "https://www.tomshardware.com/tech-industry/artificial-intelligence/brazilian-lawyers-busted-for-attempting-to-manipulate-courts-ai-with-prompt-injection-hidden-in-filing-courts-ai-flags-hidden-text-th",
+   "published_at": "2026-11-01T15:05:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Biwin M560 2TB SSD Review: The DRAM-less drive to beat",
+   "url": "https://www.tomshardware.com/pc-components/ssds/biwin-m560-2tb-ssd-review",
+   "published_at": "2026-11-01T15:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  },
+  {
+   "title": "Anycubic and Thingiverse announce exclusive 3D printing partnership",
+   "url": "https://www.tomshardware.com/3d-printing/anycubic-and-thingiverse-announce-exclusive-3d-printing-partnership-makeronline-platform-to-offer-1-click-multicolor-3mf-models",
+   "published_at": "2026-11-01T15:00:00+00:00",
+   "lang": "en",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

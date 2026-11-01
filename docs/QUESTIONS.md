@@ -15,3 +15,6 @@
 - [ ] **Q13 Alpha Vantage 미사용 확정** — investment-monitor 가 같은 무료 키를 매일 쓴다(PLAN §0.3). 기본값: 사용 안 함. 확인만.
 - [ ] **Q14 Phase 4 이전 주간 리포트 수동 생성(Phase 2 DoD)** 은 대화형 세션에서 `/weekly-report` 를 사람이 호출한다. 자동 실행은 Phase 4. 확인만.
 - [ ] **Q15 기존 ping-pong debate 시스템 위치.** PLAN 은 "기존 시스템 이식"이라 했지만 이 머신에서 찾지 못했다(ADR-0001). 경로를 알려주면 스킬에 이식; 없으면 현재 스킬(§10.3 프로토콜)로 간다.
+- [ ] **Q16 FRED API 키.** 키 없는 경로(fredgraph.csv)가 수집기 UA 에 응답하지 않아 FRED 시리즈 15개(DGS10·CPI·WALCL·VIX·유가 등)는 **키 입력 후** 수집된다. `https://fred.stlouisfed.org/docs/api/api_key.html` 에서 무료 발급 → `private/.env` 의 `FRED_API_KEY`. market-data DoD 가 여기 걸려 있다.
+- [ ] **Q17 ECOS·DART 키와 통계 코드.** `ECOS_API_KEY`·`DART_API_KEY` 입력 후 첫 수집에서 `config/sources.yaml` 의 ECOS 통계표(722Y001 기준금리·731Y001 환율) 코드가 맞는지 확인한다(⚠️ 미검증).
+- [ ] **Q18 글로벌 지수 백업 경로.** Stooq 가 JS 봇 검사로 막혀 S&P500·SOX·KOSPI 일별 종가는 FRED(SP500·NASDAQCOM 시리즈) 또는 FinanceDataReader 중 택일. 기본값: FRED 시리즈 추가(키 필요) + FDR 은 KRX 전용으로 Phase 1 market-data 단계에서 결정.

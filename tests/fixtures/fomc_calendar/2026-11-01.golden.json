@@ -1,0 +1,36 @@
+{
+ "n_items": 105,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "FOMC statement 2026-01-28",
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260128a.htm",
+   "published_at": "2026-01-28T00:00:00+00:00",
+   "lang": "en",
+   "has_summary": false
+  },
+  {
+   "title": "FOMC implementation note 2026-01-28",
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260128a1.htm",
+   "published_at": "2026-01-28T00:00:00+00:00",
+   "lang": "en",
+   "has_summary": false
+  },
+  {
+   "title": "FOMC press conference 2026-01-28",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomcpressconf20260128.htm",
+   "published_at": "2026-01-28T00:00:00+00:00",
+   "lang": "en",
+   "has_summary": false
+  }
+ ],
+ "feed_window_known": false,
+ "notes": [
+  "meeting:2026-01-27..28",
+  "meeting:2026-03-17..18*",
+  "meeting:2026-04-28..29",
+  "meeting:2026-06-16..17*",
+  "meeting:2026-07-28..29"
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "n_items": 50,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "홈플러스 이어 골프존도 '시끌'…MBK 손 댄 곳곳서 잡음",
+   "url": "https://www.hankyung.com/article/202611018732g",
+   "published_at": "2026-11-01T13:23:25+00:00",
+   "lang": "ko",
+   "has_summary": false
+  },
+  {
+   "title": "국내 5대 코인 거래소, 준비금·보험 1854억뿐",
+   "url": "https://www.hankyung.com/article/2026110186101",
+   "published_at": "2026-11-01T09:18:30+00:00",
+   "lang": "ko",
+   "has_summary": false
+  },
+  {
+   "title": "5대 은행 대출 연체율, 9년 반 만에 '최고'",
+   "url": "https://www.hankyung.com/article/2026110186121",
+   "published_at": "2026-11-01T09:18:20+00:00",
+   "lang": "ko",
+   "has_summary": false
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

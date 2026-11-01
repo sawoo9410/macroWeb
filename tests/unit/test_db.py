@@ -7,7 +7,8 @@ def test_init_db_is_idempotent(tmp_path: Path) -> None:
     p = tmp_path / "db" / "t.sqlite"
     first = repo.init_db(p)
     assert first["created"] is True
-    assert first["schema_version"] == repo.SCHEMA_VERSION
+    assert first["schema_version"] >= repo.SCHEMA_VERSION
+    assert first["applied_migrations"] == ["0002_collect.sql"]
     for t in (
         "source",
         "article",

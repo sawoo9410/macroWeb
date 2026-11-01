@@ -1,0 +1,30 @@
+{
+ "n_items": 50,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "유리지갑 직장인만 강제로 모범납세자…사업자 소득 10조 뒷북확인",
+   "url": "https://www.mk.co.kr/news/economy/12193032",
+   "published_at": "2026-11-01T13:20:39+00:00",
+   "lang": "ko",
+   "has_summary": true
+  },
+  {
+   "title": "[단독] 석화 구조조정 한파에...근로자 55%만 재취업",
+   "url": "https://www.mk.co.kr/news/economy/12192973",
+   "published_at": "2026-11-01T09:45:27+00:00",
+   "lang": "ko",
+   "has_summary": true
+  },
+  {
+   "title": "한국 수출 '꿈의 1조달러' 달성 초읽기",
+   "url": "https://www.mk.co.kr/news/economy/12192946",
+   "published_at": "2026-11-01T08:37:10+00:00",
+   "lang": "ko",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

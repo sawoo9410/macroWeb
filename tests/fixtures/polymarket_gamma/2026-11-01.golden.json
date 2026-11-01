@@ -1,0 +1,54 @@
+{
+ "n_items": 23,
+ "n_market": 23,
+ "market_keys": [
+  "PM:2026-balance-of-power-d-senate-d-house-949",
+  "PM:2026-balance-of-power-r-senate-d-house-444",
+  "PM:2026-balance-of-power-r-senate-r-house-537",
+  "PM:2026-senate-map-r-none",
+  "PM:bitcoin-above-70k-on-november-1-2026",
+  "PM:bitcoin-above-74k-on-november-1-2026",
+  "PM:bitcoin-above-76k-on-november-1-2026",
+  "PM:bitcoin-above-90k-on-november-1-2026",
+  "PM:bitcoin-up-or-down-on-november-1-2026",
+  "PM:israel-x-iran-ceasefire-continues-through-november-3",
+  "PM:us-announces-end-of-iranian-blockade-by-november-2-2026",
+  "PM:us-x-iran-ceasefire-continues-through-november-2",
+  "PM:us-x-iran-ceasefire-continues-through-october-31-20260917",
+  "PM:will-the-democratic-party-control-the-house-after-the-2026-midterm-elections",
+  "PM:will-the-democratic-party-control-the-senate-after-the-2026-midterm-elections",
+  "PM:will-the-democrats-win-the-iowa-senate-race-in-2026",
+  "PM:will-the-democrats-win-the-michigan-senate-race-in-2026",
+  "PM:will-the-democrats-win-the-texas-senate-race-in-2026",
+  "PM:will-the-republican-party-control-the-house-after-the-2026-midterm-elections",
+  "PM:will-the-republican-party-control-the-senate-after-the-2026-midterm-elections",
+  "PM:will-the-republicans-win-the-iowa-senate-race-in-2026",
+  "PM:will-the-republicans-win-the-michigan-senate-race-in-2026",
+  "PM:will-the-republicans-win-the-texas-senate-race-in-2026"
+ ],
+ "first_items": [
+  {
+   "title": "Will Republicans lose the Alaska, Iowa, Kansas, Maine, Michigan, Ohio, and Texas Senate seats?",
+   "url": "https://polymarket.com/market/2026-senate-map-r-none",
+   "published_at": "2026-10-26T22:17:33+00:00",
+   "lang": "en",
+   "has_summary": false
+  },
+  {
+   "title": "Will the Democratic Party control the House after the 2026 Midterm elections?",
+   "url": "https://polymarket.com/market/will-the-democratic-party-control-the-house-after-the-2026-midterm-elections",
+   "published_at": "2025-07-11T19:29:37+00:00",
+   "lang": "en",
+   "has_summary": false
+  },
+  {
+   "title": "2026 Balance of Power: D Senate, D House",
+   "url": "https://polymarket.com/market/2026-balance-of-power-d-senate-d-house-949",
+   "published_at": "2025-07-11T20:47:53+00:00",
+   "lang": "en",
+   "has_summary": false
+  }
+ ],
+ "feed_window_known": false,
+ "notes": []
+}

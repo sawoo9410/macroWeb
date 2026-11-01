@@ -28,7 +28,6 @@ app.add_typer(phase_app, name="phase")
 console = Console()
 
 STAGE_PHASE = {
-    "collect": 1,
     "normalize": 1,
     "extract": 2,
     "verify": 2,
@@ -278,6 +277,55 @@ def source_probe(
     raise typer.Exit(1 if len(results) == len(bad) else 0)
 
 
+@source_app.command("capture")
+def source_capture(
+    source_id: str | None = typer.Argument(None, help="소스 id (생략 + --all 이면 enabled 전부)"),
+    all_: bool = typer.Option(False, "--all"),
+    url: str | None = typer.Option(None, "--url", help="대체 URL (다중 요청 소스의 한 요청만)"),
+) -> None:
+    """실제 응답을 tests/fixtures/<id>/ 에 저장 (골든 테스트용, 쿠키·개인정보 없음)."""
+    from macroweb.collect.fixtures import capture
+    from macroweb.collect.http import make_client
+    from macroweb.collect.politeness import DomainThrottle
+    from macroweb.config import load_sources
+
+    sources = load_sources().sources
+    targets = [
+        s for s in sources if (source_id and s.id == source_id) or (all_ and s.enabled and not s.auth_env)
+    ]
+    if not targets:
+        console.print("[red]대상 소스가 없습니다[/]")
+        raise typer.Exit(2)
+    throttle = DomainThrottle()
+    with make_client() as client:
+        for s in targets:
+            throttle.wait(url or s.url)
+            try:
+                p = capture(s, client, url)
+                console.print(f"[green]ok[/] {s.id} -> {p.relative_to(ROOT)} ({p.stat().st_size} bytes)")
+            except Exception as exc:  # noqa: BLE001
+                console.print(f"[red]ERR[/] {s.id}: {type(exc).__name__}: {str(exc)[:120]}")
+
+
+@source_app.command("golden")
+def source_golden(
+    write: bool = typer.Option(False, "--write", help="골든 파일 생성/갱신 (없는 것만; --force 로 전부)"),
+    force: bool = typer.Option(False, "--force"),
+) -> None:
+    """픽스처를 파서에 통과시켜 요약을 .golden.json 과 비교(기본) 또는 기록(--write)."""
+    from macroweb.collect.golden import check_all, write_all
+
+    if write:
+        for path, status in write_all(force=force):
+            console.print(f"{status:8s} {path.relative_to(ROOT)}")
+        return
+    failures = check_all()
+    for name, msg in failures:
+        console.print(f"[red]FAIL[/] {name}: {msg}")
+    console.print(f"{'[green]golden ok[/]' if not failures else f'{len(failures)} failures'}")
+    raise typer.Exit(1 if failures else 0)
+
+
 # --- phase ------------------------------------------------------------------------------------------
 @phase_app.command("show")
 def phase_show(json_out: bool = typer.Option(False, "--json")) -> None:
@@ -289,7 +337,7 @@ def phase_show(json_out: bool = typer.Option(False, "--json")) -> None:
         console.print(line)
     ph = phase_mod.current_phase(state)
     for item in phase_mod.items(state, ph):
-        console.print(f"  [{'x' if item['done'] else ' '}] {item['id']}: {item['text']}")
+        console.print(f"  [{'x' if item['done'] else ' '}] {item['id']}: {item['text']}", markup=False)
 
 
 @phase_app.command("set")
@@ -327,9 +375,37 @@ def _not_yet(stage: str) -> None:
 
 
 @app.command()
-def collect(date: str | None = typer.Option(None, "--date", help="YYYY-MM-DD (idempotent)")) -> None:
-    """L1 수집 틱 (Phase 1)."""
-    _not_yet("collect")
+def collect(
+    date: str | None = typer.Option(None, "--date", help="KST 날짜 YYYY-MM-DD (통계 파일 기준, 기본 오늘)"),
+    source: list[str] | None = typer.Option(None, "--source", "-s", help="특정 소스만 (반복 가능)"),
+    force: bool = typer.Option(False, "--force", help="next_due 를 무시하고 수집"),
+    bodies: bool = typer.Option(True, "--bodies/--no-bodies", help="fetch_body 소스의 본문 수집"),
+    body_limit: int = typer.Option(40, "--body-limit", help="틱당 본문 수집 상한"),
+) -> None:
+    """L1 수집 틱: 기한 도래 소스 → raw 스냅샷 → 기사·지표 저장 → 본문(robots 확인) → Story 그룹 → 일일 통계."""
+    from macroweb.collect.pipeline import run_collect
+
+    summary = run_collect(date, source_ids=source or None, force=force, bodies=bodies, body_limit=body_limit)
+    console.print(summary.render())
+    raise typer.Exit(summary.exit_code())
+
+
+@app.command()
+def stats(date: str | None = typer.Option(None, "--date", help="KST 날짜 (기본 오늘)")) -> None:
+    """일일 수집 통계 md 재생성 (digests/collect-stats-<date>.md)."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    from macroweb.collect.stats import write_collect_stats
+    from macroweb.db import repo
+
+    day = date or datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat()
+    repo.init_db()
+    conn = repo.connect()
+    try:
+        console.print(str(write_collect_stats(conn, day)))
+    finally:
+        conn.close()
 
 
 @app.command()

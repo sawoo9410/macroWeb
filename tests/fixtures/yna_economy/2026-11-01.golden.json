@@ -1,0 +1,30 @@
+{
+ "n_items": 120,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "이형일, 경제현안간담회서 주택공급·일자리 논의",
+   "url": "https://www.yna.co.kr/view/AKR20261101046100002",
+   "published_at": "2026-11-01T10:40:44+00:00",
+   "lang": "ko",
+   "has_summary": true
+  },
+  {
+   "title": "똑똑해진 아파트, 개인정보 안전할까…건설사 해킹에 보안 우려(종합)",
+   "url": "https://www.yna.co.kr/view/AKR20261031047451003",
+   "published_at": "2026-11-01T06:57:48+00:00",
+   "lang": "ko",
+   "has_summary": true
+  },
+  {
+   "title": "[연합뉴스 이 시각 헤드라인] - 15:00",
+   "url": "https://www.yna.co.kr/view/AKR20261101028900011",
+   "published_at": "2026-11-01T06:00:00+00:00",
+   "lang": "ko",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

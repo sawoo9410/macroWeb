@@ -16,6 +16,13 @@ make doctor                             # 전부 PASS/WARN 이어야 한다 (FAI
 - Phase 1+: `make launchd-install` · 상태 `launchctl print gui/$(id -u)/com.sawoo.macroweb.weekly` · 제거 `make launchd-uninstall`.
 - 맥 깨우기(sudo, 사용자 직접): `sudo pmset repeat wakeorpoweron MTWRFSU 06:55:00`; 일요일 17:25 는 `pmset schedule` 로 추가.
 - 잠든 사이 놓친 캘린더 잡은 깨어나면 1회 실행된다 → 모든 단계 idempotent.
+## 3b. 수집 (Phase 1)
+- 수동 틱: `uv run macroweb collect` (기한 도래 소스만) · 전부 강제: `--force` · 한 소스: `--source yna_economy --force`.
+- 결과: `digests/collect-stats-<KST날짜>.md` (소스별 fetch/new/err/304/interval/health), raw 는 `data/raw/YYYY/MM/DD/`, DB `data/db/macroweb.sqlite` (`article`·`story`·`market`·`fetch_log`).
+- 소스가 `degraded`(3회 연속 실패)면 `uv run macroweb source probe <id>` 로 URL 을 보고 `config/sources.yaml` 을 고친 뒤 `--force` 로 재시도. 백오프(최대 1일)는 성공 1회로 풀린다.
+- 파서가 바뀌면 `uv run macroweb source golden` 으로 골든 차이를 확인하고 의도된 변화면 `--write --force`.
+- 키가 필요한 소스(FRED·ECOS·DART)는 `private/.env` 에 키가 없으면 `skip … not set` 으로 건너뛴다(오류 아님).
+
 ## 4. 재실행(복구)
 모든 단계는 같은 인자로 다시 돌려도 결과가 같다.
 ```bash
