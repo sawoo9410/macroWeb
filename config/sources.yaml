@@ -1,0 +1,391 @@
+# 소스 레지스트리 (PLAN §4.2, 부록 B). 소스 1개 = 어댑터 1개 + 픽스처 1개 + 골든 테스트 1개 (Phase 1).
+# URL 은 2026-11-01 `macroweb source probe --all` 로 실제 요청해 확인 (결과: docs/SOURCE_PROBE_2026-11-01.md).
+# 키가 필요한 API 는 auth_env 로 환경변수 이름만 적고, probe_url 은 키 없이 응답하는 주소를 쓴다. 값은 절대 적지 않는다.
+sources:
+  # ---------------- T0 1차 출처 ----------------
+  - id: fed_press
+    name: Federal Reserve press releases
+    tier: 0
+    kind: rss
+    url: https://www.federalreserve.gov/feeds/press_all.xml
+    lang: en
+    country: US
+    topics: [fed, rates, policy]
+    parent_org: federal-reserve
+    parser: rss_default
+    rate_limit_s: 5
+    stratum: S-T0-STMT
+  - id: fed_speeches
+    name: Federal Reserve speeches & testimony
+    tier: 0
+    kind: rss
+    url: https://www.federalreserve.gov/feeds/speeches.xml
+    lang: en
+    country: US
+    topics: [fed, rates, persons]
+    parent_org: federal-reserve
+    parser: rss_default
+    rate_limit_s: 5
+    stratum: S-T0-LONG
+  - id: fomc_calendar
+    name: FOMC meeting calendar, statements, minutes index
+    tier: 0
+    kind: html
+    url: https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm
+    lang: en
+    country: US
+    topics: [fed, calendar]
+    parent_org: federal-reserve
+    parser: fomc_calendar_v1
+    rate_limit_s: 5
+    stratum: S-T0-STMT
+  - id: fred_api
+    name: FRED API (DFF, DGS2, DGS10, T10Y2Y, CPIAUCSL, PCEPILFE, PAYEMS, UNRATE, DTWEXBGS, WALCL, RRPONTSYD, WTREGEN, BAMLH0A0HYM2, VIXCLS, DCOILBRENTEU)
+    tier: 0
+    kind: api
+    url: https://api.stlouisfed.org/fred/series/observations
+    probe_url: https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&file_type=json
+    auth_env: FRED_API_KEY
+    lang: en
+    country: US
+    topics: [rates, inflation, liquidity, dollar, data]
+    parent_org: st-louis-fed
+    parser: fred_v1
+    stratum: S-DATA
+    params:
+      series: [DFF, DGS2, DGS10, T10Y2Y, CPIAUCSL, PCEPILFE, PAYEMS, UNRATE, DTWEXBGS, WALCL, RRPONTSYD, WTREGEN, BAMLH0A0HYM2, VIXCLS, DCOILBRENTEU]
+  - id: bls_release_schedule
+    name: BLS news release schedule (CPI/PPI/NFP dates)
+    tier: 0
+    kind: html
+    url: https://www.bls.gov/schedule/news_release/
+    lang: en
+    country: US
+    topics: [calendar, inflation, labor]
+    parent_org: bls
+    parser: bls_schedule_v1
+    rate_limit_s: 10
+    stratum: S-DATA
+    enabled: false
+    notes: "2026-11-01 probe 403 — BLS 가 선언형 수집기 UA 를 차단. 브라우저 UA 위장은 하지 않는다(PLAN §0.1-7). Phase 1 대안: FRED `releases/dates` API(키)로 CPI/PPI/NFP 발표 일정 수집"
+  - id: treasury_fiscaldata
+    name: Treasury FiscalData API (debt, TGA, auctions)
+    tier: 0
+    kind: api
+    url: https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?page[size]=1
+    lang: en
+    country: US
+    topics: [fiscal, treasury, data]
+    parent_org: us-treasury
+    parser: fiscaldata_v1
+    stratum: S-DATA
+  - id: ecos_api
+    name: 한국은행 ECOS API (기준금리·환율·금통위)
+    tier: 0
+    kind: api
+    url: https://ecos.bok.or.kr/api/
+    probe_url: https://ecos.bok.or.kr/api/
+    auth_env: ECOS_API_KEY
+    lang: ko
+    country: KR
+    topics: [bok, rates, fx, data]
+    parent_org: bank-of-korea
+    parser: ecos_v1
+    stratum: S-DATA
+  - id: bok_press
+    name: 한국은행 보도자료
+    tier: 0
+    kind: rss
+    url: https://www.bok.or.kr/portal/bbs/B0000501/news.rss?menuNo=200690
+    lang: ko
+    country: KR
+    topics: [bok, rates, policy]
+    parent_org: bank-of-korea
+    parser: rss_default
+    rate_limit_s: 5
+    stratum: S-T0-STMT
+  - id: dart_api
+    name: DART Open API 공시 (삼성전자·SK하이닉스·어보브반도체 등)
+    tier: 0
+    kind: api
+    url: https://opendart.fss.or.kr/api/list.json
+    probe_url: https://opendart.fss.or.kr/api/list.json
+    auth_env: DART_API_KEY
+    lang: ko
+    country: KR
+    topics: [disclosure, semis, korea]
+    parent_org: fss
+    parser: dart_v1
+    stratum: S-T0-STMT
+    params:
+      corp_names: [삼성전자, SK하이닉스, 어보브반도체]
+  - id: sec_edgar_fts
+    name: SEC EDGAR full-text search (8-K/10-Q — NVDA, AMD, AVGO, MU, TSM, ASML, MSFT, GOOGL, AMZN, META, ORCL)
+    tier: 0
+    kind: api
+    url: https://efts.sec.gov/LATEST/search-index?q=%22data%20center%22&forms=8-K
+    lang: en
+    country: US
+    topics: [disclosure, semis, hyperscalers]
+    parent_org: sec
+    parser: edgar_fts_v1
+    rate_limit_s: 10
+    stratum: S-T0-LONG
+    enabled: false
+    notes: SEC 는 User-Agent 에 연락처(이메일)를 요구한다. 개인정보 외부 전송은 사용자 허락 전 보류 (docs/QUESTIONS.md Q3) — 허락 전까지 비활성(수집하지 않음; probe 는 일반 UA 로 도달 여부만 확인)
+  - id: whitehouse_news
+    name: White House briefings & statements
+    tier: 0
+    kind: rss
+    url: https://www.whitehouse.gov/news/feed/
+    lang: en
+    country: US
+    topics: [politics, policy, tariffs]
+    parent_org: white-house
+    parser: rss_default
+    rate_limit_s: 5
+    stratum: S-T0-STMT
+  - id: cbo_publications
+    name: CBO publications
+    tier: 0
+    kind: rss
+    url: https://www.cbo.gov/publications/all/rss.xml
+    lang: en
+    country: US
+    topics: [fiscal, budget]
+    parent_org: cbo
+    parser: rss_default
+    rate_limit_s: 10
+    stratum: S-T0-LONG
+  # ---------------- T1 통신사·주요지 ----------------
+  - id: yna_economy
+    name: 연합뉴스 경제
+    tier: 1
+    kind: rss
+    url: https://www.yna.co.kr/rss/economy.xml
+    lang: ko
+    country: KR
+    topics: [macro, korea, markets]
+    parent_org: yonhap
+    parser: rss_default
+    stratum: S-T1-KO
+    notes: 전재 원천 — 다른 매체의 연합 전재는 독립 출처로 세지 않는다 (§4.3)
+  - id: hankyung_economy
+    name: 한국경제 경제
+    tier: 1
+    kind: rss
+    url: https://www.hankyung.com/feed/economy
+    lang: ko
+    country: KR
+    topics: [macro, korea, markets]
+    parent_org: hankyung
+    parser: rss_default
+    stratum: S-T1-KO
+  - id: mk_economy
+    name: 매일경제 경제
+    tier: 1
+    kind: rss
+    url: https://www.mk.co.kr/rss/30100041/
+    lang: ko
+    country: KR
+    topics: [macro, korea, markets]
+    parent_org: maekyung
+    parser: rss_default
+    stratum: S-T1-KO
+  - id: chosunbiz
+    name: 조선비즈
+    tier: 1
+    kind: rss
+    url: https://biz.chosun.com/arc/outboundfeeds/rss/?outputType=xml
+    lang: ko
+    country: KR
+    topics: [macro, korea, semis]
+    parent_org: chosun
+    parser: rss_default
+    stratum: S-T1-KO
+  - id: gnews_reuters_macro
+    name: Google News RSS — Reuters headlines (Fed/Treasury/semiconductor)
+    tier: 1
+    kind: rss
+    url: https://news.google.com/rss/search?q=site:reuters.com+(Fed+OR+Treasury+OR+semiconductor+OR+tariff)&hl=en-US&gl=US&ceid=US:en
+    lang: en
+    country: US
+    topics: [macro, fed, semis, tariffs]
+    parent_org: reuters
+    parser: gnews_rss_v1
+    rate_limit_s: 10
+    stratum: S-T1
+    notes: 헤드라인·링크만. Reuters 본문은 수집하지 않는다 (§4.3 유료 벽 규칙 준용)
+  - id: cnbc_economy
+    name: CNBC Economy
+    tier: 1
+    kind: rss
+    url: https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=20910258
+    lang: en
+    country: US
+    topics: [macro, markets]
+    parent_org: nbcuniversal
+    parser: rss_default
+    stratum: S-T1
+  - id: marketwatch_top
+    name: MarketWatch top stories
+    tier: 1
+    kind: rss
+    url: https://feeds.content.dowjones.io/public/rss/mw_topstories
+    lang: en
+    country: US
+    topics: [markets, macro]
+    parent_org: dow-jones
+    parser: rss_default
+    stratum: S-T1
+  - id: nikkei_asia
+    name: Nikkei Asia (headlines)
+    tier: 1
+    kind: rss
+    url: https://asia.nikkei.com/rss/feed/nar
+    lang: en
+    country: JP
+    topics: [asia, semis, macro]
+    parent_org: nikkei
+    parser: rss_default
+    paywall: true
+    stratum: S-T1
+  # ---------------- T2 전문·업계지 ----------------
+  - id: trendforce_press
+    name: TrendForce press center (DRAM/NAND 계약가)
+    tier: 2
+    kind: html
+    url: https://www.trendforce.com/presscenter/news
+    lang: en
+    country: TW
+    topics: [memory, dram, hbm, semis]
+    parent_org: trendforce
+    parser: trendforce_press_v1
+    rate_limit_s: 10
+    stratum: S-T2
+  - id: semianalysis
+    name: SemiAnalysis (무료 공개분)
+    tier: 2
+    kind: rss
+    url: https://semianalysis.com/feed/
+    lang: en
+    country: US
+    topics: [semis, ai_capex, supply_chain]
+    parent_org: semianalysis
+    parser: rss_default
+    paywall: true
+    stratum: S-T2
+  - id: tomshardware
+    name: Tom's Hardware
+    tier: 2
+    kind: rss
+    url: https://www.tomshardware.com/feeds/all
+    lang: en
+    country: US
+    topics: [semis, gpu, memory]
+    parent_org: future-plc
+    parser: rss_default
+    stratum: S-T2
+  - id: calculated_risk
+    name: Calculated Risk
+    tier: 2
+    kind: rss
+    url: https://www.calculatedriskblog.com/feeds/posts/default
+    lang: en
+    country: US
+    topics: [macro, housing, labor]
+    parent_org: calculated-risk
+    parser: rss_default
+    stratum: S-T2
+  - id: arstechnica
+    name: Ars Technica
+    tier: 2
+    kind: rss
+    url: https://feeds.arstechnica.com/arstechnica/index
+    lang: en
+    country: US
+    topics: [tech, ai, semis]
+    parent_org: conde-nast
+    parser: rss_default
+    stratum: S-T2
+  # ---------------- T3 예측시장·데이터 ----------------
+  - id: polymarket_gamma
+    name: Polymarket Gamma API (Fed/election markets)
+    tier: 3
+    kind: api
+    url: https://gamma-api.polymarket.com/markets?limit=5&closed=false
+    lang: en
+    topics: [prediction_market, fed, election]
+    parent_org: polymarket
+    parser: polymarket_v1
+    stratum: S-DATA
+    notes: 가격은 사실, 결과는 아님 (§4.1)
+  - id: kalshi_markets
+    name: Kalshi trade API (markets)
+    tier: 3
+    kind: api
+    url: https://api.elections.kalshi.com/trade-api/v2/markets?limit=5
+    lang: en
+    topics: [prediction_market, fed, election]
+    parent_org: kalshi
+    parser: kalshi_v1
+    stratum: S-DATA
+  - id: cme_fedwatch
+    name: CME FedWatch (JS 렌더 — Playwright)
+    tier: 3
+    kind: playwright
+    url: https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html
+    lang: en
+    topics: [fed, rates, probability]
+    parent_org: cme
+    parser: fedwatch_v1
+    rate_limit_s: 30
+    stratum: S-DATA
+    enabled: false
+    notes: "2026-11-01 probe 403(봇 차단). Phase 1 에서 Playwright 설치 후 robots.txt 확인하고 활성화 여부 결정. 헤드리스·로그인 세션 없음"
+  - id: cftc_cot
+    name: CFTC Commitments of Traders (futures, weekly)
+    tier: 3
+    kind: api
+    url: https://www.cftc.gov/dea/newcot/deafut.txt
+    lang: en
+    topics: [positioning, data]
+    parent_org: cftc
+    parser: cftc_cot_v1
+    rate_limit_s: 10
+    stratum: S-DATA
+  - id: stooq_csv
+    name: Stooq daily CSV (글로벌 지수 백업 — ^spx, ^sox 등)
+    tier: 3
+    kind: api
+    url: https://stooq.com/q/d/l/?s=^spx&i=d
+    lang: en
+    topics: [prices, data]
+    parent_org: stooq
+    parser: stooq_csv_v1
+    rate_limit_s: 5
+    stratum: S-DATA
+  # ---------------- T4 커뮤니티 (심리 온도계, 본문 저장 안 함) ----------------
+  - id: hn_algolia
+    name: Hacker News Algolia API
+    tier: 4
+    kind: api
+    url: https://hn.algolia.com/api/v1/search?query=nvidia&tags=story
+    lang: en
+    topics: [sentiment, ai, semis]
+    parent_org: ycombinator
+    parser: hn_algolia_v1
+    stratum: S-T4
+  - id: reddit_stocks
+    name: Reddit r/stocks (new, JSON)
+    tier: 4
+    kind: json
+    url: https://www.reddit.com/r/stocks/new.json?limit=25
+    lang: en
+    topics: [sentiment, markets]
+    parent_org: reddit
+    parser: reddit_json_v1
+    rate_limit_s: 10
+    stratum: S-T4
+    enabled: false
+    notes: "2026-11-01 probe 403 — Reddit 은 고유·설명형 UA 와 API 정책 준수를 요구. UA 정책(Q4) 결정 후 Phase 1 에서 공식 방식으로 재시도. 작성자 개인정보 저장 금지 — 건수·키워드·감성만 집계 (§16.1)"

@@ -1,0 +1,13 @@
+# fact-checker 수치 대조 허용 오차 (PLAN 부록 F). claim.value/unit ↔ market 테이블.
+default_rel: 0.005
+by_unit:
+  "%": {abs: 0.05, note: 금리·비율 — 소수점 둘째 자리 반올림 차이 허용}
+  bp: {abs: 1}
+  index: {rel: 0.002, note: 지수 종가}
+  KRW: {rel: 0.002, note: 환율}
+  USD: {rel: 0.005}
+  조원: {rel: 0.01, note: 한국 기사 억/조 반올림}
+  억원: {rel: 0.01}
+  YoY: {abs: 0.1}
+  QoQ: {abs: 0.1}
+  MoM: {abs: 0.05}

@@ -1,0 +1,5 @@
+# 캘린더 시드 (PLAN §9.3). status: unverified 항목은 PLAN §1.5 맥락 시드에서 왔고 Phase 1 수집(fomc_calendar·bls_release_schedule)으로 확정한다.
+events:
+  - {id: us-midterm-2026, name: 미국 중간선거, date: "2026-11-03", kind: election, status: unverified, source: "PLAN §1.5", watch: 의회 구도 → 재정·관세·연준 독립성 공방}
+  - {id: fomc-2026-12, name: FOMC 12월 회의, date: "2026-12-09", time_kst: "04:00(익일)", kind: fomc, status: unverified, source: "PLAN §1.5 — fomc_calendar 소스로 날짜 확정 필요", watch: 25bp 인상 여부·SEP 점도표}
+  - {id: us-cpi-2026-11, name: 미국 11월 CPI 발표(10월분), date: "2026-11-TBD", time_kst: "22:30", kind: data, status: unverified, source: "bls_release_schedule 로 확정", watch: 코어 MoM ≤ 0.2% 면 인상 논거 약화}

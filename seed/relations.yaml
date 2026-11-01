@@ -1,0 +1,19 @@
+# 시드 엣지 (PLAN 부록 E, 2026-11 맥락 — 전부 ⚠️ evidence 필요). origin seed 는 사람 검수, computed 는 계산 후 채움.
+relations:
+  - {src: kevin-warsh, dst: fed, type: reports_to, sign: 0, weight: 1.0, origin: seed, needs_evidence: true}
+  - {src: lisa-cook, dst: fomc-2026-12-09, type: votes_on, sign: 1, weight: 1.0, origin: seed, note: "10월 인상 소수의견(⚠️)", needs_evidence: true}
+  - {src: beth-hammack, dst: fomc-2026-12-09, type: votes_on, sign: 1, weight: 1.0, origin: seed, needs_evidence: true}
+  - {src: donald-trump, dst: fed, type: pressures, sign: -1, weight: 0.8, origin: seed, note: "금리 인하 요구", needs_evidence: true}
+  - {src: us-midterm-2026, dst: donald-trump, type: triggers, sign: 0, weight: 0.9, origin: seed, note: "임기 후반 권력 구도", needs_evidence: true}
+  - {src: fomc-2026-12-09, dst: ust10y, type: triggers, sign: 1, weight: 0.6, origin: seed, note: "인상 시 상승(조건부)", needs_evidence: true}
+  - {src: ust10y, dst: sox, type: correlates_with, sign: -1, weight: 0.5, origin: computed, r: null, lag_days: null}
+  - {src: sox, dst: sk-hynix, type: correlates_with, sign: 1, weight: 0.7, origin: computed, r: null, lag_days: null}
+  - {src: nvidia, dst: sk-hynix, type: customer_of, sign: 1, weight: 0.9, origin: seed, note: HBM, needs_evidence: true}
+  - {src: sk-hynix, dst: hbm, type: supplies_to, sign: 1, weight: 1.0, origin: seed, needs_evidence: true}
+  - {src: kimi-k3, dst: theme-ai-capex, type: hurt_by, sign: -1, weight: 0.5, origin: seed, note: "저비용 모델→capex 재평가", needs_evidence: true}
+  - {src: turboquant, dst: hbm, type: hurt_by, sign: -1, weight: 0.4, origin: seed, note: "메모리 수요 둔화 우려", needs_evidence: true}
+  - {src: theme-ai-capex, dst: sk-hynix, type: benefits_from, sign: 1, weight: 0.8, origin: seed, needs_evidence: true}
+  - {src: sk-hynix, dst: kospi, type: exposed_to, sign: 1, weight: 0.8, origin: seed, needs_evidence: true}
+  - {src: ust10y, dst: usdkrw, type: correlates_with, sign: 1, weight: 0.4, origin: computed, r: null, lag_days: null}
+  - {src: iran-conflict, dst: oil, type: triggers, sign: 1, weight: 0.7, origin: seed, needs_evidence: true}
+  - {src: oil, dst: fed, type: pressures, sign: 1, weight: 0.4, origin: seed, note: "헤드라인 물가 경유, lag", needs_evidence: true}

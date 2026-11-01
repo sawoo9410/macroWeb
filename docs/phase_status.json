@@ -1,0 +1,373 @@
+{
+  "current_phase": 0,
+  "updated": "2026-11-02",
+  "phases": {
+    "0": {
+      "name": "스캐폴딩 (D1–2)",
+      "dod": [
+        {
+          "id": "repo-structure",
+          "text": "§13.1 레포 구조 생성",
+          "done": true,
+          "done_at": "2026-11-02"
+        },
+        {
+          "id": "claude-md",
+          "text": "CLAUDE.md (§13.2 골격, ≤150줄)",
+          "done": true,
+          "done_at": "2026-11-02"
+        },
+        {
+          "id": "agents-skills",
+          "text": ".claude/agents 14 + .claude/skills 9 골격",
+          "done": true,
+          "done_at": "2026-11-02"
+        },
+        {
+          "id": "settings-hooks",
+          "text": ".claude/settings.json 훅 4 + 허용/거부 도구",
+          "done": true,
+          "done_at": "2026-11-02"
+        },
+        {
+          "id": "pyproject",
+          "text": "pyproject (uv, Python 3.12) + uv sync",
+          "done": true,
+          "done_at": "2026-11-02"
+        },
+        {
+          "id": "makefile",
+          "text": "Makefile (doctor/test/lint/cost/launchd)",
+          "done": true,
+          "done_at": "2026-11-02"
+        },
+        {
+          "id": "db-schema-v1",
+          "text": "DB 스키마 v1 (부록 A) + db init 멱등",
+          "done": true,
+          "done_at": "2026-11-02"
+        },
+        {
+          "id": "make-doctor",
+          "text": "make doctor 통과 (FAIL 0)",
+          "done": true,
+          "done_at": "2026-11-02"
+        },
+        {
+          "id": "launchd-dryrun",
+          "text": "launchd plist dry-run (plutil + bootstrap + launchctl print + bootout)",
+          "done": true,
+          "done_at": "2026-11-02"
+        },
+        {
+          "id": "adr-0001",
+          "text": "ADR-0001 docs 검증 결과 (+ ADR-0002 과금, ADR-0003 레포)",
+          "done": true,
+          "done_at": "2026-11-02"
+        },
+        {
+          "id": "plan-digest",
+          "text": "docs/PLAN_DIGEST.md ≤300줄",
+          "done": true,
+          "done_at": "2026-11-02"
+        },
+        {
+          "id": "source-probe",
+          "text": "sources.yaml URL 실제 요청 검증 → docs/SOURCE_PROBE_*.md",
+          "done": true,
+          "done_at": "2026-11-02"
+        }
+      ]
+    },
+    "1": {
+      "name": "수집 MVP (W1)",
+      "dod": [
+        {
+          "id": "sources-20",
+          "text": "sources.yaml 20개 (T0 8·T1 6·T2 3·T3 3) 어댑터 + 픽스처 + 골든",
+          "done": false
+        },
+        {
+          "id": "raw-snapshot",
+          "text": "raw 스냅샷 gzip + meta(url, status, fetched_at, sha256, etag)",
+          "done": false
+        },
+        {
+          "id": "dedupe",
+          "text": "URL 정규화 + SimHash 중복제거 (임계는 200쌍 라벨로 보정)",
+          "done": false
+        },
+        {
+          "id": "market-data",
+          "text": "FRED/ECOS/Stooq 지표 수집 → market 테이블",
+          "done": false
+        },
+        {
+          "id": "scheduler",
+          "text": "30분 틱 스케줄러 + 소스별 적응 주기 + 이벤트 모드",
+          "done": false
+        },
+        {
+          "id": "launchd-install",
+          "text": "launchd collect/daily 설치 + pmset",
+          "done": false
+        },
+        {
+          "id": "unattended-3d",
+          "text": "collect 3일 연속 무인 실행",
+          "done": false
+        },
+        {
+          "id": "collect-stats",
+          "text": "일일 수집 통계 md",
+          "done": false
+        }
+      ]
+    },
+    "2": {
+      "name": "추출·검증 v1 (W2) — 첫 다이제스트·첫 수동 리포트",
+      "dod": [
+        {
+          "id": "extract-v1",
+          "text": "추출 프롬프트 v1 + 배치 파이프 (롤링 제출·06:30 마감·실시간 보충)",
+          "done": false
+        },
+        {
+          "id": "claim-entity-tables",
+          "text": "claim/entity 테이블 채움, extracted_by·stratum 기록",
+          "done": false
+        },
+        {
+          "id": "verify-signals-v1",
+          "text": "검증 신호 1·2·4·5·6 + 라벨 + review 큐",
+          "done": false
+        },
+        {
+          "id": "digest",
+          "text": "일일 다이제스트 10줄",
+          "done": false
+        },
+        {
+          "id": "eval-extract-30",
+          "text": "추출 평가셋 30개 (한/영 반반) + make eval-extract",
+          "done": false
+        },
+        {
+          "id": "routing-experiment",
+          "text": "모델 라우팅 측정 실험 §6.2.4 + ADR",
+          "done": false
+        },
+        {
+          "id": "t0-diff",
+          "text": "T0 diff 우선 처리 (FOMC 성명·금통위 의결문)",
+          "done": false
+        },
+        {
+          "id": "first-manual-report",
+          "text": "첫 주간 리포트 수동 생성 (템플릿 준수, 조악해도 됨)",
+          "done": false
+        }
+      ]
+    },
+    "3": {
+      "name": "거미줄 v1 (W3)",
+      "dod": [
+        {
+          "id": "seed-graph",
+          "text": "시드 그래프 200노드/500엣지 YAML 로드",
+          "done": false
+        },
+        {
+          "id": "entity-resolution",
+          "text": "엔티티 해소 (별칭 사전, candidate→confirmed)",
+          "done": false
+        },
+        {
+          "id": "edge-update",
+          "text": "추출 relations → 엣지 갱신 (evidence 100%)",
+          "done": false
+        },
+        {
+          "id": "stat-edges",
+          "text": "통계 엣지 r/lag 계산",
+          "done": false
+        },
+        {
+          "id": "vault-export",
+          "text": "vault 내보내기 + HTML 뷰어",
+          "done": false
+        },
+        {
+          "id": "propagate-v1",
+          "text": "전파 v1 + 주간 diff + 서브그래프 PNG",
+          "done": false
+        },
+        {
+          "id": "quality-v1",
+          "text": "주간 품질 검토 v1 (Q1·Q2·Q4·Q6) + 스코어카드",
+          "done": false
+        },
+        {
+          "id": "escalation",
+          "text": "승급 규칙 1–5 가동",
+          "done": false
+        }
+      ]
+    },
+    "4": {
+      "name": "편집국 v1 (W4) — 자동 주간 리포트",
+      "dod": [
+        {
+          "id": "agents-6",
+          "text": "분석가 4 + cartographer + editor 실동작",
+          "done": false
+        },
+        {
+          "id": "writer-factchecker",
+          "text": "writer-ko + fact-checker GATE",
+          "done": false
+        },
+        {
+          "id": "weekly-pack",
+          "text": "데이터팩 생성기",
+          "done": false
+        },
+        {
+          "id": "headless-runner",
+          "text": "claude -p 러너 (ADR-0002) + 토큰 갱신 + run 기록",
+          "done": false
+        },
+        {
+          "id": "launchd-weekly",
+          "text": "launchd weekly 등록",
+          "done": false
+        },
+        {
+          "id": "auto-publish-1",
+          "text": "일요일 17:30 자동 실행 → 19:30 전 발행 1회 성공",
+          "done": false
+        },
+        {
+          "id": "telegram",
+          "text": "텔레그램 알림 (별도 채팅방)",
+          "done": false
+        }
+      ]
+    },
+    "5": {
+      "name": "토론·논제·캘린더 (W5–6)",
+      "dod": [
+        {
+          "id": "pingpong",
+          "text": "ping-pong 스킬 실동작 + judge",
+          "done": false
+        },
+        {
+          "id": "thesis-ledger",
+          "text": "논제 원장 + 자동 채점",
+          "done": false
+        },
+        {
+          "id": "calendar-regime",
+          "text": "캘린더 엔진 + 레짐 탐지기 + 교차자산 정합성",
+          "done": false
+        },
+        {
+          "id": "history-5",
+          "text": "역사 베이스 5사례",
+          "done": false
+        },
+        {
+          "id": "charts-blog",
+          "text": "chart-maker + 블로그 초안 + 포트폴리오 렌즈",
+          "done": false
+        },
+        {
+          "id": "auto-publish-2",
+          "text": "2회 연속 자동 발행",
+          "done": false
+        }
+      ]
+    },
+    "6": {
+      "name": "검증 v2 · 인물 카드 (W7–8)",
+      "dod": [
+        {
+          "id": "verify-signals-v2",
+          "text": "신호 3·7·8·9·10·11",
+          "done": false
+        },
+        {
+          "id": "eval-verify-200",
+          "text": "평가셋 200개, F1 ≥ 0.85",
+          "done": false
+        },
+        {
+          "id": "traps-redteam",
+          "text": "traps.yaml 가동 + 레드팀 검증 토론",
+          "done": false
+        },
+        {
+          "id": "person-cards-30",
+          "text": "인물 카드 30명 (성향 벡터 evidence)",
+          "done": false
+        },
+        {
+          "id": "verification-notes",
+          "text": "검증 노트 섹션 가동",
+          "done": false
+        },
+        {
+          "id": "quality-v2",
+          "text": "품질 검토 v2 (Q3·Q5·Q7) + 정정 섹션",
+          "done": false
+        }
+      ]
+    },
+    "7": {
+      "name": "학습 루프 (W9–12)",
+      "dod": [
+        {
+          "id": "monthly-run",
+          "text": "월간 회고 run",
+          "done": false
+        },
+        {
+          "id": "credibility-update",
+          "text": "출처 credibility 갱신 (층별 오류율 할인)",
+          "done": false
+        },
+        {
+          "id": "verifier-retrain",
+          "text": "검증기 재학습 + 롤백",
+          "done": false
+        },
+        {
+          "id": "graph-prune",
+          "text": "그래프 정리",
+          "done": false
+        },
+        {
+          "id": "macro-background",
+          "text": "투자일기 '거시 배경' 생성",
+          "done": false
+        },
+        {
+          "id": "calibration-cost",
+          "text": "캘리브레이션 곡선 + 비용 리포트 + 품질 임계 재보정",
+          "done": false
+        },
+        {
+          "id": "runbook",
+          "text": "RUNBOOK.md 완성",
+          "done": false
+        },
+        {
+          "id": "success-metrics",
+          "text": "12주 성공 기준 §1.4 측정",
+          "done": false
+        }
+      ]
+    }
+  }
+}

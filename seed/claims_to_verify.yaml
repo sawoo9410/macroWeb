@@ -1,0 +1,19 @@
+# PLAN §1.5 "지금 이 순간의 맥락 시드" (2026-11-01). 사실로 쓰지 않는다 — 검증 레이어의 첫 실전 테스트.
+# Phase 2: 각 항목을 claim(label=UNVERIFIABLE, status=active) 으로 등록하고 신호 1–6 으로 라벨을 다시 매긴다.
+claims:
+  - {id: seed-fed-chair, area: 연준, text: "연준 의장은 케빈 워시(Kevin Warsh)다", type: attribution, verify_with: [fed_press, fomc_calendar]}
+  - {id: seed-fomc-0916-hike, area: 연준, text: "2026-09-16 FOMC 가 25bp 인상해 3.75–4.00% 가 됐다", type: event, value: 25, unit: bp, time_ref: "2026-09-16", verify_with: [fomc_calendar, fed_press, fred_api]}
+  - {id: seed-fomc-1028-hold, area: 연준, text: "2026-10-28 FOMC 동결, 표결 10:2 (쿡·해맥 인상 주장)", type: event, time_ref: "2026-10-28", verify_with: [fomc_calendar, fed_press]}
+  - {id: seed-minutes-more-hikes, area: 연준, text: "9월 의사록에 '연내 추가 인상' 문구", type: quote, verify_with: [fomc_calendar]}
+  - {id: seed-ppi-oct, area: 물가, text: "10/15 PPI 가 4년래 최대 상승", type: numeric, time_ref: "2026-10-15", verify_with: [bls_release_schedule, fred_api]}
+  - {id: seed-midterm-date, area: 중간선거, text: "미국 중간선거 11/3(화), 한국 시간 11/4 오전 개표", type: event, time_ref: "2026-11-03", verify_with: [whitehouse_news, gnews_reuters_macro]}
+  - {id: seed-congress-split, area: 중간선거, text: "선거 전 상원 53:47, 하원 218:214 공화", type: numeric, verify_with: [gnews_reuters_macro]}
+  - {id: seed-iran-war, area: 지정학, text: "이란 전쟁 진행 중, 트럼프 '선거 전 공격 안 한다', 한국에 파병 요청", type: event, verify_with: [gnews_reuters_macro, yna_economy]}
+  - {id: seed-avgo-shock, area: AI반도체, text: "6월 브로드컴 AI 매출 가이던스 쇼크로 SOX 하루 −10%대", type: numeric, verify_with: [stooq_csv, gnews_reuters_macro]}
+  - {id: seed-mu-sndk, area: AI반도체, text: "6월 마이크론·샌디스크 −13%", type: numeric, verify_with: [stooq_csv]}
+  - {id: seed-turboquant, area: AI반도체, text: "구글 TurboQuant(KV캐시 압축)로 메모리 수요 우려", type: event, verify_with: [tomshardware, arstechnica, semianalysis]}
+  - {id: seed-kimi-k3, area: AI반도체, text: "문샷 Kimi K3 저비용 오픈웨이트 공개", type: event, verify_with: [arstechnica, tomshardware]}
+  - {id: seed-nasdaq-2d, area: AI반도체, text: "10/16–17 나스닥 이틀 −2.85%", type: numeric, value: -2.85, unit: "%", verify_with: [stooq_csv]}
+  - {id: seed-kospi-6000, area: 한국, text: "KOSPI 6000대 국면, 증권사 밴드 6300–7300", type: numeric, verify_with: [yna_economy, hankyung_economy]}
+  - {id: seed-btc-80k, area: 크립토, text: "BTC 8만 달러대", type: numeric, verify_with: [stooq_csv]}
+  - {id: seed-bok-report, area: 한국, text: "한국은행이 10/16 중간선거 쟁점 보고서 발간", type: event, time_ref: "2026-10-16", verify_with: [bok_press]}

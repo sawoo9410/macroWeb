@@ -1,0 +1,13 @@
+# 핵심 인물 (PLAN §6.2.2 규칙 4: 직접 발언은 승급). 이름은 2026-11 기준 현직자 검증 필요(verify: true) — Phase 3 인물 카드에서 확정.
+persons:
+  - {id: fed-chair, name: Kevin Warsh, role: Fed Chair, org: federal-reserve, why: 금리 결정권자·독립성 공방의 중심, verify: true}
+  - {id: fed-governor-cook, name: Lisa Cook, role: Fed Governor (FOMC 투표권), org: federal-reserve, why: 10월 인상 소수의견(PLAN §1.5), verify: true}
+  - {id: cleveland-fed-president, name: Beth Hammack, role: Cleveland Fed President (FOMC 투표권), org: federal-reserve, why: 10월 인상 소수의견(PLAN §1.5), verify: true}
+  - {id: us-president, name: Donald Trump, role: US President, org: white-house, why: 연준 인하 압박·관세·이란, verify: true}
+  - {id: us-treasury-secretary, name: null, role: US Treasury Secretary, org: us-treasury, why: 국채 발행·TGA·재정, verify: true}
+  - {id: bok-governor, name: 이창용, role: 한국은행 총재, org: bank-of-korea, why: 기준금리·환율 발언, verify: true}
+  - {id: nvidia-ceo, name: Jensen Huang, role: NVIDIA CEO, org: nvidia, why: AI capex 사이클의 수요 측 발언, verify: true}
+  - {id: sk-hynix-ceo, name: null, role: SK hynix CEO, org: sk-hynix, why: HBM 공급·가격, verify: true}
+  - {id: samsung-ds-head, name: null, role: 삼성전자 DS부문장, org: samsung-electronics, why: 메모리 투자·가격, verify: true}
+  - {id: micron-ceo, name: Sanjay Mehrotra, role: Micron CEO, org: micron, why: DRAM/HBM 가이던스, verify: true}
+  - {id: abov-semiconductor, name: null, role: 어보브반도체 (102120) 경영진, org: abov, why: 상우 재직사 — 공시 사실만 (PLAN §16.1), verify: true, conflict_of_interest: true}

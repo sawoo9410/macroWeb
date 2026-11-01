@@ -1,0 +1,126 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run macroweb *)",
+      "Bash(uv run pytest *)",
+      "Bash(uv run ruff *)",
+      "Bash(uv run mypy *)",
+      "Bash(uv run python *)",
+      "Bash(uv sync *)",
+      "Bash(uv lock *)",
+      "Bash(make *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git branch *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(ls *)",
+      "Bash(plutil -lint *)",
+      "Bash(launchctl print *)",
+      "Bash(launchctl list *)",
+      "Read",
+      "Edit(./src/**)",
+      "Edit(./tests/**)",
+      "Edit(./config/**)",
+      "Edit(./prompts/**)",
+      "Edit(./seed/**)",
+      "Edit(./docs/**)",
+      "Edit(./reports/**)",
+      "Edit(./digests/**)",
+      "Edit(./charts/**)",
+      "Edit(./drafts/**)",
+      "Edit(./review/**)",
+      "Edit(./vault/**)",
+      "Edit(./eval/**)",
+      "Edit(./launchd/**)",
+      "Edit(./bin/**)",
+      "Edit(./.claude/**)",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:platform.claude.com)"
+    ],
+    "deny": [
+      "Read(./private/.env*)",
+      "Read(./.env*)",
+      "Read(./**/.env)",
+      "Read(./**/*token*.json)",
+      "Read(~/.claude/.credentials.json)",
+      "Edit(./private/**)",
+      "Edit(./data/raw/**)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push --force-with-lease *)",
+      "Bash(git add -A *)",
+      "Bash(git add --all *)",
+      "Bash(git commit -a *)",
+      "Bash(git commit --all *)",
+      "Bash(git commit -am *)",
+      "Bash(printenv *)",
+      "Bash(env)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(sudo *)",
+      "Bash(launchctl bootstrap *)",
+      "Bash(launchctl bootout *)",
+      "Bash(launchctl load *)",
+      "Bash(launchctl unload *)",
+      "Bash(pmset *)",
+      "Bash(rm -rf *)",
+      "Bash(git reset --hard *)",
+      "Bash(git checkout -- *)",
+      "Bash(git restore *)",
+      "Bash(git stash *)",
+      "Bash(git clean *)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session_start.py",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard_bash.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lint_json.py",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/phase_check.py",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

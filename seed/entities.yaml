@@ -1,0 +1,24 @@
+# 시드 엔티티 (PLAN 부록 E). status 는 로드 시 candidate. 전부 evidence 필요.
+entities:
+  - {id: fed, type: org, name: Federal Reserve, aliases: [연준, Fed, FOMC], country: US, sector: central_bank}
+  - {id: kevin-warsh, type: person, name: Kevin Warsh, aliases: [워시, 케빈 워시], role: Fed Chair, verify_role: true}
+  - {id: lisa-cook, type: person, name: Lisa Cook, role: Fed Governor, verify_role: true}
+  - {id: beth-hammack, type: person, name: Beth Hammack, role: Cleveland Fed President, verify_role: true}
+  - {id: donald-trump, type: person, name: Donald Trump, aliases: [트럼프], role: US President}
+  - {id: us-midterm-2026, type: event, name: 2026 US midterm election, date: "2026-11-03"}
+  - {id: fomc-2026-12-09, type: event, name: FOMC December 2026, date: "2026-12-09", verify_date: true}
+  - {id: ust10y, type: asset, name: US 10Y yield, data_key: "FRED:DGS10"}
+  - {id: sox, type: asset, name: PHLX Semiconductor Index, data_key: "STOOQ:^SOX"}
+  - {id: sk-hynix, type: org, name: SK hynix, aliases: [하이닉스, 닉스, 000660.KS], country: KR, sector: memory}
+  - {id: nvidia, type: org, name: NVIDIA, aliases: [엔비디아, NVDA], country: US, sector: semis}
+  - {id: moonshot-ai, type: org, name: Moonshot AI, aliases: [문샷], country: CN, sector: ai_lab}
+  - {id: kimi-k3, type: product_tech, name: Kimi K3 (open-weight, low-cost)}
+  - {id: turboquant, type: product_tech, name: Google TurboQuant (KV-cache compression)}
+  - {id: hbm, type: product_tech, name: HBM}
+  - {id: usdkrw, type: asset, name: USD/KRW, data_key: "ECOS:FX_USDKRW"}
+  - {id: kospi, type: asset, name: KOSPI}
+  - {id: theme-ai-capex, type: theme, name: AI capex 지속성}
+  - {id: theme-fed-independence, type: theme, name: 연준 독립성}
+  - {id: iran-conflict, type: event, name: 이란 전쟁/호르무즈}
+  - {id: oil, type: asset, name: Brent, data_key: "FRED:DCOILBRENTEU"}
+  - {id: abov, type: org, name: 어보브반도체, aliases: [ABOV, 102120], country: KR, sector: semis, conflict_of_interest: true}

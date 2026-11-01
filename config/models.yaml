@@ -1,0 +1,63 @@
+# 모델명·단가의 단일 출처 (PLAN §6.2.6: 코드 하드코딩 금지). 단가는 USD / 1M tokens.
+# 2026-11-01 공식 단가 페이지에서 확인 (ADR-0001). 플랜 §16.4 가정(Haiku $1/$5·Sonnet $3/$15·Opus $5/$25)보다 모두 내려갔다.
+updated: "2026-11-01"
+price_source: https://platform.claude.com/docs/en/about-claude/pricing
+tiers:
+  small:
+    id: claude-haiku-5-5
+    alias: haiku
+    input: 0.10
+    output: 0.50
+    cache_read: 0.01
+    cache_write_5m: 0.125
+    note: 프롬프트 100K 토큰 초과 요청은 5배($0.50/$2.50). 추출 입력은 ≤ 6k 라 해당 없음
+  mid:
+    id: claude-sonnet-5-5
+    alias: sonnet
+    input: 2.00
+    output: 10.00
+    cache_read: 0.10
+    cache_write_5m: 2.50
+  large:
+    id: claude-opus-5-5
+    alias: opus
+    input: 4.00
+    output: 20.00
+    cache_read: 0.20
+    cache_write_5m: 5.00
+batch_discount: 0.5          # Message Batches API: 입력·출력 50% 할인 (공식 단가 페이지 확인)
+defaults:
+  effort: {small: low, mid: medium, large: high}
+  max_tokens: {extract: 4096, read_long: 8192, synth: 16000}
+routing:                      # PLAN §6.2.1 가설 — Phase 2 측정 실험(§6.2.4)으로 확정 후 ADR
+  strata:
+    S-DATA: none              # 파서 → market/claim(VERIFIED), LLM 없음
+    S-T0-STMT: mid            # diff 문장만 (§6.2.3)
+    S-T0-LONG: mid            # 월 4–6건(의사록·실적콜)은 large (large_monthly_quota_long_docs)
+    S-T1: small
+    S-T1-KO: small            # 가장 의심되는 층 — 측정 결과 약하면 mid
+    S-T2: small               # 수치 검증 실패 시 승급
+    S-T4: none                # 고영향 루머만 small
+    S-ER: mid                 # 엔티티 해소 애매 케이스, 일 ≤ 20건
+  large_monthly_quota_long_docs: 6
+  escalation:                 # §6.2.2 — 한 단계 위 모델로 재추출
+    enabled: true
+    daily_cap: 8
+    reasons: [schema_fail, numeric_mismatch, high_impact_disputed, key_person_quote, rumor_high_impact]
+  audit:                      # §6.2.5 — 모델 차이가 출처 신뢰도를 오염시키지 않게
+    reference_tier: mid
+    weekly_sample_per_stratum: 10
+    long_doc_monthly_sample: 5
+    error_rate_alert: 0.15
+budget:                       # §0.3 월 비용 상한
+  monthly_cap_usd: 45
+  soft_limit_pct: 0.80
+  degrade:
+    - {at_pct: 0.80, action: "T1/T2 추출 80 → 50 Story/일"}
+    - {at_pct: 1.00, action: "주간 리포트만 실행 — 단 T0 정독·품질 검토는 강등 제외"}
+  weekly_editorial_cap_usd: 8
+weekly_runner:                # ADR-0002: 주간 편집국은 claude -p (구독 OAuth). api 로 바꾸면 Agent SDK/API 키 과금
+  mode: claude_headless
+  api_fallback: false
+  max_turns: 60
+  max_budget_usd: 8.0

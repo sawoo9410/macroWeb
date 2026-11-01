@@ -1,0 +1,17 @@
+# 인물 카드 시드 (PLAN §8.3). 전부 ⚠️ — 2026-11 기준 현직·날짜 검증 후 evidence(claim_id) 연결.
+id: kevin-warsh
+role: Fed Chair
+valid_from: "2026-05"            # ⚠️ 검증
+stance_vector:                   # −1 ~ +1, evidence 링크 필수(현재 없음 → 리포트 사용 금지)
+  hawkish_dovish: 0.6            # 2026-09 인상, "인플레 너무 높고 오래" (⚠️)
+  independence: 0.8              # 트럼프 인하 압박 공개 거부 (⚠️)
+  market_sensitivity: -0.2
+incentives:
+  - "의장 1년차: 독립성·신뢰 구축 (인상 결정의 비용 < 굴복의 평판 비용)"
+  - "재임명 시점·정치 환경 (⚠️)"
+track_record:
+  - {date: "2026-10-16", said: "회의 예단 안 함", outcome: "10/28 동결 (일치)", evidence: []}
+rhetoric_patterns: ["데이터 의존", "인플레 지속성 강조"]
+listens_to: [FOMC 매파 블록]
+conflicts: []
+sources: []

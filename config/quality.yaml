@@ -1,0 +1,56 @@
+# 주간 데이터 품질 검토 Q1–Q7 (PLAN §10.5). 시작 경보 기준은 8주 분포를 쌓은 뒤 하위/상위 5% 로 교체 (§0.4).
+recalibrate_after_weeks: 8
+checks:
+  Q1:
+    name: 근거 무결성
+    what: 모든 엣지에 evidence, raw 스냅샷 존재 + sha256 일치, claim 의 article 생존
+    auto: 실패 엣지·claim → quarantined (데이터팩 제외)
+    alert: {red_if_any_fail: true}
+    phase: 3
+  Q2:
+    name: 시효
+    what: 만기 지난 forecast, 더 새 claim 이 있는 현재상태 claim, 종류별 기한 넘긴 미강화 엣지, 직책 바뀐 인물
+    auto: expired / superseded(새 claim 링크) / valid_to 설정
+    alert: {report_counts_only: true}
+    phase: 3
+  Q3:
+    name: 모순
+    what: 같은 주어·술어·시점에 값이 다른 VERIFIED/CORROBORATED claim 둘, 같은 src→dst 반대 부호 활성 엣지(신뢰도 > 0.5)
+    human_or_llm: data-steward(Sonnet급, 주 ≤ 20건) — superseded / 조건 주석 / review 큐
+    alert: {yellow_if_open_days_over: 7}
+    phase: 6
+  Q4:
+    name: 중복·오염
+    what: 별칭 정규화 후 같은 엔티티 쌍, 4주 넘은 candidate, 한 소스가 주간 신규 엣지 30% 이상
+    auto: 별칭 완전 일치만 병합(이력 보존), 오래된 candidate 비활성
+    human_or_llm: 유사 이름 병합 후보·소스 쏠림 → review 큐
+    alert: {source_flood_share: 0.30, candidate_max_weeks: 4}
+    phase: 3
+  Q5:
+    name: 소급 정정
+    what: 라벨 바뀐 claim(→ DEBUNKED·DISPUTED·superseded) 중 과거 리포트·논제 인용분, 경제지표 수정치(ALFRED ⚠️)
+    auto: report_citation 으로 영향 추적 → 정정 목록, 전파 재계산
+    human_or_llm: 논제 판단 변경 여부는 chief-editor
+    alert: {errata_section_required_if_nonempty: true}
+    phase: 6
+  Q6:
+    name: 커버리지
+    what: 테마·소스별 수집량 vs 최근 4주 중앙값, 정상 주기 2배 넘게 침묵한 소스, 상위 claim 중 T0 비율
+    auto: 소스 health degraded
+    human_or_llm: 수집 이상 vs 실제 조용한 주 — data-steward
+    alert: {volume_drop_vs_median: -0.50, t0_share_yellow_below: 0.20}
+    phase: 3
+  Q7:
+    name: 추출 품질 감사
+    what: 감사 샘플 50개(§6.2.5) — 층별 추출 오류율 e, 수치 오류율, 관계 부호 오류율
+    auto: e 를 신뢰도 갱신 할인율에 반영
+    human_or_llm: 오류 상위 5개 → docs/PROMPT_PROPOSALS.md
+    alert: {stratum_error_rate_yellow: 0.15, numeric_error_rate_red: 0.05}
+    phase: 6
+gate:
+  q1_fail: 데이터팩에서 제외 (fact-checker 인용 시 FAIL)
+  q3_open: 해당 claim 은 [F] 불가 → 충돌 자체를 서술
+  q5_errata: 리포트 맨 위 '정정' 섹션 필수
+  q6_red_theme: 분석가 메모에 '수집 이상 가능' 단서 필수, 그 테마로 새 논제 금지
+  q7_red_stratum: 그 층에서만 나온 수치는 [I] 로 강등
+  two_reds: 리포트 상단 배너 '이번 주 데이터 품질 경보' + 텔레그램 알림

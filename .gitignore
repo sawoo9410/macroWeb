@@ -1,0 +1,33 @@
+# --- secrets & private (never commit) ---
+private/*
+!private/README.md
+!private/env.example
+.env
+.env.*
+!.env.example
+*token*.json
+
+# --- runtime data & logs ---
+data/
+logs/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+# --- python ---
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+
+# --- claude code local overrides ---
+.claude/settings.local.json
+.claude/worktrees/
+
+# --- os ---
+.DS_Store

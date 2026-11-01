@@ -1,0 +1,34 @@
+# 테마 시드 (PLAN §1.5·§9.1). Story→Theme 매핑은 임베딩 + 키워드 룰. 모멘텀·혼잡도는 Phase 3.
+themes:
+  - id: ai-capex-sustainability
+    name: AI capex 지속성
+    keywords: [capex, 데이터센터, hyperscaler, FCF, GPU 수요, 데이터센터 취소, 지연]
+    seed_entities: [nvidia, sk-hynix, theme-ai-capex]
+  - id: fed-independence
+    name: 연준 독립성
+    keywords: [연준 독립성, Fed independence, 인하 압박, Warsh, 워시, Trump Fed]
+    seed_entities: [fed, kevin-warsh, donald-trump]
+  - id: memory-supercycle
+    name: 메모리 슈퍼사이클 / 피크아웃 논쟁
+    keywords: [HBM, DRAM 계약가, 메모리 피크아웃, 하이닉스, 삼성전자 반도체, KV캐시 압축]
+    seed_entities: [hbm, sk-hynix, turboquant]
+  - id: rate-path-dec-hike
+    name: 12월 FOMC 인상 가능성
+    keywords: [FOMC, 12월 인상, 점도표, FedWatch, 기준금리]
+    seed_entities: [fomc-2026-12-09, ust10y]
+  - id: us-midterm-2026
+    name: 미국 중간선거와 재정
+    keywords: [중간선거, midterm, 상원, 하원, 감세, 부채한도, 관세]
+    seed_entities: [us-midterm-2026, donald-trump]
+  - id: iran-hormuz-oil
+    name: 이란·호르무즈·유가
+    keywords: [이란, Hormuz, 호르무즈, Brent, 유가, 파병]
+    seed_entities: [iran-conflict, oil]
+  - id: korea-foreign-flows
+    name: 한국 외국인 수급과 원화
+    keywords: [외국인 순매수, KOSPI, 원달러, 환율, 한미 금리차]
+    seed_entities: [kospi, usdkrw]
+  - id: dollar-liquidity
+    name: 달러·유동성 레짐
+    keywords: [DXY, 달러지수, RRP, TGA, 준비금, HY 스프레드, QT]
+    seed_entities: [fed]

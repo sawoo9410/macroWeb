@@ -1,0 +1,30 @@
+# 알려진 함정 (PLAN §7.4). 검증기 신호와 레드팀 토론이 참조한다.
+traps:
+  - id: satire_parody
+    description: 풍자·패러디 사이트, 리딩방·작전 텔레그램 지라시, 유튜브 썸네일 뉴스
+    signals: [domain_risk, satire_probability, ad_or_pump_probability]
+    label_hint: SPAM_SATIRE
+  - id: anonymous_policy_rumor
+    description: "'소식통에 따르면'만 있는 정책 루머 (관세·금리·공시 전 M&A)"
+    signals: [anonymous_ratio, rumor_lifecycle, n_independent]
+    label_hint: UNVERIFIABLE
+  - id: recycled_chart_or_article
+    description: 과거 차트·기사 재유통 (날짜 잘린 캡처)
+    signals: [time_consistency, embedding_similarity_old]
+    label_hint: RECYCLED
+  - id: unit_confusion
+    description: 실적 서프라이즈 수치의 단위 혼동 (QoQ vs YoY, 억/조, 계약가 vs 현물가)
+    signals: [numeric_match, escalation]
+  - id: deepfake_or_mistranslation
+    description: CEO·연준 인사 발언의 딥페이크·오역 — 원문 영상/성명과 대조
+    signals: [primary_doc_match, key_person_quote]
+  - id: prediction_market_as_fact
+    description: 예측시장 수치를 '사실'로 보도 (확률은 사실, 결과는 아님)
+    signals: [source_tier_T3, claim_type_forecast]
+  - id: korean_foreign_roundup
+    description: 한국 기사의 '외신 종합' — 원문 링크 없으면 SINGLE_SOURCE
+    signals: [cited_primary_doc_missing, lang_ko]
+    label_hint: SINGLE_SOURCE
+  - id: capex_guidance_as_actual
+    description: 하이퍼스케일러 capex '전망치'를 '확정치'로 쓰는 기사
+    signals: [claim_type_forecast_vs_numeric, time_ref_future]
