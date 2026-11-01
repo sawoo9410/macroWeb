@@ -1,0 +1,10 @@
+{
+ "source_id": "ecb_exr",
+ "url": "https://data-api.ecb.europa.eu/service/data/EXR/D.USD+KRW+JPY+CNY.EUR.SP00.A?format=csvdata&startPeriod=2026-07-01",
+ "final_url": "https://data-api.ecb.europa.eu/service/data/EXR/D.USD+KRW+JPY+CNY.EUR.SP00.A?format=csvdata&startPeriod=2026-07-01",
+ "status": 200,
+ "content_type": "text/csv",
+ "fetched_at": "2026-11-01T22:55:18+00:00",
+ "size": 77460,
+ "parser": "ecb_exr_v1"
+}

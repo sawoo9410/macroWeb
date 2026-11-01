@@ -103,7 +103,8 @@
         {
           "id": "market-data",
           "text": "FRED/ECOS/Stooq 지표 수집 → market 테이블",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-02"
         },
         {
           "id": "scheduler",

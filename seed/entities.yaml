@@ -7,8 +7,8 @@ entities:
   - {id: donald-trump, type: person, name: Donald Trump, aliases: [트럼프], role: US President}
   - {id: us-midterm-2026, type: event, name: 2026 US midterm election, date: "2026-11-03"}
   - {id: fomc-2026-12-09, type: event, name: FOMC December 2026, date: "2026-12-09", verify_date: true}
-  - {id: ust10y, type: asset, name: US 10Y yield, data_key: "FRED:DGS10"}
-  - {id: sox, type: asset, name: PHLX Semiconductor Index, data_key: "STOOQ:^SOX"}
+  - {id: ust10y, type: asset, name: US 10Y yield, data_key: "UST:10Y"}   # 재무부 원천(ADR-0005); FRED:DGS10 은 키 입력 후 동일 값
+  - {id: sox, type: asset, name: PHLX Semiconductor Index, data_key: "NAVER:.SOX"}   # Stooq 봇 검사로 대체(ADR-0005)
   - {id: sk-hynix, type: org, name: SK hynix, aliases: [하이닉스, 닉스, 000660.KS], country: KR, sector: memory}
   - {id: nvidia, type: org, name: NVIDIA, aliases: [엔비디아, NVDA], country: US, sector: semis}
   - {id: moonshot-ai, type: org, name: Moonshot AI, aliases: [문샷], country: CN, sector: ai_lab}
@@ -16,7 +16,7 @@ entities:
   - {id: turboquant, type: product_tech, name: Google TurboQuant (KV-cache compression)}
   - {id: hbm, type: product_tech, name: HBM}
   - {id: usdkrw, type: asset, name: USD/KRW, data_key: "ECOS:FX_USDKRW"}
-  - {id: kospi, type: asset, name: KOSPI}
+  - {id: kospi, type: asset, name: KOSPI, data_key: "NAVER:KOSPI"}
   - {id: theme-ai-capex, type: theme, name: AI capex 지속성}
   - {id: theme-fed-independence, type: theme, name: 연준 독립성}
   - {id: iran-conflict, type: event, name: 이란 전쟁/호르무즈}

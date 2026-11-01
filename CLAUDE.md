@@ -19,6 +19,7 @@ PLAN과 ADR(`docs/decisions/`)이 충돌하면 ADR이 이긴다(충돌 사실을
 | launchd plist 문법+로드 확인(잡을 남기지 않음) | `make launchd-dryrun` |
 | **수집 틱 (Phase 1 구현됨)** | `uv run macroweb collect` (`--source <id>` · `--force` · `--no-bodies`) · 통계 재생성 `uv run macroweb stats --date YYYY-MM-DD` |
 | 픽스처 캡처 / 골든 갱신·검사 | `uv run macroweb source capture <id>` · `uv run macroweb source golden --write` · `uv run macroweb source golden` |
+| 시장 데이터 조회 (ADR-0005 키 없는 UST·ECB·NAVER·KRAKEN) | `uv run macroweb market latest [--like 'UST:%']` · `uv run macroweb market get UST:10Y --limit 10` |
 | 이후 단계 (Phase 2+ 스텁) | `uv run macroweb extract` · `verify` · `graph` · `digest` · `quality` · `weekly` · `monthly` |
 
 ## 세션 운영 규칙 (PLAN §0.1 요약)

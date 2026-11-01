@@ -1,0 +1,10 @@
+{
+ "source_id": "treasury_yield_curve",
+ "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value_month=202610",
+ "final_url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value_month=202610",
+ "status": 200,
+ "content_type": "text/xml; charset=UTF-8",
+ "fetched_at": "2026-11-01T22:55:09+00:00",
+ "size": 33118,
+ "parser": "treasury_yield_v1"
+}

@@ -195,6 +195,29 @@ def insert_market(conn: sqlite3.Connection, points: list[MarketPoint]) -> int:
     return n
 
 
+def market_latest(conn: sqlite3.Connection, like: str | None = None) -> list[sqlite3.Row]:
+    """Newest point per key (optionally key LIKE pattern, e.g. 'UST:%'), with the number of stored days."""
+    where = "WHERE key LIKE ?" if like else ""
+    args: tuple[str, ...] = (like,) if like else ()
+    return conn.execute(
+        f"""SELECT m.key, m.date, m.value, m.source, c.n_days, c.first_date
+            FROM market m
+            JOIN (SELECT key, MAX(date) AS max_date, COUNT(*) AS n_days, MIN(date) AS first_date
+                  FROM market {where} GROUP BY key) c
+              ON c.key = m.key AND c.max_date = m.date
+            ORDER BY m.key""",
+        args,
+    ).fetchall()
+
+
+def market_series(conn: sqlite3.Connection, key: str, limit: int = 30) -> list[sqlite3.Row]:
+    """Most recent `limit` points of one key, oldest first."""
+    rows = conn.execute(
+        "SELECT date, value, source FROM market WHERE key = ? ORDER BY date DESC LIMIT ?", (key, limit)
+    ).fetchall()
+    return list(reversed(rows))
+
+
 # --- story grouping (SimHash stage) -------------------------------------------------------------------
 def group_into_stories(
     conn: sqlite3.Connection, *, max_hamming: int = 3, window_hours: int = 72

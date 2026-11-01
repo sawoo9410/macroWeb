@@ -11,14 +11,19 @@ from urllib.parse import quote_plus
 
 from macroweb.collect.fetchers.api import (
     parse_cftc_cot,
+    parse_ecb_exr,
     parse_ecos,
     parse_fiscaldata,
     parse_fred_csv,
     parse_fred_json,
     parse_hn_algolia,
     parse_kalshi,
+    parse_kraken_ohlc,
+    parse_naver_domestic_index,
+    parse_naver_world_index,
     parse_polymarket,
     parse_stooq_csv,
+    parse_treasury_yield_curve,
 )
 from macroweb.collect.fetchers.html import parse_fomc_calendar, parse_trendforce_press
 from macroweb.collect.fetchers.rss import parse_gnews_rss, parse_rss
@@ -41,6 +46,12 @@ PARSERS: dict[str, Parser] = {
     "cftc_cot_v1": parse_cftc_cot,
     "hn_algolia_v1": parse_hn_algolia,
     "stooq_csv_v1": parse_stooq_csv,
+    # keyless market data (ADR-0005)
+    "treasury_yield_v1": parse_treasury_yield_curve,
+    "ecb_exr_v1": parse_ecb_exr,
+    "naver_world_index_v1": parse_naver_world_index,
+    "naver_domestic_index_v1": parse_naver_domestic_index,
+    "kraken_ohlc_v1": parse_kraken_ohlc,
 }
 NOT_IMPLEMENTED_KINDS = {"playwright", "pdf"}
 
@@ -98,4 +109,29 @@ def plan_requests(src: Source, env: dict[str, str] | None = None) -> list[tuple[
         queries = src.params.get("queries") or ["nvidia"]
         sep = "&" if "?" in src.url else "?"
         return [(f"{src.url}{sep}query={quote_plus(q)}", q) for q in queries]
+    # --- keyless market data (ADR-0005) ---
+    if src.parser == "treasury_yield_v1":
+        # the XML endpoint is per month: previous + current month (covers month starts and late postings)
+        first = today.replace(day=1)
+        prev = (first - timedelta(days=1)).replace(day=1)
+        sep = "&" if "?" in src.url else "?"
+        return [
+            (f"{src.url}{sep}field_tdr_date_value_month={m}", m)
+            for m in (prev.strftime("%Y%m"), today.strftime("%Y%m"))
+        ]
+    if src.parser == "ecb_exr_v1":
+        start = (today - timedelta(days=int(src.params.get("lookback_days", 120)))).isoformat()
+        sep = "&" if "?" in src.url else "?"
+        return [(f"{src.url}{sep}startPeriod={start}", "exr")]
+    if src.parser == "naver_world_index_v1":
+        template = str(src.params.get("url_template") or "")
+        symbols = src.params.get("symbols") or []
+        if not symbols or "{symbol}" not in template:
+            return [(src.url, "main")]
+        size = int(src.params.get("page_size", 60))
+        return [(template.format(symbol=sym, page_size=size), sym) for sym in symbols]
+    if src.parser == "kraken_ohlc_v1":
+        since = int(datetime.now(UTC).timestamp()) - int(src.params.get("lookback_days", 90)) * 86400
+        sep = "&" if "?" in src.url else "?"
+        return [(f"{src.url}{sep}since={since}", "ohlc")]
     return [(src.url, "main")]

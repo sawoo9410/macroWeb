@@ -21,10 +21,12 @@ db_app = typer.Typer(help="SQLite 생성·점검·마이그레이션", no_args_i
 config_app = typer.Typer(help="config/·prompts/ 스키마 검증", no_args_is_help=True)
 source_app = typer.Typer(help="소스 레지스트리 (config/sources.yaml)", no_args_is_help=True)
 phase_app = typer.Typer(help="Phase / DoD 상태 (docs/phase_status.json)", no_args_is_help=True)
+market_app = typer.Typer(help="market 테이블 조회 (지표·가격, S-DATA)", no_args_is_help=True)
 app.add_typer(db_app, name="db")
 app.add_typer(config_app, name="config")
 app.add_typer(source_app, name="source")
 app.add_typer(phase_app, name="phase")
+app.add_typer(market_app, name="market")
 console = Console()
 
 STAGE_PHASE = {
@@ -406,6 +408,59 @@ def stats(date: str | None = typer.Option(None, "--date", help="KST 날짜 (기�
         console.print(str(write_collect_stats(conn, day)))
     finally:
         conn.close()
+
+
+# --- market -----------------------------------------------------------------------------------------
+@market_app.command("latest")
+def market_latest(
+    like: str | None = typer.Option(None, "--like", help="key LIKE 패턴 (예: 'UST:%', '%KRW%')"),
+    json_out: bool = typer.Option(False, "--json"),
+) -> None:
+    """key 별 최신 값·기준일·보유 일수 (fact-checker 가 수치 대조에 쓴다)."""
+    from macroweb.collect import store
+    from macroweb.db import repo
+
+    conn = repo.connect()
+    try:
+        rows = store.market_latest(conn, like)
+    finally:
+        conn.close()
+    if json_out:
+        console.print_json(json.dumps([dict(r) for r in rows], ensure_ascii=False))
+        return
+    table = Table(title=f"market — {len(rows)} keys")
+    for col in ("key", "date", "value", "source", "days", "since"):
+        table.add_column(col, overflow="fold")
+    for r in rows:
+        table.add_row(
+            r["key"], r["date"], f"{r['value']:,.4f}", r["source"], str(r["n_days"]), r["first_date"]
+        )
+    console.print(table)
+
+
+@market_app.command("get")
+def market_get(
+    key: str = typer.Argument(..., help="예: UST:10Y, NAVER:.SOX, ECB:USD_KRW_CROSS, KRAKEN:XBTUSD"),
+    limit: int = typer.Option(30, "--limit", help="최근 n 개 (오래된 순 출력)"),
+    json_out: bool = typer.Option(False, "--json"),
+) -> None:
+    """한 key 의 최근 시계열."""
+    from macroweb.collect import store
+    from macroweb.db import repo
+
+    conn = repo.connect()
+    try:
+        rows = store.market_series(conn, key, limit)
+    finally:
+        conn.close()
+    if not rows:
+        console.print(f"[yellow]no points for {key}[/] — `macroweb market latest` 로 key 목록 확인")
+        raise typer.Exit(1)
+    if json_out:
+        console.print_json(json.dumps([dict(r) for r in rows], ensure_ascii=False))
+        return
+    for r in rows:
+        console.print(f"{r['date']}  {r['value']:>14,.4f}  ({r['source']})")
 
 
 @app.command()

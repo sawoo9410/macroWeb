@@ -19,7 +19,7 @@ Phase 순서 엄수 · 결정은 ADR · 🔒는 QUESTIONS.md 에 적고 기본�
 | 배치 | 틱마다 롤링 제출, 06:30 마지막 배치, 07:20 까지 미완료분만 실시간 |
 | 월 비용 상한 | API $45 (80% → 추출 50개, 100% → 주간만; T0 정독·품질 검토는 강등 제외). **ADR-0001: 단가 하락으로 API 예상 ≈ $9/월** |
 | 주간 실행기 | ~~Agent SDK~~ → **`claude -p` 구독 경로 (ADR-0002)** |
-| 시장 데이터 | FRED·Stooq·FDR·ECOS. Alpha Vantage 사용 안 함(investment-monitor 와 키 충돌) |
+| 시장 데이터 | ~~FRED·Stooq·FDR·ECOS~~ → **ADR-0005: 키 없는 1차 = 재무부 수익률(UST)·ECB 환율·Naver 지수·Kraken BTC; FRED·ECOS 는 키 입력 후 추가 층. Stooq·FDR 제외.** Alpha Vantage 사용 안 함(investment-monitor 와 키 충돌) |
 | 그래프 뷰어 | 자체 HTML(cytoscape.js) — 색=부호, 굵기=가중치, 시간 슬라이더. Obsidian 은 Phase 8 선택 |
 | 알림 | 기존 텔레그램 봇, **별도 채팅방**, 한 줄 요약 + 논제 3 + 경로 |
 | 리포트 | 한국어·괄호 풀이·투자 1년차 눈높이. 블로그는 초안 md 만(티스토리 API 종료) |
@@ -89,3 +89,4 @@ robots·유료 벽 우회 금지·커뮤니티 개인정보 저장 금지·발�
 - ADR-0002 주간 실행기 = `claude -p` 구독 OAuth (Agent SDK 는 API 키 정책). API 월 예상 ≈ $9.
 - ADR-0004 (Phase 1) 수집 계층: migration 0002(스케줄 상태·fetch_log·simhash), 어댑터=순수 파서 + 실제 응답 픽스처 + 골든, 내용 주소화 raw, SimHash ≤3(패러프레이즈 ≈6 측정), 적응 주기·백오프, 키 없는 FRED/Stooq/BLS/Reddit 은 위장 없이 비활성.
 - ADR-0003 레포 위치 `/Users/seosang-u/projects/finance/macroWeb`, 원격 `github.com/sawoo9410/macroWeb`(**PUBLIC** — QUESTIONS Q1), `MACROWEB_PLAN_v0.3.md` → `PLAN.md`, Python 3.12.16(uv).
+- ADR-0005 (Phase 1 market-data) 키 없는 시장 데이터: API 소스도 robots.txt 준수(호스트별 확인 표), 소스 5개(`treasury_yield_curve`·`ecb_exr` T0, `naver_world_index`·`naver_domestic_index`·`kraken_ohlc` T3), key `<PROVIDER>:<SERIES>`, 계산 시리즈는 이름에(`UST:10Y2Y`·`ECB:USD_KRW_CROSS`), 잠정치 미기록(KOSPI CLOSE 만·Kraken 확정 캔들만), 시드 `data_key` 갱신, `macroweb market latest|get`. 실수집 1,256점·26 key, 멱등.

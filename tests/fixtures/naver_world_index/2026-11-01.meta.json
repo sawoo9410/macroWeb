@@ -1,0 +1,10 @@
+{
+ "source_id": "naver_world_index",
+ "url": "https://api.stock.naver.com/index/.SOX/price?pageSize=60&page=1",
+ "final_url": "https://api.stock.naver.com/index/.SOX/price?pageSize=60&page=1",
+ "status": 200,
+ "content_type": "application/json;charset=UTF-8",
+ "fetched_at": "2026-11-01T22:55:22+00:00",
+ "size": 36598,
+ "parser": "naver_world_index_v1"
+}

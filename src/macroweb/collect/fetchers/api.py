@@ -257,3 +257,145 @@ def parse_stooq_csv(content: bytes, src: Source, url: str) -> ParseResult:
 
 def _unused(_: Any) -> None:  # keep `Any` import meaningful for type checkers on older pythons
     return None
+
+
+# --- keyless market data (ADR-0005): T0 Treasury/ECB, T3 Naver/Kraken ---------------------------------
+def _num(text: str | None) -> float | None:
+    """'10,688.80' -> 10688.8; None/''/'-' -> None."""
+    if text is None:
+        return None
+    t = str(text).replace(",", "").strip()
+    if t in ("", "-", "."):
+        return None
+    try:
+        return float(t)
+    except ValueError:
+        return None
+
+
+UST_TENORS: dict[str, str] = {
+    "BC_1MONTH": "1M",
+    "BC_3MONTH": "3M",
+    "BC_6MONTH": "6M",
+    "BC_1YEAR": "1Y",
+    "BC_2YEAR": "2Y",
+    "BC_5YEAR": "5Y",
+    "BC_10YEAR": "10Y",
+    "BC_30YEAR": "30Y",
+}
+UST_SPREADS: tuple[tuple[str, str, str], ...] = (("10Y2Y", "10Y", "2Y"), ("10Y3M", "10Y", "3M"))
+
+
+def parse_treasury_yield_curve(content: bytes, src: Source, url: str) -> ParseResult:
+    """home.treasury.gov daily par yield curve (Atom/OData XML, one <entry> per business day).
+    Keys UST:<tenor> plus computed spreads UST:10Y2Y / UST:10Y3M (percentage points)."""
+    import xml.etree.ElementTree as ET
+
+    ns_d = "{http://schemas.microsoft.com/ado/2007/08/dataservices}"
+    ns_m = "{http://schemas.microsoft.com/ado/2007/08/dataservices/metadata}"
+    try:
+        root = ET.fromstring(content)
+    except ET.ParseError as exc:
+        return ParseResult(notes=[f"treasury: xml parse error {exc}"])
+    points: list[MarketPoint] = []
+    for props in root.iter(f"{ns_m}properties"):
+        date_el = props.find(f"{ns_d}NEW_DATE")
+        if date_el is None or not (date_el.text or "").strip():
+            continue
+        day = (date_el.text or "").strip()[:10]
+        tenor_vals: dict[str, float] = {}
+        for field, tenor in UST_TENORS.items():
+            el = props.find(f"{ns_d}{field}")
+            v = _num(el.text if el is not None else None)
+            if v is not None:
+                tenor_vals[tenor] = v
+                points.append(MarketPoint(date=day, key=f"UST:{tenor}", value=v, source="treasury"))
+        for name, a, b in UST_SPREADS:
+            if a in tenor_vals and b in tenor_vals:
+                spread = round(tenor_vals[a] - tenor_vals[b], 4)
+                points.append(MarketPoint(date=day, key=f"UST:{name}", value=spread, source="treasury"))
+    return ParseResult(market=points, notes=[] if points else ["treasury: no entries"])
+
+
+def parse_ecb_exr(content: bytes, src: Source, url: str) -> ParseResult:
+    """ECB reference rates (SDMX csvdata: KEY,…,CURRENCY,…,TIME_PERIOD,OBS_VALUE). Quoted as <CUR> per EUR and
+    stored as ECB:<CUR>_EUR; USD crosses are derived from the same 14:15 CET fixing as
+    ECB:USD_<CUR>_CROSS = <CUR>_EUR / USD_EUR."""
+    rows = list(csv.DictReader(io.StringIO(content.decode("utf-8", "replace"))))
+    per_eur: dict[tuple[str, str], float] = {}
+    points: list[MarketPoint] = []
+    for r in rows:
+        cur, day, val = r.get("CURRENCY"), r.get("TIME_PERIOD"), _num(r.get("OBS_VALUE"))
+        if not cur or not day or val is None or len(day) != 10:
+            continue
+        per_eur[(day, cur)] = val
+        points.append(MarketPoint(date=day, key=f"ECB:{cur}_EUR", value=val, source="ecb"))
+    for (day, cur), val in sorted(per_eur.items()):
+        usd = per_eur.get((day, "USD"))
+        if cur != "USD" and usd:
+            cross = round(val / usd, 6)
+            points.append(MarketPoint(date=day, key=f"ECB:USD_{cur}_CROSS", value=cross, source="ecb"))
+    return ParseResult(market=points, notes=[] if points else ["ecb: no observations"])
+
+
+def parse_naver_world_index(content: bytes, src: Source, url: str) -> ParseResult:
+    """api.stock.naver.com/index/<symbol>/price — daily closes of world indices (.SOX, .INX, .VIX, .DXY …).
+    Dates are the exchange-local trading day taken from localTradedAt."""
+    data = json.loads(content)
+    if not isinstance(data, list):
+        return ParseResult(notes=["naver_world: unexpected payload"])
+    path = urlsplit(url).path
+    path_sym = path.split("/index/")[-1].split("/")[0] if "/index/" in path else "?"
+    points: list[MarketPoint] = []
+    for row in data:
+        sym = row.get("worldIndexSymbol") or path_sym
+        day = (row.get("localTradedAt") or "")[:10]
+        val = _num(row.get("closePrice"))
+        if len(day) == 10 and val is not None:
+            points.append(MarketPoint(date=day, key=f"NAVER:{sym}", value=val, source="naver"))
+    return ParseResult(market=points, notes=[] if points else ["naver_world: no rows"])
+
+
+def parse_naver_domestic_index(content: bytes, src: Source, url: str) -> ParseResult:
+    """polling.finance.naver.com realtime KOSPI/KOSDAQ. Only marketStatus == CLOSE is recorded (one close per
+    trading day, dated by localTradedAt); intraday values are never written to `market`."""
+    data = json.loads(content)
+    points: list[MarketPoint] = []
+    notes: list[str] = []
+    rows = data.get("datas", []) if isinstance(data, dict) else []
+    for row in rows:
+        code = row.get("itemCode") or row.get("symbolCode")
+        status = row.get("marketStatus")
+        if status != "CLOSE":
+            notes.append(f"naver_domestic: {code} marketStatus={status} (skipped)")
+            continue
+        day = (row.get("localTradedAt") or "")[:10]
+        val = _num(row.get("closePriceRaw") or row.get("closePrice"))
+        if code and len(day) == 10 and val is not None:
+            points.append(MarketPoint(date=day, key=f"NAVER:{code}", value=val, source="naver"))
+    return ParseResult(market=points, notes=notes)
+
+
+def parse_kraken_ohlc(content: bytes, src: Source, url: str) -> ParseResult:
+    """api.kraken.com/0/public/OHLC daily candles. Only committed candles (time <= result.last) are kept; the
+    in-progress candle is dropped. Key KRAKEN:<pair from the query>, value = close, date = UTC candle day."""
+    data = json.loads(content)
+    if data.get("error"):
+        return ParseResult(notes=[f"kraken: {data['error']}"])
+    result = data.get("result") or {}
+    last = int(result.get("last") or 0)
+    pair = parse_qs(urlsplit(url).query).get("pair", ["?"])[0].upper()
+    points: list[MarketPoint] = []
+    for k, candles in result.items():
+        if k == "last" or not isinstance(candles, list):
+            continue
+        for c in candles:
+            try:
+                t, close = int(c[0]), float(c[4])
+            except (IndexError, TypeError, ValueError):
+                continue
+            if last and t > last:
+                continue
+            day = datetime.fromtimestamp(t, tz=UTC).date().isoformat()
+            points.append(MarketPoint(date=day, key=f"KRAKEN:{pair}", value=close, source="kraken"))
+    return ParseResult(market=points, notes=[] if points else ["kraken: no committed candles"])

@@ -1,0 +1,19 @@
+{
+ "n_items": 0,
+ "n_market": 210,
+ "market_keys": [
+  "UST:10Y",
+  "UST:10Y2Y",
+  "UST:10Y3M",
+  "UST:1M",
+  "UST:1Y",
+  "UST:2Y",
+  "UST:30Y",
+  "UST:3M",
+  "UST:5Y",
+  "UST:6M"
+ ],
+ "first_items": [],
+ "feed_window_known": false,
+ "notes": []
+}

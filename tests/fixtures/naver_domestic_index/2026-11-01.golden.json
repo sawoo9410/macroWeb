@@ -1,0 +1,11 @@
+{
+ "n_items": 0,
+ "n_market": 2,
+ "market_keys": [
+  "NAVER:KOSDAQ",
+  "NAVER:KOSPI"
+ ],
+ "first_items": [],
+ "feed_window_known": false,
+ "notes": []
+}
