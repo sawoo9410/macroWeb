@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import gzip
 import json
+import os
 from datetime import UTC, date, datetime
 from pathlib import Path
 
@@ -13,6 +14,7 @@ import httpx
 
 from macroweb.collect.http import ext_for, fetch_url
 from macroweb.collect.models import FetchResponse
+from macroweb.collect.redact import redact_url
 from macroweb.config import Source
 from macroweb.paths import ROOT
 
@@ -36,10 +38,11 @@ def save_fixture(src: Source, resp: FetchResponse, day: date | None = None, suff
     stem = f"{day.isoformat()}{suffix}"
     body = d / f"{stem}.{ext}"
     body.write_bytes(resp.content)
+    secrets = [v for k, v in os.environ.items() if k.endswith(("_API_KEY", "_TOKEN", "_SECRET")) and v]
     meta = {
         "source_id": src.id,
-        "url": resp.url,
-        "final_url": resp.final_url,
+        "url": redact_url(resp.url, secrets),
+        "final_url": redact_url(resp.final_url, secrets),
         "status": resp.status,
         "content_type": resp.content_type,
         "fetched_at": (resp.fetched_at or datetime.now(UTC)).isoformat(timespec="seconds"),

@@ -57,7 +57,7 @@ sources:
     parser: fred_v1
     stratum: S-DATA
     params:
-      series: [DFF, DGS2, DGS10, T10Y2Y, CPIAUCSL, PCEPILFE, PAYEMS, UNRATE, DTWEXBGS, WALCL, RRPONTSYD, WTREGEN, BAMLH0A0HYM2, VIXCLS, DCOILBRENTEU]
+      series: [DFF, DGS2, DGS10, T10Y2Y, CPIAUCSL, PCEPILFE, PAYEMS, UNRATE, DTWEXBGS, WALCL, RRPONTSYD, WTREGEN, BAMLH0A0HYM2, VIXCLS, DCOILBRENTEU, SP500, NASDAQCOM, DEXKOUS]
       lookback_days: 800
   - id: bls_release_schedule
     name: BLS news release schedule (CPI/PPI/NFP dates)
