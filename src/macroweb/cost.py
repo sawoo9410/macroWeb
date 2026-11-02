@@ -28,6 +28,9 @@ class CostEstimate:
     cap_usd: float
     cap_pct: float | None
     weekly_runner_mode: str
+    track_a_runner_mode: str
+    subscription_calls_per_day: float
+    subscription_tokens_per_day: float
     price_source: str
     prices_updated: str
 
@@ -53,9 +56,27 @@ def estimate(models: ModelsConfig | None = None, workload: CostWorkload | None =
         per_call = router.estimate_cost(job.tier, usage, batch=job.batch)
         monthly = per_call * job.count * _periods(job, workload) * job.overhead
         lines.append(CostLine(job.name, job.tier, job.batch, job.group, monthly))
-    subscription_groups = {"weekly_editorial"} if models.weekly_runner.mode == "claude_headless" else set()
+    subscription_groups: set[str | None] = set()
+    if models.weekly_runner.mode == "claude_headless":
+        subscription_groups.add("weekly_editorial")
+    if models.track_a_runner.mode == "claude_headless":
+        subscription_groups.add("track_a")
     api_total = sum(line.monthly_usd for line in lines if line.group not in subscription_groups)
     sub_total = sum(line.monthly_usd for line in lines if line.group in subscription_groups)
+    # subscription volume: calls/day and tokens/day incl. the per-call harness overhead (ADR-0007 measurement)
+    calls_day = 0.0
+    tokens_day = 0.0
+    for job in workload.jobs:
+        if job.group not in subscription_groups:
+            continue
+        per_day = job.count * _periods(job, workload) / workload.days_per_month
+        calls_day += per_day
+        tokens_day += per_day * (
+            job.input_tokens
+            + job.cached_input_tokens
+            + job.output_tokens
+            + workload.headless_overhead_tokens_per_call
+        )
     cap = models.budget.monthly_cap_usd
     return CostEstimate(
         lines=lines,
@@ -64,6 +85,9 @@ def estimate(models: ModelsConfig | None = None, workload: CostWorkload | None =
         cap_usd=cap,
         cap_pct=(api_total / cap * 100) if cap else None,
         weekly_runner_mode=models.weekly_runner.mode,
+        track_a_runner_mode=models.track_a_runner.mode,
+        subscription_calls_per_day=calls_day,
+        subscription_tokens_per_day=tokens_day,
         price_source=models.price_source,
         prices_updated=models.updated,
     )

@@ -29,6 +29,7 @@ def test_models_config_tiers_and_budget() -> None:
     assert 0 < cfg.batch_discount <= 1
     assert cfg.budget.monthly_cap_usd > 0
     assert cfg.weekly_runner.mode in {"claude_headless", "api"}
+    assert cfg.track_a_runner.mode in {"claude_headless", "api"}
 
 
 def test_quality_has_seven_checks() -> None:

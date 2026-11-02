@@ -61,3 +61,6 @@ weekly_runner:                # ADR-0002: 주간 편집국은 claude -p (구독 
   api_fallback: false
   max_turns: 60
   max_budget_usd: 8.0
+track_a_runner:               # ADR-0007: 일일 추출·검증 루브릭·감사도 claude -p (Max 구독). api 로 바꾸면 Batches API + ANTHROPIC_API_KEY
+  mode: claude_headless
+  api_fallback: false

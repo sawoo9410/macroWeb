@@ -7,10 +7,19 @@ selection:                     # 선별 = 테마 유사도 × 출처 tier (§0.3
   theme_weight: 0.6
   tier_weight: 0.4
   min_independent_to_force: 3  # 독립 출처 ≥ 3 이면 자동 승격
-batch:                         # Message Batches API — 틱마다 롤링 제출, 결과는 다음 틱/일일 잡에서 회수
+headless:                      # ADR-0007 (기본): claude -p 구독 경로. 하네스 프롬프트를 --system-prompt 로 대체, 도구 없음, 1턴
+  model_flag_by_tier: {small: haiku, mid: sonnet, large: opus}
+  calls_per_tick: 15           # 30분 틱마다 새 Story 를 조금씩 처리 — 5시간 사용 창에 몰리지 않게
+  max_calls_per_day: 150       # 80 Story + T0 전량 + 승급 ≤ 8 + 여유
+  concurrency: 2
+  max_turns: 1
+  setting_sources: user        # 프로젝트 훅·CLAUDE.md 제외 (토큰·지연 절약)
+  limit_backoff_s: 3600        # 구독 한도(429/limit) 감지 시 LLM 작업 중단, 이 시간 뒤 재시도
+  realtime_cutoff_kst: "07:20" # 일일 잡이 남은 Story 를 마감 처리하는 시각
+batch:                         # track_a_runner.mode == api 일 때만: Message Batches API 롤링 제출
   rolling_every_tick: true
   last_submit_kst: "06:30"
-  realtime_cutoff_kst: "07:20" # 이 시각까지 미완료분만 실시간 호출
+  realtime_cutoff_kst: "07:20"
   poll_interval_s: 300
   custom_id_prefix: ext
 prompt: {name: extract, version: 1}

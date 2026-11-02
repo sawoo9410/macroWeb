@@ -92,7 +92,9 @@ def cost(json_out: bool = typer.Option(False, "--json")) -> None:
     if json_out:
         typer.echo(json.dumps(est.as_dict(), ensure_ascii=False, indent=2))
         return
-    table = Table(title=f"월 비용 추정 (단가 {est.prices_updated}, weekly_runner={est.weekly_runner_mode})")
+    table = Table(
+        title=f"월 비용 추정 (단가 {est.prices_updated}, weekly={est.weekly_runner_mode}, track_a={est.track_a_runner_mode})"
+    )
     table.add_column("job")
     table.add_column("tier")
     table.add_column("batch")
@@ -105,7 +107,8 @@ def cost(json_out: bool = typer.Option(False, "--json")) -> None:
     console.print(table)
     console.print(
         f"API 합계 ≈ ${est.api_total_usd:.2f}/월 (캡 ${est.cap_usd:.0f}, {est.cap_pct or 0:.0f}%) · "
-        f"구독으로 흡수되는 주간 편집국 ≈ ${est.subscription_equivalent_usd:.2f}/월 상당 · 단가 출처: {est.price_source}"
+        f"구독으로 흡수 ≈ ${est.subscription_equivalent_usd:.2f}/월 상당 — 약 {est.subscription_calls_per_day:.0f}호출/일, "
+        f"{est.subscription_tokens_per_day / 1e6:.1f}M 토큰/일(하네스 오버헤드 포함) · 단가 출처: {est.price_source}"
     )
 
 

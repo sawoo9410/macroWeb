@@ -117,6 +117,11 @@ class WeeklyRunner(Strict):
     max_budget_usd: float = 8.0
 
 
+class TrackARunner(Strict):
+    mode: Literal["claude_headless", "api"]
+    api_fallback: bool = False
+
+
 class Defaults(Strict):
     effort: dict[TierName, Literal["low", "medium", "high", "xhigh", "max"]]
     max_tokens: dict[str, int]
@@ -131,6 +136,7 @@ class ModelsConfig(Strict):
     routing: Routing
     budget: Budget
     weekly_runner: WeeklyRunner
+    track_a_runner: TrackARunner
 
     @model_validator(mode="after")
     def _all_tiers(self) -> ModelsConfig:
@@ -277,6 +283,17 @@ class ExtractBatch(Strict):
     custom_id_prefix: str = Field(pattern=r"^[A-Za-z0-9_-]{1,8}$")
 
 
+class ExtractHeadless(Strict):
+    model_flag_by_tier: dict[TierName, Literal["haiku", "sonnet", "opus", "fable"]]
+    calls_per_tick: int = Field(ge=1)
+    max_calls_per_day: int = Field(ge=1)
+    concurrency: int = Field(ge=1, le=4)
+    max_turns: int = Field(ge=1, le=3)
+    setting_sources: Literal["user", "project", "local", "none"] = "user"
+    limit_backoff_s: int = Field(ge=60)
+    realtime_cutoff_kst: str
+
+
 class PromptRef(Strict):
     name: str
     version: int
@@ -288,6 +305,7 @@ class ExtractConfig(Strict):
     t0_full_coverage: bool
     max_input_tokens: int
     selection: ExtractSelection
+    headless: ExtractHeadless
     batch: ExtractBatch
     prompt: PromptRef
     language_rubric_prompt: PromptRef
@@ -311,6 +329,7 @@ class CostJob(Strict):
 class CostWorkload(Strict):
     days_per_month: float = 30
     weeks_per_month: float = 4.33
+    headless_overhead_tokens_per_call: int = 15000
     jobs: list[CostJob]
 
 

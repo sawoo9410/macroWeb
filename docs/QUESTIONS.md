@@ -8,7 +8,7 @@
 - [ ] **Q6 맥 깨우기.** `sudo pmset repeat wakeorpoweron MTWRFSU 06:55:00` 과 일요일 17:25 기상은 sudo 라 사용자가 직접 실행(Phase 1 launchd 설치 전).
 - [ ] **Q7 블로그 문체 샘플.** `AI 투자 일기` 최근 5편을 `prompts/style/` 에 넣어 달라(Phase 4 writer-ko 전). 기본값: 샘플 없이 PLAN §10.4 문체 규칙만.
 - [ ] **Q8 `private/portfolio.yaml` 작성** (Phase 5 포트폴리오 렌즈 전). 포맷은 Phase 5 에서 제안.
-- [ ] **Q9 월 상한 $45 유지 여부.** 2026-11 단가로 API 예상 ≈ $9/월(주간 편집국은 구독). 기본값: $45 유지(여유분은 라우팅 상향 실험에 쓴다).
+- [ ] **Q9 월 상한 $45 유지 여부.** (ADR-0007 이후 의미 변경: API 청구 $0, 대신 `extract.yaml headless.max_calls_per_day=150` 이 구독 사용 상한 역할) 2026-11 단가로 API 예상 ≈ $9/월(주간 편집국은 구독). 기본값: $45 유지(여유분은 라우팅 상향 실험에 쓴다).
 - [ ] **Q10 raw 보존 정책** — 90일 후 압축, 1년 후 삭제(PLAN §3.3). 기본값 채택 예정, Phase 1 ADR.
 - [ ] **Q11 launchd 실제 설치 시점** — Phase 1 "collect 3일 연속 무인 실행" 시작 전. 기본값: Phase 1 첫 세션. Phase 0 은 dry-run 만(잡을 남기지 않음).
 - [ ] **Q12 ALFRED(발표 시점별 FRED) 접근 방식** — Phase 6 Q5 지표 수정치용. 조사 후 ADR.
@@ -20,5 +20,5 @@
 - [x] **Q18 글로벌 지수 백업 경로.** → **ADR-0005** (2026-11-02): Stooq·Yahoo·Binance·m.stock.naver.com 은 robots `Disallow: /` 또는 봇 검사라 제외, FDR 은 어댑터 규약 밖이라 제외. `api.stock.naver.com`(robots 없음)으로 .SOX·.INX·.DJI·.IXIC·.VIX·.DXY, `polling.finance.naver.com` 으로 KOSPI·KOSDAQ 마감값. 시드 `data_key` 갱신(`NAVER:.SOX`·`UST:10Y`·`NAVER:KOSPI`).
 - [ ] **Q19 Brent 유가의 키 없는 1차 출처.** 시드 `oil` 은 `FRED:DCOILBRENTEU`(키 필요, Q16). EIA 도 키 필요. 키 입력 전까지 유가는 `market` 에 없다 — 리포트에서 유가 수치는 [F] 로 쓰지 못한다. 기본값: Q16 해결로 같이 풀림.
 - [ ] **Q20 S-DATA 일별 소스 주기.** 재무부·ECB·Naver·Kraken 은 하루 1번 갱신인데 스케줄러 기본(api 1시간)으로 돈다(Naver 6요청/시간 — 예절 범위 안). 기본값: 그대로 두고 Phase 1 끝 피드 창 실측 때 소스별 `interval` 파라미터로 6시간으로 늘린다(ADR-0005 후속 a).
-- [ ] **Q19 `ANTHROPIC_API_KEY` (Track A).** Phase 2 추출·검증은 Message Batches API 를 쓰므로 Console 키가 필요하다(주간 편집국은 구독 `claude -p`, ADR-0002). `private/.env` 의 `ANTHROPIC_API_KEY`. 월 상한 $45 는 `config/models.yaml budget` 이 지킨다.
+- [x] **Q19 `ANTHROPIC_API_KEY` (Track A).** 2026-11-02 결정: **필요 없음** — Max 구독의 `claude -p` 로 일일 추출도 돌린다(ADR-0007). 키는 선택 사항(`track_a_runner.mode: api` 로 되돌릴 때만).
 - [ ] **Q20 추출 평가셋 라벨링 (Phase 2 DoD).** 층별 Story 20개 중 10개는 상우가 직접 claim 라벨을 단다(§6.2.4). Phase 2 첫 세션이 `eval/extraction/` 에 후보 Story 와 라벨 양식을 만들어 두면 30분쯤 걸리는 작업이다 — 시간을 내줄 수 있는지.

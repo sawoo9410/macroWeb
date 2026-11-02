@@ -1,20 +1,21 @@
 # PLAN §16.4 의 물량 가정 (토큰·건수). `macroweb cost` 가 models.yaml 단가와 곱한다. 숫자를 바꾸면 ADR.
 days_per_month: 30
 weeks_per_month: 4.33
+headless_overhead_tokens_per_call: 15000   # ADR-0007 측정: claude -p 1호출의 하네스 입력(캐시 포함) ≈ 1.5만 토큰
 jobs:
-  - {name: "T1/T2 추출 (Story 80/일)", tier: small, batch: true, per: day, count: 80, input_tokens: 2500, cached_input_tokens: 1500, output_tokens: 700}
-  - {name: "엔티티 해소 S-ER (≤20/일)", tier: mid, batch: true, per: day, count: 20, input_tokens: 1500, output_tokens: 300}
-  - {name: "T0 1차 문서 정독 (15/주)", tier: mid, batch: true, per: week, count: 15, input_tokens: 20000, output_tokens: 2000}
-  - {name: "T0 장문 Opus (의사록·실적콜 5/월)", tier: large, batch: true, per: month, count: 5, input_tokens: 40000, output_tokens: 3000}
-  - {name: "승급 재추출 (≤8/일)", tier: mid, batch: true, per: day, count: 8, input_tokens: 4000, output_tokens: 700}
+  - {name: "T1/T2 추출 (Story 80/일)", tier: small, batch: true, per: day, count: 80, input_tokens: 2500, cached_input_tokens: 1500, output_tokens: 700, group: track_a}
+  - {name: "엔티티 해소 S-ER (≤20/일)", tier: mid, batch: true, per: day, count: 20, input_tokens: 1500, output_tokens: 300, group: track_a}
+  - {name: "T0 1차 문서 정독 (15/주)", tier: mid, batch: true, per: week, count: 15, input_tokens: 20000, output_tokens: 2000, group: track_a}
+  - {name: "T0 장문 Opus (의사록·실적콜 5/월)", tier: large, batch: true, per: month, count: 5, input_tokens: 40000, output_tokens: 3000, group: track_a}
+  - {name: "승급 재추출 (≤8/일)", tier: mid, batch: true, per: day, count: 8, input_tokens: 4000, output_tokens: 700, group: track_a}
   - {name: "편집국 분석가·cartographer·historian ×6", tier: mid, per: week, count: 6, input_tokens: 25000, output_tokens: 3000, overhead: 2.0, group: weekly_editorial}
   - {name: "편집국 chief-editor", tier: large, per: week, count: 1, input_tokens: 30000, output_tokens: 4000, overhead: 2.0, group: weekly_editorial}
   - {name: "편집국 ping-pong 토론 24호출", tier: mid, per: week, count: 24, input_tokens: 8000, output_tokens: 500, overhead: 2.0, group: weekly_editorial}
   - {name: "편집국 judge ×4", tier: large, per: week, count: 4, input_tokens: 8000, output_tokens: 1000, overhead: 2.0, group: weekly_editorial}
   - {name: "편집국 writer-ko", tier: large, per: week, count: 1, input_tokens: 40000, output_tokens: 8000, overhead: 2.0, group: weekly_editorial}
   - {name: "편집국 fact-checker (재시도 포함)", tier: mid, per: week, count: 2, input_tokens: 30000, output_tokens: 1500, overhead: 2.0, group: weekly_editorial}
-  - {name: "품질 검토 Q3 모순 판정 (≤20/주)", tier: mid, per: week, count: 20, input_tokens: 3000, output_tokens: 300}
-  - {name: "품질 검토 Q7 감사 샘플 50/주", tier: mid, batch: true, per: week, count: 50, input_tokens: 2500, output_tokens: 700}
-  - {name: "data-steward 해설", tier: mid, per: week, count: 1, input_tokens: 15000, output_tokens: 1500}
-  - {name: "월간 회고 (large)", tier: large, per: month, count: 1, input_tokens: 60000, output_tokens: 8000}
-  - {name: "월간 회고 채점 보조 (mid ×10)", tier: mid, per: month, count: 10, input_tokens: 5000, output_tokens: 500}
+  - {name: "품질 검토 Q3 모순 판정 (≤20/주)", tier: mid, per: week, count: 20, input_tokens: 3000, output_tokens: 300, group: track_a}
+  - {name: "품질 검토 Q7 감사 샘플 50/주", tier: mid, batch: true, per: week, count: 50, input_tokens: 2500, output_tokens: 700, group: track_a}
+  - {name: "data-steward 해설", tier: mid, per: week, count: 1, input_tokens: 15000, output_tokens: 1500, group: track_a}
+  - {name: "월간 회고 (large)", tier: large, per: month, count: 1, input_tokens: 60000, output_tokens: 8000, group: track_a}
+  - {name: "월간 회고 채점 보조 (mid ×10)", tier: mid, per: month, count: 10, input_tokens: 5000, output_tokens: 500, group: track_a}

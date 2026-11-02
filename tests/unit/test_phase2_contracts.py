@@ -34,6 +34,8 @@ def test_verify_and_extract_configs_load() -> None:
     e = load_extract()
     assert e.daily_story_cap == 80 and e.max_input_tokens == 6000
     assert e.batch.last_submit_kst < e.batch.realtime_cutoff_kst
+    assert e.headless.calls_per_tick <= e.headless.max_calls_per_day and e.headless.max_turns == 1
+    assert e.headless.model_flag_by_tier["small"] == "haiku"
 
 
 def test_score_ordering_matches_plan_intuition() -> None:
