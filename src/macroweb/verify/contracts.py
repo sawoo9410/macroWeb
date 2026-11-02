@@ -7,12 +7,12 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, StrEnum
 
 from macroweb.config import VerifyConfig, load_verify
 
 
-class Label(str, Enum):
+class Label(StrEnum):
     VERIFIED = "VERIFIED"
     CORROBORATED = "CORROBORATED"
     SINGLE_SOURCE = "SINGLE_SOURCE"

@@ -26,6 +26,8 @@ class PromptSpec:
 
 def load_prompt(name: str, version: int) -> PromptSpec:
     path = PROMPTS_DIR / name / f"v{version}.md"
+    if not path.exists():
+        raise ValueError(f"prompt {name} v{version} not found: {path}")
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---"):
         raise ValueError(f"{path} lacks frontmatter")
