@@ -1,0 +1,24 @@
+# L3 추출 운영 파라미터 (PLAN §0.3·§6). 모델명·단가·라우팅은 config/models.yaml, 프롬프트 본문은 prompts/.
+version: 1
+daily_story_cap: 80            # T1/T2 정밀 추출 Story/일 — 예산 80% 도달 시 50 (models.yaml budget.degrade)
+t0_full_coverage: true         # T0 1차 문서는 전량
+max_input_tokens: 6000         # Story 대표 기사 본문 상한 (초과 시 앞부분 + 말미 요약)
+selection:                     # 선별 = 테마 유사도 × 출처 tier (§0.3). 임베딩(bge-m3) 전에는 themes.yaml 키워드 매칭으로 대체
+  theme_weight: 0.6
+  tier_weight: 0.4
+  min_independent_to_force: 3  # 독립 출처 ≥ 3 이면 자동 승격
+batch:                         # Message Batches API — 틱마다 롤링 제출, 결과는 다음 틱/일일 잡에서 회수
+  rolling_every_tick: true
+  last_submit_kst: "06:30"
+  realtime_cutoff_kst: "07:20" # 이 시각까지 미완료분만 실시간 호출
+  poll_interval_s: 300
+  custom_id_prefix: ext
+prompt: {name: extract, version: 1}
+language_rubric_prompt: {name: verify, version: 1}
+review_queue:
+  high_impact: 0.7
+  low_confidence: 0.5
+  md_dir: review
+digest:
+  lines: 10
+  template: digests/_template-daily.md

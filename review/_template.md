@@ -1,0 +1,8 @@
+# 검토 큐 {{date}} — 고영향(impact ≥ 0.7) · 저신뢰(conf < 0.5) claim
+
+사람이 안 읽어도 파이프라인은 돈다(PLAN §2-9). 읽었다면 `decision` 열에 approve / reject / unsure 를 적고
+`uv run macroweb verify apply --review review/{{date}}.md` 로 반영한다 → `source_stats` 와 학습셋(eval/verify)에 들어간다.
+
+| # | claim_id | impact | conf | 제안 라벨 | 결정적 신호 | 출처 | decision |
+|---|---|---|---|---|---|---|---|
+{{rows}}

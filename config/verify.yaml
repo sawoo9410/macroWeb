@@ -1,0 +1,45 @@
+# L4 검증 — 신호 가중치·라벨 규칙 (PLAN §7.1–7.3 초기값). 월 1회 eval/verify 로 로지스틱 회귀 재학습(§7.5), 주중엔 바꾸지 않는다.
+version: 1
+weights:                       # logit(conf) = bias + Σ w·x   (x 는 0–1 또는 log1p)
+  bias: -1.0                   # ⚠️ PLAN §7.2 수식엔 없는 절편 — 단일 출처 T4 루머가 0.7 로 시작하지 않게 중심 이동 (ADR-0006)
+  prior: 1.2
+  log1p_n_independent: 0.9
+  primary_match: 1.5
+  numeric_match: 1.5
+  recycled: -0.8
+  language_risk: -0.7
+  domain_risk: -1.0
+  rumor_stale: -0.6
+  market_consistency: 0.3
+  debunked: -2.0
+rules:
+  independent_source: {max_body_similarity: 0.8, require_different_parent_org: true, exclude_citing_each_other: true}
+  recycled: {min_cosine: 0.9, min_age_days: 90}
+  rumor_grace_business_days: 2
+  numeric_tolerances: config/tolerances.yaml
+  high_impact: 0.7
+  low_confidence: 0.5
+labels:
+  order: [SPAM_SATIRE, DEBUNKED, RECYCLED, VERIFIED, DISPUTED, CORROBORATED, UNVERIFIABLE, SINGLE_SOURCE]
+  report_use:                  # 리포트에서 어떻게 쓰이나 (§7.1 표)
+    VERIFIED: F
+    CORROBORATED: F
+    SINGLE_SOURCE: I
+    DISPUTED: conflict
+    UNVERIFIABLE: S
+    DEBUNKED: notes_only
+    RECYCLED: notes_only
+    SPAM_SATIRE: quarantine
+signals_phase:                 # 신호 번호 → 구현 Phase (§14: v1 = 1·2·4·5·6, v2 = 3·7·8·9·10·11, 12 는 선택)
+  "1": 2
+  "2": 2
+  "3": 6
+  "4": 2
+  "5": 2
+  "6": 2
+  "7": 6
+  "8": 6
+  "9": 6
+  "10": 6
+  "11": 6
+  "12": 6

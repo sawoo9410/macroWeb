@@ -230,6 +230,71 @@ class GlossaryConfig(Strict):
     terms: dict[str, str]
 
 
+class VerifyWeights(Strict):
+    bias: float
+    prior: float
+    log1p_n_independent: float
+    primary_match: float
+    numeric_match: float
+    recycled: float
+    language_risk: float
+    domain_risk: float
+    rumor_stale: float
+    market_consistency: float
+    debunked: float
+
+
+class VerifyLabels(Strict):
+    order: list[str]
+    report_use: dict[str, str]
+
+    @model_validator(mode="after")
+    def _consistent(self) -> VerifyLabels:
+        if set(self.order) != set(self.report_use):
+            raise ValueError("labels.order and labels.report_use must list the same labels")
+        return self
+
+
+class VerifyConfig(Strict):
+    version: int
+    weights: VerifyWeights
+    rules: dict[str, Any]
+    labels: VerifyLabels
+    signals_phase: dict[str, int]
+
+
+class ExtractSelection(Strict):
+    theme_weight: float
+    tier_weight: float
+    min_independent_to_force: int
+
+
+class ExtractBatch(Strict):
+    rolling_every_tick: bool
+    last_submit_kst: str
+    realtime_cutoff_kst: str
+    poll_interval_s: int
+    custom_id_prefix: str = Field(pattern=r"^[A-Za-z0-9_-]{1,8}$")
+
+
+class PromptRef(Strict):
+    name: str
+    version: int
+
+
+class ExtractConfig(Strict):
+    version: int
+    daily_story_cap: int
+    t0_full_coverage: bool
+    max_input_tokens: int
+    selection: ExtractSelection
+    batch: ExtractBatch
+    prompt: PromptRef
+    language_rubric_prompt: PromptRef
+    review_queue: dict[str, Any]
+    digest: dict[str, Any]
+
+
 class CostJob(Strict):
     name: str
     tier: TierName
@@ -270,6 +335,14 @@ def load_quality(path: Path | None = None) -> QualityConfig:
     return QualityConfig.model_validate(load_yaml(path or CONFIG_DIR / "quality.yaml"))
 
 
+def load_verify(path: Path | None = None) -> VerifyConfig:
+    return VerifyConfig.model_validate(load_yaml(path or CONFIG_DIR / "verify.yaml"))
+
+
+def load_extract(path: Path | None = None) -> ExtractConfig:
+    return ExtractConfig.model_validate(load_yaml(path or CONFIG_DIR / "extract.yaml"))
+
+
 def load_cost_workload(path: Path | None = None) -> CostWorkload:
     return CostWorkload.model_validate(load_yaml(path or CONFIG_DIR / "cost_workload.yaml"))
 
@@ -286,6 +359,8 @@ SCHEMAS: dict[str, type[BaseModel]] = {
     "tolerances.yaml": TolerancesConfig,
     "glossary.yaml": GlossaryConfig,
     "cost_workload.yaml": CostWorkload,
+    "verify.yaml": VerifyConfig,
+    "extract.yaml": ExtractConfig,
 }
 
 

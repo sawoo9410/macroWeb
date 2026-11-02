@@ -126,7 +126,8 @@
         {
           "id": "pmset-wake",
           "text": "pmset 깨우기 설정 (sudo, 사용자 직접) — QUESTIONS Q6",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-02"
         },
         {
           "id": "unattended-3d",

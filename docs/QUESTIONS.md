@@ -20,3 +20,5 @@
 - [x] **Q18 글로벌 지수 백업 경로.** → **ADR-0005** (2026-11-02): Stooq·Yahoo·Binance·m.stock.naver.com 은 robots `Disallow: /` 또는 봇 검사라 제외, FDR 은 어댑터 규약 밖이라 제외. `api.stock.naver.com`(robots 없음)으로 .SOX·.INX·.DJI·.IXIC·.VIX·.DXY, `polling.finance.naver.com` 으로 KOSPI·KOSDAQ 마감값. 시드 `data_key` 갱신(`NAVER:.SOX`·`UST:10Y`·`NAVER:KOSPI`).
 - [ ] **Q19 Brent 유가의 키 없는 1차 출처.** 시드 `oil` 은 `FRED:DCOILBRENTEU`(키 필요, Q16). EIA 도 키 필요. 키 입력 전까지 유가는 `market` 에 없다 — 리포트에서 유가 수치는 [F] 로 쓰지 못한다. 기본값: Q16 해결로 같이 풀림.
 - [ ] **Q20 S-DATA 일별 소스 주기.** 재무부·ECB·Naver·Kraken 은 하루 1번 갱신인데 스케줄러 기본(api 1시간)으로 돈다(Naver 6요청/시간 — 예절 범위 안). 기본값: 그대로 두고 Phase 1 끝 피드 창 실측 때 소스별 `interval` 파라미터로 6시간으로 늘린다(ADR-0005 후속 a).
+- [ ] **Q19 `ANTHROPIC_API_KEY` (Track A).** Phase 2 추출·검증은 Message Batches API 를 쓰므로 Console 키가 필요하다(주간 편집국은 구독 `claude -p`, ADR-0002). `private/.env` 의 `ANTHROPIC_API_KEY`. 월 상한 $45 는 `config/models.yaml budget` 이 지킨다.
+- [ ] **Q20 추출 평가셋 라벨링 (Phase 2 DoD).** 층별 Story 20개 중 10개는 상우가 직접 claim 라벨을 단다(§6.2.4). Phase 2 첫 세션이 `eval/extraction/` 에 후보 Story 와 라벨 양식을 만들어 두면 30분쯤 걸리는 작업이다 — 시간을 내줄 수 있는지.

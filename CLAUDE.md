@@ -53,4 +53,4 @@ PLAN과 ADR(`docs/decisions/`)이 충돌하면 ADR이 이긴다(충돌 사실을
 
 ## 레포 지도
 
-`src/macroweb/` (cli·doctor·cost·config·db·llm·collect/…/publish) · `config/` (sources·models·quality·aliases·traps·themes·calendar·key_persons·tolerances·glossary·cost_workload) · `prompts/` (버전·CHANGELOG) · `seed/` (시드 그래프·검증 대상 claim) · `.claude/` (agents 14·skills 9·hooks 4·settings) · `launchd/`·`bin/` (잡) · `reports/`·`digests/`·`charts/`·`drafts/`·`review/`·`vault/` (산출물) · `data/`·`logs/`·`private/` (git 제외)
+`src/macroweb/` (cli·doctor·cost·config·db·llm·collect/…/publish) · `config/` (sources·models·quality·verify·extract·aliases·traps·themes·calendar·key_persons·tolerances·glossary·cost_workload) · `prompts/` (버전·CHANGELOG) · `seed/` (시드 그래프·검증 대상 claim) · `.claude/` (agents 14·skills 9·hooks 4·settings) · `launchd/`·`bin/` (잡) · `reports/`·`digests/`·`charts/`·`drafts/`·`review/`·`vault/` (산출물) · `data/`·`logs/`·`private/` (git 제외)
