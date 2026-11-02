@@ -115,7 +115,8 @@
         {
           "id": "launchd-collect",
           "text": "launchd collect(30분 틱) 설치 — 실제 로드",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-02"
         },
         {
           "id": "launchd-daily",
