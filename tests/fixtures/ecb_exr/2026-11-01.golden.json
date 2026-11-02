@@ -1,0 +1,16 @@
+{
+ "n_items": 0,
+ "n_market": 616,
+ "market_keys": [
+  "ECB:CNY_EUR",
+  "ECB:JPY_EUR",
+  "ECB:KRW_EUR",
+  "ECB:USD_CNY_CROSS",
+  "ECB:USD_EUR",
+  "ECB:USD_JPY_CROSS",
+  "ECB:USD_KRW_CROSS"
+ ],
+ "first_items": [],
+ "feed_window_known": false,
+ "notes": []
+}

@@ -22,6 +22,7 @@ make doctor                             # 전부 PASS/WARN 이어야 한다 (FAI
 - 소스가 `degraded`(3회 연속 실패)면 `uv run macroweb source probe <id>` 로 URL 을 보고 `config/sources.yaml` 을 고친 뒤 `--force` 로 재시도. 백오프(최대 1일)는 성공 1회로 풀린다.
 - 파서가 바뀌면 `uv run macroweb source golden` 으로 골든 차이를 확인하고 의도된 변화면 `--write --force`.
 - 키가 필요한 소스(FRED·ECOS·DART)는 `private/.env` 에 키가 없으면 `skip … not set` 으로 건너뛴다(오류 아님).
+- 시장 데이터 확인: `uv run macroweb market latest` (key 별 최신값·보유 일수) · `uv run macroweb market get UST:10Y --limit 10`. 키 없이 들어오는 것은 `UST:*`(재무부)·`ECB:*`·`NAVER:*`·`KRAKEN:XBTUSD` (ADR-0005). `NAVER:KOSPI` 는 장 마감 후 틱에서만 1점 쌓이고, Kraken 은 확정 캔들만 들어온다.
 
 ## 4. 재실행(복구)
 모든 단계는 같은 인자로 다시 돌려도 결과가 같다.

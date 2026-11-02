@@ -419,7 +419,74 @@ sources:
     rate_limit_s: 5
     stratum: S-DATA
     enabled: false
-    notes: "2026-11-02 캡처 시 CSV 대신 JavaScript 작업증명 봇 검사 페이지가 왔다. 우회하지 않는다 — 글로벌 지수 백업은 Phase 1 market-data 단계에서 FDR/FRED 로 대체"
+    notes: "2026-11-02 캡처 시 CSV 대신 JavaScript 작업증명 봇 검사 페이지가 왔다. 우회하지 않는다 — 글로벌 지수는 naver_world_index(ADR-0005)로 대체, 키 입력 후 FRED 가 1차"
+  # ---------------- 키 없는 시장 데이터 (ADR-0005; robots.txt 확인 2026-11-02, UA 위장 없음) ----------------
+  - id: treasury_yield_curve
+    name: 미 재무부 일별 par 수익률 곡선 (1M…30Y, 10Y-2Y·10Y-3M 스프레드 계산)
+    tier: 0
+    kind: api
+    url: https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve
+    probe_url: https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value_month=202610
+    lang: en
+    country: US
+    topics: [rates, data]
+    parent_org: us-treasury
+    parser: treasury_yield_v1
+    stratum: S-DATA
+    notes: "월 단위 XML(전월+당월 2요청). robots: Allow /. 키 UST:<tenor>; FRED DGS2/DGS10 의 원천이라 키 없이 T0 수익률 확보"
+  - id: ecb_exr
+    name: ECB 기준환율 (USD·KRW·JPY·CNY per EUR, 14:15 CET) + USD 크로스 계산
+    tier: 0
+    kind: api
+    url: https://data-api.ecb.europa.eu/service/data/EXR/D.USD+KRW+JPY+CNY.EUR.SP00.A?format=csvdata
+    lang: en
+    topics: [fx, dollar, data]
+    parent_org: ecb
+    parser: ecb_exr_v1
+    stratum: S-DATA
+    params:
+      lookback_days: 120
+    notes: "robots: /service/ 허용. ECB:KRW_EUR 등 원값 + ECB:USD_KRW_CROSS(=KRW_EUR/USD_EUR, 같은 고시 시각). 서울 종가 USD/KRW 는 ECOS 키 입력 후(Q17)"
+  - id: naver_world_index
+    name: Naver 세계 지수 일별 종가 (.SOX .INX .DJI .IXIC .VIX .DXY)
+    tier: 3
+    kind: api
+    url: https://api.stock.naver.com/index/.SOX/price?pageSize=60&page=1
+    lang: ko
+    topics: [prices, semis, data]
+    parent_org: naver
+    parser: naver_world_index_v1
+    stratum: S-DATA
+    params:
+      url_template: "https://api.stock.naver.com/index/{symbol}/price?pageSize={page_size}&page=1"
+      symbols: [".SOX", ".INX", ".DJI", ".IXIC", ".VIX", ".DXY"]
+      page_size: 60
+    notes: "api.stock.naver.com 은 robots.txt 없음(404=허용). m.stock.naver.com·fchart·Yahoo·Binance 는 Disallow / 라 쓰지 않는다. 키 NAVER:.SOX (seed data_key 갱신)"
+  - id: naver_domestic_index
+    name: Naver 국내 지수 (KOSPI·KOSDAQ) — 장 마감(CLOSE) 값만 기록
+    tier: 3
+    kind: api
+    url: https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ
+    lang: ko
+    country: KR
+    topics: [prices, korea, data]
+    parent_org: naver
+    parser: naver_domestic_index_v1
+    stratum: S-DATA
+    notes: "실시간 엔드포인트(robots 404). marketStatus=CLOSE 일 때만 localTradedAt 날짜로 1점 — 장중 값은 market 에 쓰지 않는다. 과거치는 쌓이면서 생긴다(백필은 ECOS 802Y001 키 입력 후)"
+  - id: kraken_ohlc
+    name: Kraken BTC/USD 일봉 (확정 캔들만)
+    tier: 3
+    kind: api
+    url: https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=1440
+    lang: en
+    topics: [prices, crypto, data]
+    parent_org: kraken
+    parser: kraken_ohlc_v1
+    stratum: S-DATA
+    params:
+      lookback_days: 90
+    notes: "robots 404(허용). result.last 이하 캔들만(진행 중 캔들 제외). 키 KRAKEN:XBTUSD, 날짜는 UTC 캔들일"
   # ---------------- T4 커뮤니티 (심리 온도계, 본문 저장 안 함) ----------------
   - id: hn_algolia
     name: Hacker News Algolia API

@@ -1,0 +1,10 @@
+{
+ "source_id": "kraken_ohlc",
+ "url": "https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=1440&since=1785797466",
+ "final_url": "https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=1440&since=1785797466",
+ "status": 200,
+ "content_type": "application/json",
+ "fetched_at": "2026-11-01T22:55:35+00:00",
+ "size": 7731,
+ "parser": "kraken_ohlc_v1"
+}

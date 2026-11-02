@@ -43,5 +43,17 @@ def test_fixture_yields_content(case) -> None:
         assert summary["n_items"] > 0
         for it in summary["first_items"]:
             assert it["url"].startswith("http") and it["title"]
-    elif src.parser in ("fiscaldata_v1", "fred_v1", "fred_csv_v1", "cftc_cot_v1", "ecos_v1"):
+    elif src.parser in (
+        "fiscaldata_v1",
+        "fred_v1",
+        "fred_csv_v1",
+        "cftc_cot_v1",
+        "ecos_v1",
+        # keyless market data (ADR-0005)
+        "treasury_yield_v1",
+        "ecb_exr_v1",
+        "naver_world_index_v1",
+        "naver_domestic_index_v1",
+        "kraken_ohlc_v1",
+    ):
         assert summary["n_market"] > 0

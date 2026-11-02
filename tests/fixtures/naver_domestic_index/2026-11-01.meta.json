@@ -1,0 +1,10 @@
+{
+ "source_id": "naver_domestic_index",
+ "url": "https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ",
+ "final_url": "https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ",
+ "status": 200,
+ "content_type": "application/json;charset=UTF-8",
+ "fetched_at": "2026-11-01T22:55:29+00:00",
+ "size": 2031,
+ "parser": "naver_domestic_index_v1"
+}
