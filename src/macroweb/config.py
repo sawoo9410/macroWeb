@@ -43,6 +43,9 @@ class Source(Strict):
     probe_url: str | None = None
     params: dict[str, Any] = Field(default_factory=dict)
     fetch_body: bool = False  # 본문(trafilatura) 수집 여부 — paywall 소스는 무시
+    interval_s: int | None = Field(
+        default=None, ge=900, le=86400
+    )  # 고정 주기(초). 없으면 피드 창 기반 적응 주기
     notes: str | None = None
 
     @model_validator(mode="after")
@@ -218,6 +221,9 @@ class Tolerance(Strict):
 class TolerancesConfig(Strict):
     default_rel: float
     by_unit: dict[str, Tolerance]
+    by_pair: dict[str, Tolerance] = Field(
+        default_factory=dict
+    )  # "KEY_A~KEY_B": 같은 지표의 두 출처 허용 오차
 
 
 class GlossaryConfig(Strict):

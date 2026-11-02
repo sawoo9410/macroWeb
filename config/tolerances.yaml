@@ -11,3 +11,9 @@ by_unit:
   YoY: {abs: 0.1}
   QoQ: {abs: 0.1}
   MoM: {abs: 0.05}
+by_pair:   # 같은 지표·다른 출처 (ADR-0005-3·4). 왼쪽이 우선 출처
+  "UST:10Y~FRED:DGS10": {abs: 0.02, note: "둘 다 재무부 par 수익률, 반올림 차이"}
+  "UST:2Y~FRED:DGS2": {abs: 0.02}
+  "ECB:USD_KRW_CROSS~ECOS:FX_USDKRW": {rel: 0.005, note: "ECB 14:15 CET 고시 교차환율 vs 서울 종가"}
+  "NAVER:KOSPI~ECOS:802Y001": {rel: 0.002}
+  "NAVER:.VIX~FRED:VIXCLS": {abs: 0.1}

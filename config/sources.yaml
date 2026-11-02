@@ -84,6 +84,7 @@ sources:
     parent_org: us-treasury
     parser: fiscaldata_v1
     stratum: S-DATA
+    interval_s: 21600
   - id: ecos_api
     name: 한국은행 ECOS API (기준금리·환율·금통위)
     tier: 0
@@ -397,6 +398,7 @@ sources:
     parser: cftc_cot_v1
     rate_limit_s: 10
     stratum: S-DATA
+    interval_s: 21600
     params:
       markets:   # deafut.txt 의 Market_and_Exchange_Names 정확 일치 → 키 접미사
         "E-MINI S&P 500 - CHICAGO MERCANTILE EXCHANGE": ES
@@ -433,6 +435,7 @@ sources:
     parent_org: us-treasury
     parser: treasury_yield_v1
     stratum: S-DATA
+    interval_s: 21600
     notes: "월 단위 XML(전월+당월 2요청). robots: Allow /. 키 UST:<tenor>; FRED DGS2/DGS10 의 원천이라 키 없이 T0 수익률 확보"
   - id: ecb_exr
     name: ECB 기준환율 (USD·KRW·JPY·CNY per EUR, 14:15 CET) + USD 크로스 계산
@@ -444,6 +447,7 @@ sources:
     parent_org: ecb
     parser: ecb_exr_v1
     stratum: S-DATA
+    interval_s: 21600
     params:
       lookback_days: 120
     notes: "robots: /service/ 허용. ECB:KRW_EUR 등 원값 + ECB:USD_KRW_CROSS(=KRW_EUR/USD_EUR, 같은 고시 시각). 서울 종가 USD/KRW 는 ECOS 키 입력 후(Q17)"
@@ -457,6 +461,7 @@ sources:
     parent_org: naver
     parser: naver_world_index_v1
     stratum: S-DATA
+    interval_s: 21600
     params:
       url_template: "https://api.stock.naver.com/index/{symbol}/price?pageSize={page_size}&page=1"
       symbols: [".SOX", ".INX", ".DJI", ".IXIC", ".VIX", ".DXY"]
@@ -473,6 +478,7 @@ sources:
     parent_org: naver
     parser: naver_domestic_index_v1
     stratum: S-DATA
+    interval_s: 21600
     notes: "실시간 엔드포인트(robots 404). marketStatus=CLOSE 일 때만 localTradedAt 날짜로 1점 — 장중 값은 market 에 쓰지 않는다. 과거치는 쌓이면서 생긴다(백필은 ECOS 802Y001 키 입력 후)"
   - id: kraken_ohlc
     name: Kraken BTC/USD 일봉 (확정 캔들만)
@@ -484,6 +490,7 @@ sources:
     parent_org: kraken
     parser: kraken_ohlc_v1
     stratum: S-DATA
+    interval_s: 21600
     params:
       lookback_days: 90
     notes: "robots 404(허용). result.last 이하 캔들만(진행 중 캔들 제외). 키 KRAKEN:XBTUSD, 날짜는 UTC 캔들일"

@@ -24,7 +24,10 @@ DEFAULT_INTERVAL_BY_KIND = {
 KST = ZoneInfo("Asia/Seoul")
 
 
-def compute_interval(feed_window_s: int | None, kind: str, tier: int) -> int:
+def compute_interval(feed_window_s: int | None, kind: str, tier: int, fixed: int | None = None) -> int:
+    """`fixed` (sources.yaml `interval_s`) wins; otherwise half the feed window, clamped; otherwise a per-kind default."""
+    if fixed:
+        return int(min(24 * 3600, max(MIN_INTERVAL_S, fixed)))
     if feed_window_s and feed_window_s > 0:
         return int(min(MAX_INTERVAL_S, max(MIN_INTERVAL_S, feed_window_s * 0.5)))
     base = DEFAULT_INTERVAL_BY_KIND.get(kind, 3600)

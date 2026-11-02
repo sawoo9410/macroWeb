@@ -9,6 +9,7 @@ from dataclasses import asdict, dataclass
 import httpx
 
 from macroweb.collect.politeness import USER_AGENT, DomainThrottle
+from macroweb.collect.robots import RobotsCache
 from macroweb.config import Source, load_sources
 
 
@@ -23,6 +24,7 @@ class ProbeResult:
     elapsed_ms: int
     error: str | None = None
     note: str | None = None
+    robots: str | None = None  # allowed | disallowed | unknown (ADR-0005: API 소스도 robots 를 따른다)
 
     def as_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -33,7 +35,9 @@ def list_sources(enabled_only: bool = False) -> list[Source]:
     return [s for s in sources if s.enabled] if enabled_only else sources
 
 
-def probe_source(src: Source, client: httpx.Client | None = None, timeout: float = 15.0) -> ProbeResult:
+def probe_source(
+    src: Source, client: httpx.Client | None = None, timeout: float = 15.0, robots: RobotsCache | None = None
+) -> ProbeResult:
     url = src.probe_url or src.url
     own = client is None
     client = client or httpx.Client(
@@ -54,6 +58,7 @@ def probe_source(src: Source, client: httpx.Client | None = None, timeout: float
                 resp = r
         ms = int((time.monotonic() - t0) * 1000)
         auth_gate = bool(src.auth_env) and 400 <= resp.status_code < 500
+        robots_state = (robots or RobotsCache(client)).check(url)
         return ProbeResult(
             id=src.id,
             tier=src.tier,
@@ -65,6 +70,7 @@ def probe_source(src: Source, client: httpx.Client | None = None, timeout: float
             note="reachable; key required (expected without " + str(src.auth_env) + ")"
             if auth_gate
             else None,
+            robots=robots_state,
         )
     except httpx.HTTPError as exc:
         ms = int((time.monotonic() - t0) * 1000)
@@ -78,17 +84,18 @@ def probe_all(enabled_only: bool = True, timeout: float = 15.0) -> list[ProbeRes
     throttle = DomainThrottle()
     results: list[ProbeResult] = []
     with httpx.Client(timeout=timeout, follow_redirects=True, headers={"User-Agent": USER_AGENT}) as client:
+        robots = RobotsCache(client)
         for src in list_sources(enabled_only=enabled_only):
             throttle.wait(src.probe_url or src.url)
-            results.append(probe_source(src, client=client, timeout=timeout))
+            results.append(probe_source(src, client=client, timeout=timeout, robots=robots))
     return results
 
 
 def probe_markdown(results: list[ProbeResult]) -> str:
-    lines = ["| id | tier | ok | status | ms | final_url / error |", "|---|---|---|---|---|---|"]
+    lines = ["| id | tier | ok | status | robots | ms | final_url / error |", "|---|---|---|---|---|---|---|"]
     for r in results:
         tail = r.error or r.note or (r.final_url or "")
         lines.append(
-            f"| {r.id} | T{r.tier} | {'✅' if r.ok else '❌'} | {r.status or '-'} | {r.elapsed_ms} | {tail[:90]} |"
+            f"| {r.id} | T{r.tier} | {'✅' if r.ok else '❌'} | {r.status or '-'} | {r.robots or '-'} | {r.elapsed_ms} | {tail[:90]} |"
         )
     return "\n".join(lines)

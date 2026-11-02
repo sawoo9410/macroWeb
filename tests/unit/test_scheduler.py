@@ -18,6 +18,8 @@ def test_interval_clamps() -> None:
     assert compute_interval(4 * 3600, "rss", 1) == 2 * 3600
     assert compute_interval(None, "html", 0) == 3600
     assert compute_interval(None, "api", 3) == 3600
+    assert compute_interval(600, "api", 3, fixed=21600) == 21600  # explicit interval_s wins
+    assert compute_interval(None, "api", 3, fixed=60) == MIN_INTERVAL_S  # floor still applies
 
 
 def test_event_mode_and_due() -> None:

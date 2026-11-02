@@ -86,7 +86,7 @@ def record_fetch(
     health = "degraded" if consecutive >= DEGRADED_AFTER else "ok"
     prev_window = int(stats["feed_window_s"]) if stats and stats["feed_window_s"] else None
     window = feed_window_s or prev_window
-    interval = compute_interval(window, src.kind, src.tier)
+    interval = compute_interval(window, src.kind, src.tier, fixed=src.interval_s)
     if failed:
         interval = min(interval * (2 ** min(consecutive, 4)), 24 * 3600)  # back off, max 1 day
     due = next_due(now, interval, src.tier, event_active)

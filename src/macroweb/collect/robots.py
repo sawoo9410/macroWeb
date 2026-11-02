@@ -38,7 +38,11 @@ class RobotsCache:
         return rp
 
     def allowed(self, url: str) -> bool:
+        return self.check(url) == "allowed"
+
+    def check(self, url: str) -> str:
+        """'allowed' | 'disallowed' | 'unknown' (robots.txt unreachable or 4xx other than 404 → treated as disallowed)."""
         rp = self._load(url)
         if rp is None:
-            return False
-        return rp.can_fetch(USER_AGENT, url)
+            return "unknown"
+        return "allowed" if rp.can_fetch(USER_AGENT, url) else "disallowed"

@@ -38,3 +38,8 @@
 - 2026-11-02 실수집(임시 `MACROWEB_DATA_DIR`): 요청 11건 전부 200, market 1,256점·26 key (UST 10 key × 21영업일, ECB 7 key × 85일, Naver 세계 6 × 60일, KOSPI·KOSDAQ 1일, BTC 89일). 두 번째 실행도 1,256 — 멱등. 테스트 131개 통과(골든 5개 추가), `make lint` 통과.
 - `market-data` DoD 는 이 경로로 닫는다. FRED(15 시리즈: CPI·PCE·고용·WALCL·RRP·HY 스프레드·Brent·VIX 등)·ECOS 는 **키가 들어오면 어댑터 변경 없이 다음 틱부터** 추가된다(Q16·Q17 은 계속 열림).
 - 후속: (a) S-DATA 일별 소스의 기본 주기를 1시간 → 6시간으로(스케줄러 `interval` 파라미터; 지금은 Naver 6요청/시간이라 예절 범위 안) (b) `source probe` 에 robots 자동 확인 (c) `tolerances.yaml` 에 UST↔FRED·ECB 교차↔ECOS 허용 오차.
+
+## 후속 처리 (2026-11-02, main 병합 후)
+- (a) `sources.yaml` 에 `interval_s`(고정 주기) 를 추가하고 일별·주별 데이터 소스 7개(재무부 2·ECB·Naver 2·Kraken·CFTC)를 6시간으로 — Naver 요청이 시간당 6 → 1 로 준다.
+- (b) `macroweb source probe` 가 호스트 robots.txt 를 함께 보고 `robots` 열(allowed/disallowed/unknown)을 낸다(`RobotsCache.check`).
+- (c) `config/tolerances.yaml by_pair` 에 UST↔FRED, ECB 교차↔ECOS, NAVER↔FRED VIX 허용 오차를 적었다(Phase 2 신호 4 가 읽는다).
