@@ -1,5 +1,5 @@
 {
-  "current_phase": 3,
+  "current_phase": 4,
   "updated": "2026-11-03",
   "phases": {
     "0": {
@@ -259,17 +259,23 @@
         {
           "id": "writer-factchecker",
           "text": "writer-ko + fact-checker GATE",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010): pack/gate/runner 코드+테스트; 첫 실전 실행은 auto-publish-1"
         },
         {
           "id": "weekly-pack",
           "text": "데이터팩 생성기",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010): pack/gate/runner 코드+테스트; 첫 실전 실행은 auto-publish-1"
         },
         {
           "id": "headless-runner",
           "text": "claude -p 러너 (ADR-0002) + 토큰 갱신 + run 기록",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010): pack/gate/runner 코드+테스트; 첫 실전 실행은 auto-publish-1"
         },
         {
           "id": "launchd-weekly",
@@ -415,6 +421,10 @@
       "routing-experiment",
       "first-manual-report",
       "eval-extract-30"
+    ],
+    "3": [
+      "seed-graph",
+      "escalation"
     ]
   }
 }

@@ -55,6 +55,14 @@ make doctor                             # 전부 PASS/WARN 이어야 한다 (FAI
 - `uv run macroweb quality run --week 2026-W45` → Q1 근거 무결성(evidence 없는 추출 엣지·기사 없는 claim 격리), Q2 시효(만기 forecast expired·같은 주어/술어 신값 superseded·엣지 만료), Q4 중복(별칭 병합·4주 넘은 candidate 비활성·소스 쏠림 30%), Q6 커버리지(4주 중앙값 대비 −50%, 침묵 소스, 상위 claim T0 비율). 결과 `reports/quality/<week>.md` + `quality_run` 행. `--no-apply` 는 보고만.
 - 스코어카드 한 줄(`데이터 품질: Q1🟢 Q2🟢 Q3⚪ …`)이 주간 리포트 레짐 대시보드 아래에 들어간다. Q3·Q5·Q7 은 Phase 6.
 
+## 3h. 주간 편집국 (Phase 4 v1)
+- 자동: `launchd/com.sawoo.macroweb.weekly.plist`(일 17:30 KST) → `bin/run_weekly.sh` → `macroweb weekly run --week <ISO주>`. 설치는 사용자가 `bash launchd/install.sh weekly` (자동 설치는 하네스가 막는다, ADR-0003 메모).
+- 수동 확인: `uv run macroweb weekly run --week 2026-W45 --dry-run` (품질 → 팩 → 초안 있으면 게이트; 모델 호출 없음) · 대화형으로는 `/weekly-report 2026-W45`.
+- 산출: `data/weekly/<week>/pack.json`·`slices/*.json`·`steps.jsonl`·`draft.md`→`draft_final.md`·`gate.json`; 발행물 `reports/<week>.md`·`drafts/blog-<week>.md`·`vault/weekly/<week>.md`; `report_citation` 행(어느 claim 을 어느 주가 썼나 — Q5 소급 정정용).
+- 게이트(FAIL 이면 발행 안 됨): `[F]` 문장마다 `[claim_id]`, 그 claim 이 active VERIFIED/CORROBORATED, 문장 속 숫자가 claim.value 와 `tolerances.yaml` 안, 매수·매도류 표현 없음, DEBUNKED/RECYCLED/SPAM 은 검증 노트에만, 포트폴리오 섹션에 수량·금액 없음. `uv run macroweb weekly gate --week … --json`.
+- 알림: `TELEGRAM_BOT_TOKEN`·`MACROWEB_TELEGRAM_CHAT_ID`(private/.env, 별도 채팅방 권장) 가 있으면 텔레그램, 없으면 stdout+macOS 알림만.
+- v1 한계: 에이전트 6+4 는 Phase 0 정의 그대로(첫 실전은 일요일 자동 실행 또는 사용자의 `/weekly-report`), 차트 캡션 삽입·토론 로그 채점은 Phase 5.
+
 ## 4. 재실행(복구)
 모든 단계는 같은 인자로 다시 돌려도 결과가 같다.
 ```bash

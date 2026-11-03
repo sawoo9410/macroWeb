@@ -1165,12 +1165,125 @@ def quality(
     console.print(f"report: {res.report}")
 
 
-@app.command()
-def weekly(
-    action: str = typer.Argument("run", help="pack|run"), week: str | None = typer.Option(None, "--week")
+weekly_app = typer.Typer(
+    help="주간 편집국 (Phase 4 v1, ADR-0002/0010): 품질 → 데이터팩 → claude -p /weekly-report → 게이트 → 발행",
+    no_args_is_help=True,
+)
+app.add_typer(weekly_app, name="weekly")
+
+
+def _week_or_now(week: str | None) -> str:
+    from macroweb.graph.analysis import iso_week
+
+    return week or iso_week()
+
+
+@weekly_app.command("pack")
+def weekly_pack(week: str | None = typer.Option(None, "--week", help="ISO 주 (기본 이번 주)")) -> None:
+    """data/weekly/<week>/pack.json + slices/<desk>.json (검증 claim·테마·그래프 diff·전파·시장·캘린더·검토 큐)."""
+    from macroweb.db import repo
+    from macroweb.synth.pack import write_pack
+
+    repo.init_db()
+    conn = repo.connect()
+    try:
+        paths = write_pack(conn, _week_or_now(week))
+    finally:
+        conn.close()
+    console.print(f"pack: {paths.pack}\nslices: {', '.join(sorted(paths.slices))}")
+
+
+@weekly_app.command("gate")
+def weekly_gate(
+    week: str | None = typer.Option(None, "--week"),
+    draft: Path | None = typer.Option(
+        None, "--draft", help="기본 data/weekly/<week>/draft_final.md|draft.md"
+    ),
+    json_out: bool = typer.Option(False, "--json"),
 ) -> None:
-    """주간 합성: 데이터팩 + claude -p 헤드리스 편집국 (Phase 4, ADR-0002)."""
-    _not_yet("weekly")
+    """결정론 fact-check 게이트: [F]↔claim_id·라벨·수치·금지 표현·격리 라벨·포트폴리오 금액. FAIL 이면 exit 1."""
+    from macroweb.db import repo
+    from macroweb.synth.gate import check_draft
+    from macroweb.synth.run_weekly import find_draft, weekly_dir
+
+    wk = _week_or_now(week)
+    path = draft or find_draft(wk)
+    if path is None or not path.exists():
+        console.print(f"[red]no draft for {wk} (looked in {weekly_dir(wk)})[/]")
+        raise typer.Exit(2)
+    conn = repo.connect()
+    try:
+        res = check_draft(conn, path.read_text(encoding="utf-8"))
+    finally:
+        conn.close()
+    if json_out:
+        console.print_json(json.dumps(res.as_dict(), ensure_ascii=False))
+    else:
+        console.print(res.render())
+    raise typer.Exit(0 if res.passed else 1)
+
+
+@weekly_app.command("publish")
+def weekly_publish(
+    week: str | None = typer.Option(None, "--week"),
+    draft: Path | None = typer.Option(None, "--draft"),
+    no_notify: bool = typer.Option(False, "--no-notify"),
+) -> None:
+    """게이트 PASS 인 초안을 reports/<week>.md·drafts/blog-<week>.md·vault/weekly/<week>.md 로 발행 (+알림)."""
+    from macroweb.db import repo
+    from macroweb.publish.weekly import publish_report
+    from macroweb.synth.gate import check_draft
+    from macroweb.synth.run_weekly import find_draft
+
+    wk = _week_or_now(week)
+    path = draft or find_draft(wk)
+    if path is None:
+        console.print(f"[red]no draft for {wk}[/]")
+        raise typer.Exit(2)
+    repo.init_db()
+    conn = repo.connect()
+    try:
+        gate = check_draft(conn, path.read_text(encoding="utf-8"))
+        if not gate.passed:
+            console.print(gate.render())
+            console.print("[red]gate FAIL — not published[/]")
+            raise typer.Exit(1)
+        res = publish_report(conn, wk, path, notify=not no_notify)
+    finally:
+        conn.close()
+    console.print(
+        f"published {res.report} · blog {res.blog} · vault {res.vault_note} · citations {res.citations} · notify {res.notified}"
+    )
+
+
+@weekly_app.command("record")
+def weekly_record(
+    week: str = typer.Option(..., "--week"),
+    step: str = typer.Option(..., "--step"),
+    status: str = typer.Option(..., "--status", help="ok|failed"),
+    note: str | None = typer.Option(None, "--note"),
+) -> None:
+    """스킬 단계 기록 → data/weekly/<week>/steps.jsonl (weekly-report 스킬이 각 단계 끝에 부른다)."""
+    from macroweb.synth.run_weekly import record_step
+
+    console.print(str(record_step(week, step, status, note=note)))
+
+
+@weekly_app.command("run")
+def weekly_run(
+    week: str | None = typer.Option(None, "--week"),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="모델 호출 없이 품질·팩·(초안이 있으면) 게이트까지"
+    ),
+    timeout: int = typer.Option(7200, "--timeout", help="claude -p 상한 초"),
+    skip_quality: bool = typer.Option(False, "--skip-quality"),
+) -> None:
+    """전체 주간 실행: quality → pack → claude -p '/weekly-report <week>' → gate → publish. 실패해도 부분 산출물 보존."""
+    from macroweb.synth.run_weekly import run_weekly
+
+    rep = run_weekly(week, dry_run=dry_run, timeout_s=timeout, skip_quality=skip_quality)
+    console.print(rep.render())
+    raise typer.Exit(0 if (rep.published or (dry_run and not rep.stopped)) else 1)
 
 
 @app.command()

@@ -1,7 +1,7 @@
 # 수집 통계 2026-11-03 (KST)
 
-- 기사 신규 **616** · 본문 수집 58 · Story 신규 487 · market 누적 2853
-- fetch 60회 / 소스 34개 · 오류 1 · 304 4
+- 기사 신규 **617** · 본문 수집 58 · Story 신규 487 · market 누적 2854
+- fetch 61회 / 소스 34개 · 오류 1 · 304 4
 - degraded: 없음 · 48h 침묵(enabled): fred_api, ecos_api, dart_api
 
 | source | T | fetch | new | seen | mkt | err | 304 | interval | health | last error |
@@ -38,7 +38,7 @@
 | kraken_ohlc | T3 | 1 | 0 | 0 | 89 | 0 | 0 | 360m | ok |  |
 | naver_domestic_index | T3 | 1 | 0 | 0 | 2 | 0 | 0 | 360m | ok |  |
 | naver_world_index | T3 | 6 | 0 | 0 | 360 | 0 | 0 | 360m | ok |  |
-| polymarket_gamma | T3 | 1 | 9 | 26 | 26 | 0 | 0 | 60m | ok |  |
+| polymarket_gamma | T3 | 2 | 10 | 53 | 53 | 0 | 0 | 60m | ok |  |
 | hn_algolia | T4 | 4 | 7 | 80 | 0 | 0 | 0 | 180m | ok |  |
 
 > 생성: `uv run macroweb stats --date 2026-11-03` (fetch_log 기준, 재실행 시 덮어씀)

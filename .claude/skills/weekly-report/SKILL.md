@@ -15,9 +15,9 @@ WEEK = `$0` (없으면 `uv run python -c 'import datetime as d;print(d.date.toda
 3. **편집** — `chief-editor` → `theses_draft.md` (논제 3–5, 한 줄 요약, 레짐, 구조, 정정 판단).
 4. **토론** — 논제마다 `/ping-pong-debate <thesis_id>` (skeptic-red-team ↔ editor 3라운드) → `reports/debates/$WEEK-<id>.md`; 끝나면 `judge` → `theses_final.json`.
 5. **작성** — `writer-ko` → `draft.md` (템플릿 `reports/_template.md`, 모든 [F] 에 claim_id).
-6. **게이트** — `fact-checker` 출력을 `gate.json` 으로 저장. FAIL 이면 5 를 **1회만** 재시도(위반 목록만 수정). 재실패 → 중단, `uv run macroweb notify --level error --job weekly --tail 3`.
+6. **게이트** — 먼저 결정론 게이트 `uv run macroweb weekly gate --week $WEEK` (claim_id 존재·라벨·수치·금지 표현·격리 라벨·포트폴리오 금액; `gate.json` 저장), 그다음 `fact-checker` 가 의미 검수. 둘 중 하나라도 FAIL 이면 5 를 **1회만** 재시도(위반 목록만 수정) 후 `draft_final.md` 로 저장. 재실패 → 중단, `uv run macroweb notify --level error --job weekly --tail 3`.
 7. **차트** — `chart-maker` → `charts/$WEEK/*.png` + `chart_captions.json`; writer 가 캡션 삽입.
-8. **발행** — `publisher` → `reports/$WEEK.md`, `vault/weekly/$WEEK.md`, `drafts/blog-$WEEK.md`(포트폴리오 섹션 제외), 텔레그램 요약.
+8. **발행** — `publisher` 는 직접 파일을 만들지 않고 `uv run macroweb weekly publish --week $WEEK` 를 부른다(게이트 PASS 일 때만 `reports/$WEEK.md`, `vault/weekly/$WEEK.md`, `drafts/blog-$WEEK.md`(포트폴리오 섹션 제외), 알림을 만든다). 헤드리스 러너(`macroweb weekly run`)도 claude 가 끝난 뒤 같은 게이트·발행을 한 번 더 돌린다 — 두 번 실행해도 결과는 같다.
 9. **기록** — run 테이블(토큰·시간·게이트 결과). 예산: 전체 ≤ 60분, 주간 단독 $8 초과 시 토론 라운드 3→2 (models.yaml budget).
 
 규칙: 출처 없는 숫자·URL 금지 · 매수/매도 지시 금지 · `private/` 읽기 금지 · 헤드리스(-p)에서는 질문하지 말고 기본값으로 진행하되 결정을 `data/weekly/$WEEK/decisions.md` 에 적는다.

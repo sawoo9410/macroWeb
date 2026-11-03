@@ -1,7 +1,7 @@
 # MacroWeb — 거미줄
 
 목적: 매일 수집·검증·그래프 갱신, 매주 거시 인사이트 리포트 발행. **`PLAN.md`(v0.3)가 단일 진실원(SSOT)**이다.
-현재 Phase: **3 거미줄 v1** — ADR-0010 "다 구축하고 손본다" 모드. 이월 항목(Phase 1: 3일 무인 실행·launchd daily / Phase 2: T0 diff·라우팅 실험·첫 수동 리포트·평가셋 라벨)은 `docs/phase_status.json` 의 `carry_over` 가 단일 TODO 다. 사람용 요약은 `docs/PLAN_DIGEST.md`(세션 시작 시 먼저 읽을 것).
+현재 Phase: **4 편집국 v1** — ADR-0010 "다 구축하고 손본다" 모드. 이월 항목(Phase 1: 3일 무인 실행·launchd daily / Phase 2: T0 diff·라우팅 실험·첫 수동 리포트·평가셋 라벨)은 `docs/phase_status.json` 의 `carry_over` 가 단일 TODO 다. 사람용 요약은 `docs/PLAN_DIGEST.md`(세션 시작 시 먼저 읽을 것).
 PLAN과 ADR(`docs/decisions/`)이 충돌하면 ADR이 이긴다(충돌 사실을 ADR에 명시).
 
 ## 명령어
@@ -26,7 +26,8 @@ PLAN과 ADR(`docs/decisions/`)이 충돌하면 ADR이 이긴다(충돌 사실을
 | **일일 다이제스트 10줄** | `uv run macroweb digest [--date YYYY-MM-DD] [--json]` → `digests/<날짜>.md` (틱마다 다시 씀; 미구현 엔진은 그렇다고 적힘) |
 | **거미줄 (Phase 3 v1)** | `uv run macroweb graph load-seed` · `graph update` (추출 relations→엣지+해소+만료) · `graph propagate <node> --sign ±1 [--as-of]` · `graph path <src> <dst>` · `graph hubs` · `graph diff --week` · `graph stats --pair A B` (r/lag 계산, 자료 부족이면 그렇다고 출력) · `graph export-vault` · `graph html --week` · `graph render --week` · `graph counts` |
 | **주간 품질 검토 v1** | `uv run macroweb quality run [--week] [--no-apply]` → Q1·Q2·Q4·Q6 + `reports/quality/<week>.md` (Q3·Q5·Q7 은 Phase 6) |
-| 이후 단계 (Phase 4+ 스텁) | `uv run macroweb weekly` · `monthly` |
+| **주간 편집국 (Phase 4 v1)** | `uv run macroweb weekly pack --week` · `weekly run --week [--dry-run]` (quality → pack → `claude -p /weekly-report` → gate → publish) · `weekly gate --week` · `weekly publish --week` · `weekly record` |
+| 이후 단계 (Phase 7 스텁) | `uv run macroweb monthly` |
 
 ## 세션 운영 규칙 (PLAN §0.1 요약)
 
