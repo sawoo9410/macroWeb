@@ -75,6 +75,7 @@ def pick_stories(
     quota: dict[tuple[str, str], int] | None = None,
     min_chars: int = MIN_CHARS_DEFAULT,
     per_source_cap: int = PER_SOURCE_CAP,
+    exclude: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     """Fill each (stratum, lang) bucket: already-extracted stories first (so labels can be scored at once), then
     stories the selector passed (theme gate), then newest; at most `per_source_cap` per source per bucket."""
@@ -85,6 +86,8 @@ def pick_stories(
     per_source: dict[tuple[str, str, str], int] = defaultdict(int)
     out: list[dict[str, Any]] = []
     for r in _candidates(conn):
+        if exclude and r["id"] in exclude:
+            continue
         lang = (
             r["lang"]
             if r["lang"] in ("ko", "en")
@@ -161,14 +164,25 @@ notes: ""
 def build(
     conn: sqlite3.Connection, *, eval_dir: Path = EVAL_DIR, force: bool = False, **pick_kw: Any
 ) -> list[dict[str, Any]]:
-    """Write stories.jsonl (kept stable unless --force) and one label template per story (never overwritten)."""
+    """Write stories.jsonl and one label template per story (never overwritten). Without --force an existing set
+    is kept and only *topped up*: buckets still under quota get new stories as collection grows, so labels
+    already written are never dropped."""
     path = stories_path(eval_dir)
+    quota = dict(pick_kw.pop("quota", None) or QUOTA)
     if path.exists() and not force:
         stories = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        have: dict[tuple[str, str], int] = defaultdict(int)
+        for s in stories:
+            have[(s["stratum"], s["lang"])] += 1
+        remaining = {k: v - have[k] for k, v in quota.items() if v - have[k] > 0}
+        if remaining:
+            stories += pick_stories(
+                conn, quota=remaining, exclude={s["story_id"] for s in stories}, **pick_kw
+            )
     else:
-        stories = pick_stories(conn, **pick_kw)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text("".join(json.dumps(s, ensure_ascii=False) + "\n" for s in stories), encoding="utf-8")
+        stories = pick_stories(conn, quota=quota, **pick_kw)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("".join(json.dumps(s, ensure_ascii=False) + "\n" for s in stories), encoding="utf-8")
     ldir = labels_dir(eval_dir)
     ldir.mkdir(parents=True, exist_ok=True)
     for s in stories:
