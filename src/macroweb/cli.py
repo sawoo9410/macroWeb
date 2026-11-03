@@ -31,7 +31,6 @@ console = Console()
 
 STAGE_PHASE = {
     "normalize": 1,
-    "extract": 2,
     "verify": 2,
     "digest": 2,
     "graph": 3,
@@ -331,6 +330,103 @@ def source_golden(
     raise typer.Exit(1 if failures else 0)
 
 
+claim_app = typer.Typer(help="claim 조회 (Phase 2)", no_args_is_help=True)
+app.add_typer(claim_app, name="claim")
+
+
+@claim_app.command("get")
+def claim_get(claim_id: str = typer.Argument(..., help="claim id (16 hex)")) -> None:
+    """claim 한 건 + evidence + 소속 Story 를 JSON 으로 (fact-checker 가 쓰는 조회)."""
+    from macroweb.db import repo
+
+    conn = repo.connect()
+    try:
+        row = conn.execute("SELECT * FROM claim WHERE id = ?", (claim_id,)).fetchone()
+        if not row:
+            console.print(f"[red]no claim {claim_id}[/]")
+            raise typer.Exit(1)
+        ev = conn.execute(
+            "SELECT e.kind, e.note, a.url, a.title, a.source_id, a.published_at FROM evidence e JOIN article a ON a.id = e.article_id WHERE e.claim_id = ?",
+            (claim_id,),
+        ).fetchall()
+        st = conn.execute(
+            "SELECT id, title_rep, n_independent, summary_ko FROM story WHERE id = ?", (row["story_id"],)
+        ).fetchone()
+        typer.echo(
+            json.dumps(
+                {"claim": dict(row), "evidence": [dict(e) for e in ev], "story": dict(st) if st else None},
+                ensure_ascii=False,
+                indent=1,
+                default=str,
+            )
+        )
+    finally:
+        conn.close()
+
+
+@claim_app.command("search")
+def claim_search(
+    query: str = typer.Argument(..., help="본문 부분 일치 (대소문자 무시)"),
+    label: str | None = typer.Option(None, "--label"),
+    limit: int = typer.Option(20, "--limit"),
+) -> None:
+    """claim 검색 (텍스트 LIKE; Phase 3 에서 FTS/임베딩으로 교체)."""
+    from macroweb.db import repo
+
+    conn = repo.connect()
+    try:
+        sql = "SELECT id, type, label, confidence, impact, time_ref, text FROM claim WHERE status = 'active' AND lower(text) LIKE ?"
+        params: list[object] = [f"%{query.lower()}%"]
+        if label:
+            sql += " AND label = ?"
+            params.append(label)
+        sql += " ORDER BY impact DESC, last_updated DESC LIMIT ?"
+        params.append(limit)
+        table = Table(title=f"claims matching {query!r}")
+        for col in ("id", "type", "label", "conf", "impact", "time", "text"):
+            table.add_column(col, overflow="fold")
+        for r in conn.execute(sql, params).fetchall():
+            table.add_row(
+                r["id"],
+                r["type"],
+                r["label"] or "",
+                f"{r['confidence'] or 0:.2f}",
+                f"{r['impact'] or 0:.2f}",
+                r["time_ref"] or "",
+                r["text"][:90],
+            )
+        console.print(table)
+    finally:
+        conn.close()
+
+
+@app.command("extractions")
+def extractions(limit: int = typer.Option(20, "--limit")) -> None:
+    """최근 추출 원장 (extraction 테이블)."""
+    from macroweb.db import repo
+    from macroweb.extract.runner import recent_extractions
+
+    conn = repo.connect()
+    try:
+        table = Table(title="recent extractions")
+        for col in ("story", "tier", "status", "model", "in", "out", "error", "title"):
+            table.add_column(col, overflow="fold")
+        for r in recent_extractions(conn, limit):
+            table.add_row(
+                r["story_id"],
+                r["model_tier"],
+                r["status"],
+                r["model"] or "",
+                str(r["tokens_in"] or ""),
+                str(r["tokens_out"] or ""),
+                (r["error"] or "")[:40],
+                (r["title_rep"] or "")[:60],
+            )
+        console.print(table)
+    finally:
+        conn.close()
+
+
 # --- phase ------------------------------------------------------------------------------------------
 @phase_app.command("show")
 def phase_show(json_out: bool = typer.Option(False, "--json")) -> None:
@@ -473,9 +569,59 @@ def normalize(date: str | None = typer.Option(None, "--date")) -> None:
 
 
 @app.command()
-def extract(date: str | None = typer.Option(None, "--date")) -> None:
-    """L3 추출: 배치 회수 + 실시간 처리 (Phase 2)."""
-    _not_yet("extract")
+def extract(
+    date: str | None = typer.Option(None, "--date", help="KST 날짜 (기본 오늘)"),
+    limit: int | None = typer.Option(
+        None, "--limit", help="이번 실행 호출 상한 (기본 extract.yaml headless.calls_per_tick)"
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run", help="선별 결과만 출력, 모델 호출 없음"),
+    story: list[str] | None = typer.Option(None, "--story", help="특정 story_id 만"),
+) -> None:
+    """L3 추출 (Phase 2, ADR-0007): Story 선별 → claude -p(구독) → claim/entity 저장. 호출 상한·한도 가드 적용."""
+    from macroweb.config import load_extract
+    from macroweb.db import repo
+    from macroweb.extract.runner import HeadlessExtractor
+    from macroweb.extract.select import select_candidates
+
+    repo.init_db()
+    conn = repo.connect()
+    try:
+        ecfg = load_extract()
+        cap = limit if limit is not None else ecfg.headless.calls_per_tick
+        cands = select_candidates(conn, prompt_version=ecfg.prompt.version, limit=max(cap * 2, 10), cfg=ecfg)
+        if story:
+            cands = [c for c in cands if c.story.story_id in set(story)]
+        if dry_run:
+            table = Table(title=f"extract --dry-run: {len(cands)} candidates (cap {cap})")
+            for col in ("story_id", "tier", "stratum", "impact", "lang", "title"):
+                table.add_column(col, overflow="fold")
+            for c in cands[: cap * 2]:
+                table.add_row(
+                    c.story.story_id,
+                    f"T{c.story.tier}",
+                    c.story.stratum,
+                    f"{c.impact:.2f}",
+                    c.story.lang,
+                    c.story.title[:70],
+                )
+            console.print(table)
+            return
+        run_id = repo.start_run(conn, "extract", {ecfg.prompt.name: f"v{ecfg.prompt.version}"})
+        report = HeadlessExtractor(conn, extract_cfg=ecfg).run(cands, max_calls=cap)
+        repo.finish_run(
+            conn,
+            run_id,
+            "limit" if report.limit_hit else "ok",
+            {k: v for k, v in vars(report).items()},
+            tokens_in=report.tokens_in,
+            tokens_out=report.tokens_out,
+            model_tier="mixed",
+            cost_usd=0.0,
+        )
+        console.print(report.render())
+        raise typer.Exit(2 if report.limit_hit else 0)
+    finally:
+        conn.close()
 
 
 @app.command()

@@ -46,6 +46,10 @@ class Source(Strict):
     interval_s: int | None = Field(
         default=None, ge=900, le=86400
     )  # 고정 주기(초). 없으면 피드 창 기반 적응 주기
+    select_policy: Literal["all", "theme", "title_regex"] | None = (
+        None  # 추출 선별: 전량 / 테마 일치 / 제목 패턴 (기본 theme)
+    )
+    select_regex: str | None = None  # select_policy == title_regex 일 때
     notes: str | None = None
 
     @model_validator(mode="after")
@@ -273,6 +277,8 @@ class ExtractSelection(Strict):
     theme_weight: float
     tier_weight: float
     min_independent_to_force: int
+    min_theme_score: float = 0.25
+    t0_share: float = 0.5
 
 
 class ExtractBatch(Strict):

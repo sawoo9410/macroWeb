@@ -1,7 +1,7 @@
 # MacroWeb — 거미줄
 
 목적: 매일 수집·검증·그래프 갱신, 매주 거시 인사이트 리포트 발행. **`PLAN.md`(v0.3)가 단일 진실원(SSOT)**이다.
-현재 Phase: **1 수집 MVP** → 기계용 상태는 `docs/phase_status.json`, 사람용 요약은 `docs/PLAN_DIGEST.md`(세션 시작 시 먼저 읽을 것).
+현재 Phase: **2 추출·검증 v1** (Phase 1 이월: 3일 무인 실행·launchd daily — ADR-0008) → 기계용 상태는 `docs/phase_status.json`, 사람용 요약은 `docs/PLAN_DIGEST.md`(세션 시작 시 먼저 읽을 것).
 PLAN과 ADR(`docs/decisions/`)이 충돌하면 ADR이 이긴다(충돌 사실을 ADR에 명시).
 
 ## 명령어

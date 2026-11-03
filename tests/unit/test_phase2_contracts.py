@@ -15,7 +15,7 @@ from macroweb.verify.contracts import Label, SignalVector, decide_label, needs_r
 
 def test_migration_0003_applies(tmp_path: Path) -> None:
     info = repo.init_db(tmp_path / "t.sqlite")
-    assert info["schema_version"] == 3
+    assert info["schema_version"] >= 3
     assert "0003_phase2.sql" in info["applied_migrations"]
     for t in ("llm_batch", "extraction", "review_queue"):
         assert t in info["tables"], t

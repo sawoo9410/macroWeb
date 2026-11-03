@@ -1,5 +1,5 @@
 {
-  "current_phase": 1,
+  "current_phase": 2,
   "updated": "2026-11-02",
   "phases": {
     "0": {
@@ -387,5 +387,12 @@
         }
       ]
     }
+  },
+  "carry_over": {
+    "1": [
+      "launchd-daily",
+      "unattended-3d"
+    ],
+    "note": "ADR-0008: Phase 2 를 소크 중 시작. 이월 항목이 닫혀야 Phase 2 완료 선언 가능"
   }
 }

@@ -50,6 +50,13 @@ def summary_lines(state: dict[str, Any] | None = None) -> list[str]:
         lines.append(f"  - TODO {i['id']}: {i['text']}")
     if len(todo) > 5:
         lines.append(f"  - ... and {len(todo) - 5} more")
+    carry = state.get("carry_over", {})
+    for prev_phase, item_ids in carry.items():
+        if prev_phase == "note":
+            continue
+        open_items = [i["id"] for i in items(state, prev_phase) if i["id"] in item_ids and not i["done"]]
+        if open_items:
+            lines.append(f"  carry-over from Phase {prev_phase}: {', '.join(open_items)}")
     if not todo:
         nxt = str(int(phase) + 1)
         if nxt in state["phases"]:

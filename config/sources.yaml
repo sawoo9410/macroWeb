@@ -15,6 +15,8 @@ sources:
     parser: rss_default
     rate_limit_s: 5
     stratum: S-T0-STMT
+    select_policy: title_regex
+    select_regex: "(FOMC|monetary policy|Federal Open Market|Beige Book|interest rate|discount rate|balance sheet|Chair|Governor|statement|minutes)"
     fetch_body: true
   - id: fed_speeches
     name: Federal Reserve speeches & testimony
@@ -28,6 +30,7 @@ sources:
     parser: rss_default
     rate_limit_s: 5
     stratum: S-T0-LONG
+    select_policy: all
     fetch_body: true
   - id: fomc_calendar
     name: FOMC meeting calendar, statements, minutes index
@@ -41,6 +44,8 @@ sources:
     parser: fomc_calendar_v1
     rate_limit_s: 5
     stratum: S-T0-STMT
+    select_policy: all
+    interval_s: 10800   # 정적 페이지(ETag 304) — 3시간; FOMC 당일은 이벤트 모드 10분
     fetch_body: true
   - id: fred_api
     name: FRED API (DFF, DGS2, DGS10, T10Y2Y, CPIAUCSL, PCEPILFE, PAYEMS, UNRATE, DTWEXBGS, WALCL, RRPONTSYD, WTREGEN, BAMLH0A0HYM2, VIXCLS, DCOILBRENTEU)
@@ -115,6 +120,8 @@ sources:
     parser: rss_default
     rate_limit_s: 5
     stratum: S-T0-STMT
+    select_policy: title_regex
+    select_regex: "(통화정책방향|기준금리|금융통화위원회|금통위|환율|외환|물가|경제전망|금융안정|국제수지|소비자동향|기업경기|총재)"
     fetch_body: true
   - id: dart_api
     name: DART Open API 공시 (삼성전자·SK하이닉스·어보브반도체 등)
@@ -157,6 +164,7 @@ sources:
     parser: rss_default
     rate_limit_s: 5
     stratum: S-T0-STMT
+    select_policy: theme
     fetch_body: true
   - id: cbo_publications
     name: CBO publications
@@ -170,6 +178,7 @@ sources:
     parser: rss_default
     rate_limit_s: 10
     stratum: S-T0-LONG
+    select_policy: theme
     fetch_body: true
   - id: fed_press_monetary
     name: Federal Reserve press releases — monetary policy only (FOMC statements, implementation notes)
@@ -183,6 +192,7 @@ sources:
     parser: rss_default
     rate_limit_s: 5
     stratum: S-T0-STMT
+    select_policy: all
     fetch_body: true
   - id: ecb_press
     name: ECB press releases
@@ -196,6 +206,8 @@ sources:
     parser: rss_default
     rate_limit_s: 5
     stratum: S-T0-STMT
+    select_policy: title_regex
+    select_regex: "(monetary policy|Governing Council|interest rate|inflation|deposit facility|decision|Lagarde|press conference)"
   # ---------------- T1 통신사·주요지 ----------------
   - id: yna_economy
     name: 연합뉴스 경제
@@ -208,6 +220,7 @@ sources:
     parent_org: yonhap
     parser: rss_default
     stratum: S-T1-KO
+    interval_s: 7200   # 최다 발행 피드(~11건/시간, 120건 창 ≈ 11h) — 급증일 누락 방지 상한 2시간
     notes: 전재 원천 — 다른 매체의 연합 전재는 독립 출처로 세지 않는다 (§4.3)
   - id: hankyung_economy
     name: 한국경제 경제
@@ -289,6 +302,7 @@ sources:
     parser: rss_default
     paywall: true
     stratum: S-T1
+    interval_s: 7200   # 피드에 발행시각 없음 → 창 측정 불가, 2시간 고정
   # ---------------- T2 전문·업계지 ----------------
   - id: trendforce_press
     name: TrendForce press center (DRAM/NAND 계약가)
@@ -372,6 +386,7 @@ sources:
     parent_org: kalshi
     parser: kalshi_v1
     stratum: S-DATA
+    interval_s: 10800   # 시리즈 18개 × 요청 — 일별 가격만 쓰므로 3시간 (2026-11-03 주기 점검)
     params:   # /series?category=Economics 로 2026-11-02 확인한 시리즈 티커 (각각 한 요청, status=open)
       series_tickers: [KXFEDDECISION, KXFED, KXFEDHIKE, KXFEDCUT, KXRATEHIKE, KXFEDDISSENT, KXDOTPLOT, KXTERMINALRATE, KXFEDFUNDSYEAR, KXCPI, KXCPIYOY, KXCPICORE, KXPCECORE, KXPAYROLLS, KXU3, KXRECSSNBER, KXBALANCESHEET, KXCBDECISIONKOREA]
   - id: cme_fedwatch
@@ -505,6 +520,7 @@ sources:
     parent_org: ycombinator
     parser: hn_algolia_v1
     stratum: S-T4
+    interval_s: 10800   # 질의 4개 — 심리 온도계는 3시간이면 충분
     params:
       queries: [nvidia, "federal reserve", semiconductor, "data center"]
   - id: reddit_stocks

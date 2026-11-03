@@ -7,6 +7,8 @@ selection:                     # 선별 = 테마 유사도 × 출처 tier (§0.3
   theme_weight: 0.6
   tier_weight: 0.4
   min_independent_to_force: 3  # 독립 출처 ≥ 3 이면 자동 승격
+  min_theme_score: 0.25        # 테마 키워드 1개 이상 일치해야 모델에 보낸다 (select_policy all / title_regex 소스 제외)
+  t0_share: 0.5                # 한 실행에서 T0 문서가 차지할 수 있는 최대 몫 — T0 백로그가 T1/T2 를 굶기지 않게
 headless:                      # ADR-0007 (기본): claude -p 구독 경로. 하네스 프롬프트를 --system-prompt 로 대체, 도구 없음, 1턴
   model_flag_by_tier: {small: haiku, mid: sonnet, large: opus}
   calls_per_tick: 15           # 30분 틱마다 새 Story 를 조금씩 처리 — 5시간 사용 창에 몰리지 않게

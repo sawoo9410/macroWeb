@@ -5,7 +5,12 @@
   <key>ProgramArguments</key><array>
     <string>/bin/bash</string><string>/Users/seosang-u/projects/finance/macroWeb/bin/run_collect.sh</string>
   </array>
-  <key>StartInterval</key><integer>1800</integer>
+  <!-- StartInterval 은 이 Mac 의 GUI launchd 도메인에서 보류된다("on-demand-only mode", 65일 가동 중 한 번도 안 돎; 같은 증상의
+       com.moat-journal.token-refresh 도 runs=0). StartCalendarInterval 잡은 정상 실행되므로 매시 :00·:30 달력 트리거로 바꾼다. -->
+  <key>StartCalendarInterval</key><array>
+    <dict><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Minute</key><integer>30</integer></dict>
+  </array>
   <key>WorkingDirectory</key><string>/Users/seosang-u/projects/finance/macroWeb</string>
   <key>EnvironmentVariables</key><dict>
     <key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/Users/seosang-u/.local/bin:/usr/bin:/bin</string>

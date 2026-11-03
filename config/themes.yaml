@@ -28,6 +28,14 @@ themes:
     name: 한국 외국인 수급과 원화
     keywords: [외국인 순매수, KOSPI, 원달러, 환율, 한미 금리차]
     seed_entities: [kospi, usdkrw]
+  - id: global-central-banks
+    name: 글로벌 중앙은행 결정
+    keywords: [ECB, 유럽중앙은행, Governing Council, deposit facility, BOJ, 일본은행, 금리 결정, rate decision, 금통위, 통화정책방향, 기준금리]
+    seed_entities: []
+  - id: us-fiscal
+    name: 미국 재정·부채
+    keywords: [deficit, 적자, debt limit, 부채한도, Treasury auction, 국채 발행, CBO, budget, appropriations, 관세 수입, tariff revenue]
+    seed_entities: [donald-trump]
   - id: dollar-liquidity
     name: 달러·유동성 레짐
     keywords: [DXY, 달러지수, RRP, TGA, 준비금, HY 스프레드, QT]
