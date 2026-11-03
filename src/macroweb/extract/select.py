@@ -17,6 +17,7 @@ from macroweb.config import (
     Source,
     Stratum,
     ThemesConfig,
+    TierName,
     load_extract,
     load_sources,
     load_yaml,
@@ -50,6 +51,66 @@ class Candidate:
     theme_score: float
     impact: float
     keyword_hits: int = 0  # distinct theme keywords found anywhere (tie-break, never a gate on its own)
+    forced_tier: TierName | None = None  # escalation queue (PLAN §6.2.2 rules 2–4): re-extract at this tier
+    escalation_reason: str | None = None
+
+
+def queued_escalations(
+    conn: sqlite3.Connection,
+    *,
+    prompt_version: int,
+    cfg: ExtractConfig | None = None,
+    sources: list[Source] | None = None,
+    limit: int = 8,
+) -> list[Candidate]:
+    """Stories with an extraction row in status 'queued' (written by verify for numeric mismatch, high-impact
+    dispute, key-person quotes) — returned with the tier to use, newest first."""
+    cfg = cfg or load_extract()
+    src_by_id = {s.id: s for s in (sources or load_sources().sources)}
+    themes = _themes()
+    out: list[Candidate] = []
+    rows = conn.execute(
+        """SELECT e.story_id, e.model_tier, e.escalation_reason, s.first_seen, s.n_independent FROM extraction e
+           JOIN story s ON s.id = e.story_id WHERE e.status = 'queued' AND e.prompt_version = ?
+           ORDER BY e.created_at DESC LIMIT ?""",
+        (str(prompt_version), limit),
+    ).fetchall()
+    for row in rows:
+        if row["model_tier"] not in ("small", "mid", "large"):
+            continue
+        tier: TierName = row["model_tier"]
+        rep = _rep_article(conn, row["story_id"])
+        if rep is None:
+            continue
+        src = src_by_id.get(rep["source_id"])
+        if src is None or not src.stratum:
+            continue
+        text = rep["text"] or rep["summary"] or ""
+        sim, theme_id = theme_similarity(f"{rep['title']} {text[:1500]}", themes)
+        story = StoryInput(
+            story_id=row["story_id"],
+            source_id=src.id,
+            tier=src.tier,
+            stratum=src.stratum,
+            title=rep["title"] or "",
+            text=text,
+            url=rep["url"],
+            published_at=rep["published_at"] or row["first_seen"],
+            lang=rep["lang"] or src.lang,
+            n_independent=int(row["n_independent"] or 1),
+            impact_hint=None,
+            extra={"theme": theme_id, "rep_article_id": rep["id"]},
+        )
+        out.append(
+            Candidate(
+                story=story,
+                theme_score=sim,
+                impact=1.0,
+                forced_tier=tier,
+                escalation_reason=row["escalation_reason"],
+            )
+        )
+    return out
 
 
 def _themes() -> list[tuple[str, list[str]]]:

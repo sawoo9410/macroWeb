@@ -593,6 +593,10 @@ def _extract_run(*, limit: int | None, story: list[str] | None, force: bool, dry
             only=story or None,
             force=force,
         )
+        if not story:
+            from macroweb.extract.select import queued_escalations
+
+            cands = queued_escalations(conn, prompt_version=ecfg.prompt.version, cfg=ecfg) + cands
         if dry_run:
             table = Table(title=f"extract --dry-run: {len(cands)} candidates (cap {cap})")
             for col in ("story_id", "tier", "stratum", "impact", "lang", "title"):
@@ -820,10 +824,292 @@ def verify(
     console.print(_verify_run(day=date, since_hours=since_hours, story=story, relabel=all_claims).render())
 
 
-@app.command()
-def graph(action: str = typer.Argument("update", help="update|export-vault|propagate|path")) -> None:
-    """L5 거미줄 갱신 (Phase 3)."""
-    _not_yet("graph")
+graph_app = typer.Typer(
+    help="L5 거미줄 (Phase 3, ADR-0010 v1): 시드·엣지 갱신·해소·전파·경로·diff·내보내기", no_args_is_help=True
+)
+app.add_typer(graph_app, name="graph")
+
+
+def _graph_conn():  # type: ignore[no-untyped-def]
+    from macroweb.db import repo
+
+    repo.init_db()
+    return repo.connect()
+
+
+@graph_app.command("load-seed")
+def graph_load_seed() -> None:
+    """seed/entities.yaml·relations.yaml·persons/ → candidate 노드/엣지 (idempotent)."""
+    from macroweb.graph.store import load_seed
+
+    conn = _graph_conn()
+    try:
+        rep = load_seed(conn)
+    finally:
+        conn.close()
+    console.print(
+        f"seed: entities new/seen={rep.entities_new}/{rep.entities_seen} edges new/seen={rep.edges_new}/{rep.edges_seen} persons={rep.persons}"
+    )
+    for p in rep.problems:
+        console.print(f"[yellow]  {p}[/]")
+
+
+@graph_app.command("update")
+def graph_update(
+    since: str | None = typer.Option(None, "--since", help="이 시각(ISO) 이후 성공한 추출만"),
+    no_resolve: bool = typer.Option(False, "--no-resolve", help="엔티티 해소(별칭 병합·승격) 건너뛰기"),
+) -> None:
+    """추출 relations → 엣지(evidence = 그 Story 의 claim) → 엔티티 해소 → 만료 처리."""
+    from macroweb.graph.store import expire_edges, graph_counts, resolve_entities, update_from_extractions
+
+    conn = _graph_conn()
+    try:
+        st = update_from_extractions(conn, since=since)
+        console.print(
+            f"edges inserted={st.inserted} reinforced={st.reinforced} entities_new={st.entities_new} "
+            f"skipped: no_evidence={st.skipped_no_evidence} unknown_type={st.skipped_unknown_type} unresolved={st.skipped_unresolved}"
+        )
+        if not no_resolve:
+            rr = resolve_entities(conn)
+            console.print(
+                f"resolve: merged={len(rr.merged)} promoted={len(rr.promoted)} counted={rr.counted}"
+            )
+        console.print(f"expired edges={expire_edges(conn)} · counts={graph_counts(conn)}")
+    finally:
+        conn.close()
+
+
+@graph_app.command("resolve")
+def graph_resolve() -> None:
+    """별칭 완전 일치 병합 + Story 3개 이상 candidate → confirmed."""
+    from macroweb.graph.store import resolve_entities
+
+    conn = _graph_conn()
+    try:
+        rr = resolve_entities(conn)
+    finally:
+        conn.close()
+    console.print(f"merged={rr.merged} promoted={rr.promoted} counted={rr.counted}")
+
+
+@graph_app.command("stats")
+def graph_stats(
+    pair: tuple[str, str] | None = typer.Option(
+        None, "--pair", help="market 키 두 개 (예: UST:10Y NAVER:.SOX)"
+    ),
+    all_computed: bool = typer.Option(False, "--all", help="origin=computed 시드 엣지 전부 재계산"),
+    write: bool = typer.Option(False, "--write", help="결과를 엣지 r/lag 에 기록"),
+) -> None:
+    """통계 엣지 r/lag — 가격 데이터로 계산만 한다(추정 금지). 자료가 모자라면 그렇다고 말한다."""
+    import json as _json
+
+    from macroweb.graph.analysis import pair_stats
+    from macroweb.graph.store import upsert_edge
+
+    conn = _graph_conn()
+    try:
+        jobs: list[tuple[str, str, str | None, str | None, str | None]] = []
+        if pair:
+            jobs.append((pair[0], pair[1], None, None, None))
+        if all_computed:
+            for r in conn.execute(
+                """SELECT r.src_eid, r.dst_eid, r.type, es.profile_json AS sp, ed.profile_json AS dp FROM relation r
+                   JOIN entity es ON es.id = r.src_eid JOIN entity ed ON ed.id = r.dst_eid WHERE r.origin = 'computed'"""
+            ):
+                ks = (_json.loads(r["sp"] or "{}")).get("data_key")
+                kd = (_json.loads(r["dp"] or "{}")).get("data_key")
+                if ks and kd:
+                    jobs.append((ks, kd, r["src_eid"], r["dst_eid"], r["type"]))
+        if not jobs:
+            console.print("[yellow]--pair A B 또는 --all 이 필요하다[/]")
+            raise typer.Exit(1)
+        for ka, kb, src, dst, rtype in jobs:
+            ps = pair_stats(conn, ka, kb)
+            console.print(f"{ka} → {kb}: n={ps.n} r={ps.r} lag={ps.lag_days} {ps.note}")
+            if write and src and dst and rtype and ps.r is not None and not ps.note:
+                upsert_edge(
+                    conn,
+                    src=src,
+                    dst=dst,
+                    rtype=rtype,
+                    sign=1 if ps.r > 0 else -1,
+                    weight=abs(ps.r),
+                    confidence=min(1.0, ps.n / 250),
+                    evidence_ids=[],
+                    origin="computed",
+                    story_id=None,
+                    seen_at=__import__("datetime")
+                    .datetime.now(__import__("datetime").UTC)
+                    .isoformat(timespec="seconds"),
+                    note=f"computed {ka}~{kb} n={ps.n}",
+                    r=ps.r,
+                    lag_days=ps.lag_days,
+                )
+                conn.commit()
+    finally:
+        conn.close()
+
+
+@graph_app.command("propagate")
+def graph_propagate(
+    node: str = typer.Argument(..., help="충격 노드 id (예: fomc-2026-12-09)"),
+    sign: int = typer.Option(1, "--sign", help="+1 / -1"),
+    magnitude: float = typer.Option(1.0, "--magnitude"),
+    as_of: str | None = typer.Option(None, "--as-of", help="YYYY-MM-DD 시간 슬라이스"),
+    depth: int = typer.Option(3, "--depth"),
+    floor: float = typer.Option(0.05, "--floor"),
+    json_out: bool = typer.Option(False, "--json"),
+) -> None:
+    """충격 전파 v1 (PLAN §8.7): 1·2·3차 효과와 경로·evidence."""
+    import json as _json
+
+    from macroweb.graph.analysis import propagate
+    from macroweb.graph.store import active_edges
+
+    conn = _graph_conn()
+    try:
+        effects = propagate(
+            active_edges(conn, as_of=as_of),
+            node,
+            sign=sign,
+            magnitude=magnitude,
+            max_depth=depth,
+            floor=floor,
+        )
+    finally:
+        conn.close()
+    if json_out:
+        console.print_json(_json.dumps([e.as_dict() for e in effects], ensure_ascii=False))
+        return
+    table = Table(
+        title=f"propagate {node} sign={sign:+d} mag={magnitude} as_of={as_of or 'now'} → {len(effects)} effects"
+    )
+    for col in ("depth", "target", "sign", "magnitude", "path (nodes)", "evidence"):
+        table.add_column(col, overflow="fold")
+    for e in effects[:40]:
+        table.add_row(
+            str(e.depth),
+            e.target,
+            f"{e.sign:+d}",
+            f"{e.magnitude:.3f}",
+            " → ".join(e.nodes),
+            str(len(e.evidence)),
+        )
+    console.print(table)
+
+
+@graph_app.command("path")
+def graph_path(
+    src: str = typer.Argument(...),
+    dst: str = typer.Argument(...),
+    k: int = typer.Option(3, "--k"),
+    as_of: str | None = typer.Option(None, "--as-of"),
+) -> None:
+    """사건→자산 연결 설명 경로 k개."""
+    from macroweb.graph.analysis import k_paths
+    from macroweb.graph.store import active_edges
+
+    conn = _graph_conn()
+    try:
+        paths = k_paths(active_edges(conn, as_of=as_of), src, dst, k=k)
+    finally:
+        conn.close()
+    if not paths:
+        console.print(f"[yellow]no path {src} → {dst}[/]")
+        raise typer.Exit(1)
+    for p in paths:
+        console.print(
+            f"{p['hops']} hops · strength {p['strength']} · net sign {p['net_sign']:+d}: {' → '.join(p['nodes'])}"
+        )
+
+
+@graph_app.command("hubs")
+def graph_hubs(
+    top: int = typer.Option(10, "--top"), as_of: str | None = typer.Option(None, "--as-of")
+) -> None:
+    """가중 PageRank 허브 (이번 주 누가 중앙에 섰나)."""
+    from macroweb.graph.analysis import hubs
+    from macroweb.graph.store import active_edges
+
+    conn = _graph_conn()
+    try:
+        for n, score in hubs(active_edges(conn, as_of=as_of), top=top):
+            console.print(f"{score:.4f} {n}")
+    finally:
+        conn.close()
+
+
+@graph_app.command("diff")
+def graph_diff(week: str | None = typer.Option(None, "--week", help="ISO 주 (기본 이번 주)")) -> None:
+    """주간 그래프 diff: 신규·강화·만료 엣지, 신규 엔티티, 스냅샷 저장."""
+    import json as _json
+
+    from macroweb.graph.analysis import iso_week, weekly_diff
+
+    conn = _graph_conn()
+    try:
+        d = weekly_diff(conn, week or iso_week())
+    finally:
+        conn.close()
+    console.print_json(_json.dumps(d.summary(), ensure_ascii=False))
+
+
+@graph_app.command("export-vault")
+def graph_export_vault(as_of: str | None = typer.Option(None, "--as-of")) -> None:
+    """vault/entities/<type>/<id>.md + index.md (Obsidian 호환, wikilink = 엣지)."""
+    from macroweb.graph.export import export_vault
+
+    conn = _graph_conn()
+    try:
+        rep = export_vault(conn, as_of=as_of)
+    finally:
+        conn.close()
+    console.print(f"vault: {rep.entities} entities → {rep.index}")
+
+
+@graph_app.command("html")
+def graph_html(
+    week: str | None = typer.Option(None, "--week"), as_of: str | None = typer.Option(None, "--as-of")
+) -> None:
+    """charts/graph-<week>.html — cytoscape.js 뷰어(기준일 슬라이더·엣지 클릭 시 evidence)."""
+    from macroweb.graph.analysis import iso_week
+    from macroweb.graph.export import render_html
+
+    conn = _graph_conn()
+    try:
+        console.print(str(render_html(conn, week or iso_week(), as_of=as_of)))
+    finally:
+        conn.close()
+
+
+@graph_app.command("render")
+def graph_render(
+    week: str | None = typer.Option(None, "--week"),
+    nodes: int = typer.Option(25, "--nodes"),
+    as_of: str | None = typer.Option(None, "--as-of"),
+) -> None:
+    """charts/graph-<week>.png — 리포트용 서브그래프(노드 ≤ 25)."""
+    from macroweb.graph.analysis import iso_week
+    from macroweb.graph.export import render_png
+
+    conn = _graph_conn()
+    try:
+        path = render_png(conn, week or iso_week(), max_nodes=nodes, as_of=as_of)
+    finally:
+        conn.close()
+    console.print(str(path) if path else "[yellow]no active edges to render[/]")
+
+
+@graph_app.command("counts")
+def graph_counts_cmd() -> None:
+    """엔티티·엣지 상태별 수."""
+    from macroweb.graph.store import graph_counts
+
+    conn = _graph_conn()
+    try:
+        console.print_json(json.dumps(graph_counts(conn), ensure_ascii=False))
+    finally:
+        conn.close()
 
 
 @app.command()
@@ -851,10 +1137,32 @@ def digest(
 
 @app.command()
 def quality(
-    action: str = typer.Argument("run", help="run|apply"), week: str | None = typer.Option(None, "--week")
+    action: str = typer.Argument("run", help="run"),
+    week: str | None = typer.Option(None, "--week", help="ISO 주 (기본 이번 주)"),
+    no_apply: bool = typer.Option(False, "--no-apply", help="자동 처리(격리·만료·병합) 없이 보고만"),
 ) -> None:
-    """주간 데이터 품질 검토 Q1–Q7 (Phase 3 v1 / Phase 6 v2)."""
-    _not_yet("quality")
+    """주간 데이터 품질 검토 v1: Q1·Q2·Q4·Q6 결정론 검사 + 스코어카드 reports/quality/<week>.md (Q3·Q5·Q7 은 Phase 6)."""
+    from macroweb.db import repo
+    from macroweb.graph.analysis import iso_week
+    from macroweb.quality.weekly import run_quality
+
+    if action != "run":
+        console.print(
+            "[yellow]v1 은 `quality run` 만 있다 (apply 는 run 이 함께 한다; --no-apply 로 끈다)[/]"
+        )
+        raise typer.Exit(1)
+    repo.init_db()
+    conn = repo.connect()
+    try:
+        run_id = repo.start_run(conn, "quality")
+        res = run_quality(conn, week or iso_week(), apply=not no_apply)
+        repo.finish_run(conn, run_id, "ok", res.as_dict())
+    finally:
+        conn.close()
+    console.print(res.scoreline())
+    for a in res.actions:
+        console.print(f"  - {a}")
+    console.print(f"report: {res.report}")
 
 
 @app.command()

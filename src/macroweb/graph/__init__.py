@@ -1,1 +1,1 @@
-"""L5 거미줄: 온톨로지, 엔티티 해소, 전파, vault 내보내기 (Phase 3)."""
+"""L5 거미줄 — knowledge graph store, analysis and export (PLAN §8, ADR-0010 v1)."""

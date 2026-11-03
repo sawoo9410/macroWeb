@@ -349,11 +349,15 @@ class HeadlessExtractor:
             if len(story.text or "") < 60:
                 report.skipped["no_text"] = report.skipped.get("no_text", 0) + 1
                 continue
-            tier = self.router.tier_for_stratum(story.stratum)
+            tier = cand.forced_tier or self.router.tier_for_stratum(story.stratum)
             if tier is None:
                 report.skipped["no_llm_stratum"] = report.skipped.get("no_llm_stratum", 0) + 1
                 continue
-            outcome = self.extract_story(story, tier, report.batch_id, report)
+            if cand.forced_tier:
+                report.escalated += 1
+            outcome = self.extract_story(
+                story, tier, report.batch_id, report, escalation_reason=cand.escalation_reason
+            )
             if report.limit_hit:
                 report.stopped_reason = "subscription limit hit"
                 break

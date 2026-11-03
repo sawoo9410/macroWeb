@@ -1,5 +1,5 @@
 {
-  "current_phase": 2,
+  "current_phase": 3,
   "updated": "2026-11-03",
   "phases": {
     "0": {
@@ -202,32 +202,44 @@
         {
           "id": "entity-resolution",
           "text": "엔티티 해소 (별칭 사전, candidate→confirmed)",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010) — 한계는 RUNBOOK §3f/§3g"
         },
         {
           "id": "edge-update",
           "text": "추출 relations → 엣지 갱신 (evidence 100%)",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010) — 한계는 RUNBOOK §3f/§3g"
         },
         {
           "id": "stat-edges",
           "text": "통계 엣지 r/lag 계산",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010) — 한계는 RUNBOOK §3f/§3g"
         },
         {
           "id": "vault-export",
           "text": "vault 내보내기 + HTML 뷰어",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010) — 한계는 RUNBOOK §3f/§3g"
         },
         {
           "id": "propagate-v1",
           "text": "전파 v1 + 주간 diff + 서브그래프 PNG",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010) — 한계는 RUNBOOK §3f/§3g"
         },
         {
           "id": "quality-v1",
           "text": "주간 품질 검토 v1 (Q1·Q2·Q4·Q6) + 스코어카드",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010) — 한계는 RUNBOOK §3f/§3g"
         },
         {
           "id": "escalation",
@@ -397,6 +409,12 @@
       "launchd-daily",
       "unattended-3d"
     ],
-    "note": "ADR-0008: Phase 2 를 소크 중 시작. 이월 항목이 닫혀야 Phase 2 완료 선언 가능"
+    "note": "ADR-0010: 구축 우선 — 각 Phase 는 MVP 로 넘어가고 미완 DoD 는 여기(carry_over)가 단일 TODO. Phase 1 이월은 11-05 판정(unattended-3d)·launchd-daily.",
+    "2": [
+      "t0-diff",
+      "routing-experiment",
+      "first-manual-report",
+      "eval-extract-30"
+    ]
   }
 }

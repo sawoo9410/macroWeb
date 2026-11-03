@@ -13,8 +13,9 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from macroweb.config import VerifyConfig, load_verify
-from macroweb.paths import ROOT, review_dir
+from macroweb.config import KeyPersonsConfig, TierName, VerifyConfig, load_models, load_verify, load_yaml
+from macroweb.llm.router import ModelRouter
+from macroweb.paths import CONFIG_DIR, ROOT, review_dir
 from macroweb.verify.contracts import needs_review
 from macroweb.verify.signals import ClaimVerdict, tolerances, verify_claim
 
@@ -31,12 +32,14 @@ class VerifyReport:
     review_added: int = 0
     review_open: int = 0
     review_md: Path | None = None
+    escalations_queued: int = 0
     elapsed_s: float = 0.0
 
     def render(self) -> str:
         dist = " ".join(f"{k}={v}" for k, v in sorted(self.labels.items(), key=lambda kv: -kv[1]))
         lines = [
-            f"verify considered={self.considered} updated={self.updated} review +{self.review_added} (open {self.review_open}) {self.elapsed_s:.1f}s",
+            f"verify considered={self.considered} updated={self.updated} review +{self.review_added} (open {self.review_open}) "
+            f"escalations queued {self.escalations_queued} {self.elapsed_s:.1f}s",
             f"labels: {dist or '-'}",
         ]
         if self.review_md:
@@ -123,6 +126,82 @@ def _enqueue_review(
     return True
 
 
+TIER_ORDER: tuple[TierName, ...] = ("small", "mid", "large")
+
+
+def key_person_names() -> set[str]:
+    try:
+        cfg = KeyPersonsConfig.model_validate(load_yaml(CONFIG_DIR / "key_persons.yaml"))
+    except Exception:
+        return set()
+    return {p.name.lower() for p in cfg.persons if p.name}
+
+
+def escalation_reason(
+    claim: sqlite3.Row, verdict: ClaimVerdict, impact: float, key_names: set[str]
+) -> str | None:
+    """PLAN §6.2.2 rules 2–4 (rule 1 lives in the runner, rule 5 needs the T4 path)."""
+    if verdict.numeric.match == -1.0:
+        return "numeric_mismatch"
+    if impact >= 0.7 and verdict.label.value == "DISPUTED":
+        return "disputed_high_impact"
+    if claim["type"] in ("quote", "attribution") and key_names:
+        subject = ((claim["raw_subject"] or "") + " " + (claim["text"] or "")).lower()
+        if any(name in subject for name in key_names):
+            return "key_person_quote"
+    return None
+
+
+def _story_tier(conn: sqlite3.Connection, story_id: str) -> TierName | None:
+    rows = conn.execute(
+        "SELECT model_tier, status FROM extraction WHERE story_id = ? ORDER BY updated_at DESC", (story_id,)
+    ).fetchall()
+    used: list[TierName] = [
+        r["model_tier"]
+        for r in rows
+        if r["status"] in ("succeeded", "escalated", "queued", "failed") and r["model_tier"] in TIER_ORDER
+    ]
+    if not used:
+        return None
+    return max(used, key=TIER_ORDER.index)
+
+
+def _enqueue_escalation(
+    conn: sqlite3.Connection, claim: sqlite3.Row, reason: str, router: ModelRouter, now_iso: str
+) -> bool:
+    """Queue a re-extraction one tier up; the runner picks 'queued' rows first (daily cap applies there)."""
+    current = _story_tier(conn, claim["story_id"])
+    if current is None:
+        return False
+    nxt = router.escalate(current)
+    if nxt is None:
+        return False
+    exists = conn.execute(
+        "SELECT status FROM extraction WHERE story_id = ? AND model_tier = ?", (claim["story_id"], nxt)
+    ).fetchone()
+    if exists is not None:
+        return False  # already attempted or queued at that tier
+    pv = conn.execute(
+        "SELECT prompt_version FROM extraction WHERE story_id = ? ORDER BY updated_at DESC LIMIT 1",
+        (claim["story_id"],),
+    ).fetchone()
+    conn.execute(
+        """INSERT OR IGNORE INTO extraction(story_id, prompt_version, model_tier, custom_id, status, stratum, escalation_reason, created_at, updated_at)
+           VALUES (?, ?, ?, ?, 'queued', ?, ?, ?, ?)""",
+        (
+            claim["story_id"],
+            pv["prompt_version"] if pv else "0",
+            nxt,
+            f"esc_{claim['story_id']}_{nxt}",
+            claim["stratum"],
+            reason,
+            now_iso,
+            now_iso,
+        ),
+    )
+    return True
+
+
 def run_verify(
     conn: sqlite3.Connection,
     *,
@@ -140,6 +219,8 @@ def run_verify(
     now = now or datetime.now(UTC)
     now_iso = now.isoformat(timespec="seconds")
     report = VerifyReport()
+    router = ModelRouter(load_models())
+    key_names = key_person_names()
     for claim in _claims_to_verify(
         conn, since_hours=since_hours, story_ids=story_ids, relabel=relabel, now=now
     ):
@@ -172,6 +253,9 @@ def run_verify(
         impact = float(claim["impact"] if claim["impact"] is not None else (claim["story_impact"] or 0.5))
         if needs_review(impact, verdict.confidence, cfg) and _enqueue_review(conn, claim, verdict, now_iso):
             report.review_added += 1
+        reason = escalation_reason(claim, verdict, impact, key_names)
+        if reason and _enqueue_escalation(conn, claim, reason, router, now_iso):
+            report.escalations_queued += 1
     conn.commit()
     report.review_open = int(
         conn.execute("SELECT COUNT(*) FROM review_queue WHERE decided_at IS NULL").fetchone()[0]

@@ -1,7 +1,7 @@
 # MacroWeb — 거미줄
 
 목적: 매일 수집·검증·그래프 갱신, 매주 거시 인사이트 리포트 발행. **`PLAN.md`(v0.3)가 단일 진실원(SSOT)**이다.
-현재 Phase: **2 추출·검증 v1** (Phase 1 이월: 3일 무인 실행·launchd daily — ADR-0008) → 기계용 상태는 `docs/phase_status.json`, 사람용 요약은 `docs/PLAN_DIGEST.md`(세션 시작 시 먼저 읽을 것).
+현재 Phase: **3 거미줄 v1** — ADR-0010 "다 구축하고 손본다" 모드. 이월 항목(Phase 1: 3일 무인 실행·launchd daily / Phase 2: T0 diff·라우팅 실험·첫 수동 리포트·평가셋 라벨)은 `docs/phase_status.json` 의 `carry_over` 가 단일 TODO 다. 사람용 요약은 `docs/PLAN_DIGEST.md`(세션 시작 시 먼저 읽을 것).
 PLAN과 ADR(`docs/decisions/`)이 충돌하면 ADR이 이긴다(충돌 사실을 ADR에 명시).
 
 ## 명령어
@@ -24,11 +24,13 @@ PLAN과 ADR(`docs/decisions/`)이 충돌하면 ADR이 이긴다(충돌 사실을
 | **추출 (Phase 2, ADR-0007 claude -p 구독)** | `uv run macroweb extract` (`--dry-run` 선별만 · `--limit N` · `--story <id> --force` 재추출) · 결과 `uv run macroweb extractions` · `claim search <단어>` · `claim get <id>` |
 | **검증 v1 (ADR-0009, 모델 호출 없음)** | `uv run macroweb verify` (`--since-hours 72` · `--all` 재라벨 · `--story <id>`) → `claim.label/confidence`, 고영향·저신뢰는 `review/<날짜>.md` |
 | **일일 다이제스트 10줄** | `uv run macroweb digest [--date YYYY-MM-DD] [--json]` → `digests/<날짜>.md` (틱마다 다시 씀; 미구현 엔진은 그렇다고 적힘) |
-| 이후 단계 (Phase 3+ 스텁) | `uv run macroweb graph` · `quality` · `weekly` · `monthly` |
+| **거미줄 (Phase 3 v1)** | `uv run macroweb graph load-seed` · `graph update` (추출 relations→엣지+해소+만료) · `graph propagate <node> --sign ±1 [--as-of]` · `graph path <src> <dst>` · `graph hubs` · `graph diff --week` · `graph stats --pair A B` (r/lag 계산, 자료 부족이면 그렇다고 출력) · `graph export-vault` · `graph html --week` · `graph render --week` · `graph counts` |
+| **주간 품질 검토 v1** | `uv run macroweb quality run [--week] [--no-apply]` → Q1·Q2·Q4·Q6 + `reports/quality/<week>.md` (Q3·Q5·Q7 은 Phase 6) |
+| 이후 단계 (Phase 4+ 스텁) | `uv run macroweb weekly` · `monthly` |
 
 ## 세션 운영 규칙 (PLAN §0.1 요약)
 
-1. **Phase 순서를 지킨다.** `docs/phase_status.json`의 현재 Phase DoD를 전부 통과하기 전에는 다음 Phase 코드를 쓰지 않는다(스키마·인터페이스 정의는 예외).
+1. **Phase 순서 — ADR-0010 으로 완화.** 각 Phase 는 MVP 로 구현하고 넘어가되, 미완 DoD 는 `phase_status.json carry_over` 에 남기고 "다음 가자" 는 가장 앞 Phase 의 이월 항목부터 본다. 불변 규칙은 그대로.
 2. **설계 결정은 ADR로.** `docs/decisions/NNNN-제목.md` (맥락/선택지/결정/결과).
 3. **🔒 항목은 멈추지 않는다.** `docs/QUESTIONS.md`에 적고 PLAN §0.3 기본값으로 진행.
 4. **가짜 데이터 금지.** 출처 없는 숫자·인용·URL을 만들지 않는다. 테스트는 `tests/fixtures/`의 실제 스냅샷으로.

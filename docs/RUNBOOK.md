@@ -43,6 +43,18 @@ make doctor                             # 전부 PASS/WARN 이어야 한다 (FAI
 - 줄 1(레짐)·6(시장 정합성)·2 의 diff 수는 Phase 3 엔진이 없어 "미구현" 으로 적힌다 — 숫자를 지어 넣지 않는다. 줄 3–5 는 **그날 추출된** VERIFIED/CORROBORATED claim 중 impact 순, 각주는 claim_id.
 - 줄 9 의 비용은 `llm_batch.cost_usd` 합(API 환산 추정, 구독이라 청구 아님). 줄 10 은 `config/calendar.yaml` 의 14일 내 이벤트(미확정 표시).
 
+## 3f. 거미줄 (Phase 3 v1, ADR-0010)
+- 처음 한 번: `uv run macroweb graph load-seed` (seed/ → candidate 노드·엣지; 시드 엣지는 evidence 0 으로 시작하고 Story 가 붙으면 채워진다).
+- 틱은 그래프를 건드리지 않는다(v1). 하루 한 번 또는 리포트 전: `uv run macroweb graph update` → 추출 relations 를 엣지로(evidence = 그 Story 의 claim), 별칭 병합·Story 3개 이상 승격, 기한 넘긴 엣지 만료(구조 365d·권력/이익 90d·발언 30d).
+- 보기: `graph propagate fomc-2026-12-09 --sign 1 --floor 0.01` · `graph path fomc-2026-12-09 sk-hynix` · `graph hubs` · `graph counts`.
+- 주간: `graph diff --week 2026-W45` (스냅샷 저장) · `graph html --week` (`charts/graph-<week>.html`, 인터넷 필요: cytoscape CDN) · `graph render --week` (`charts/graph-<week>.png`, 노드 ≤ 25) · `graph export-vault` (`vault/`).
+- 통계 엣지: `graph stats --pair UST:10Y NAVER:.SOX` 는 일별 변화의 r/lag 를 **계산**한다(겹치는 일수 60 미만이면 "insufficient history"). `--all --write` 는 시드의 origin=computed 엣지에 기록. 2026-11-03 기준 자료 3일치라 전부 자료 부족.
+- v1 한계: 시드는 22노드/17엣지(목표 200/500 — 사람 검수 항목, `seed/*.yaml` 에 추가), 엔티티 해소는 완전 일치 별칭만, 임베딩 없음, 인물 카드는 시드 1장.
+
+## 3g. 주간 품질 검토 (Phase 3 v1)
+- `uv run macroweb quality run --week 2026-W45` → Q1 근거 무결성(evidence 없는 추출 엣지·기사 없는 claim 격리), Q2 시효(만기 forecast expired·같은 주어/술어 신값 superseded·엣지 만료), Q4 중복(별칭 병합·4주 넘은 candidate 비활성·소스 쏠림 30%), Q6 커버리지(4주 중앙값 대비 −50%, 침묵 소스, 상위 claim T0 비율). 결과 `reports/quality/<week>.md` + `quality_run` 행. `--no-apply` 는 보고만.
+- 스코어카드 한 줄(`데이터 품질: Q1🟢 Q2🟢 Q3⚪ …`)이 주간 리포트 레짐 대시보드 아래에 들어간다. Q3·Q5·Q7 은 Phase 6.
+
 ## 4. 재실행(복구)
 모든 단계는 같은 인자로 다시 돌려도 결과가 같다.
 ```bash
