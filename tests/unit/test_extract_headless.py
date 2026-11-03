@@ -1,5 +1,6 @@
 import json
 
+from macroweb.config import load_extract
 from macroweb.extract.contracts import StoryInput
 from macroweb.extract.headless import build_extract_cmd, parse_claude_json
 from macroweb.llm.prompting import load_prompt
@@ -21,7 +22,8 @@ def test_build_extract_cmd_follows_adr_0007() -> None:
     argv, user = build_extract_cmd(STORY, load_prompt("extract", 1), "small")
     assert argv[:3] == ["claude", "-p", user]
     flags = {argv[i]: argv[i + 1] for i in range(3, len(argv) - 1, 2) if argv[i].startswith("--")}
-    assert flags["--model"] == "haiku" and flags["--max-turns"] == "1" and flags["--tools"] == ""
+    assert flags["--model"] == "haiku" and flags["--tools"] == ""
+    assert flags["--max-turns"] == str(load_extract().headless.max_turns)
     assert flags["--setting-sources"] == "user" and flags["--output-format"] == "json"
     assert flags["--system-prompt-file"].endswith("prompts/extract/v1.md")
     schema = json.loads(flags["--json-schema"])
@@ -64,3 +66,10 @@ def test_parse_claude_json_success_and_limit() -> None:
     assert garbage.is_error and garbage.limit_hit and garbage.structured is None
     plain = parse_claude_json(json.dumps({"type": "result", "is_error": False, "result": '{"ok": false}'}))
     assert plain.ok and plain.structured == {"ok": False}
+    # harness-level failure with an empty result: the subtype is the only clue and must survive into .error
+    harness = parse_claude_json(
+        json.dumps({"type": "result", "subtype": "error_during_execution", "is_error": True, "result": ""}),
+        returncode=1,
+    )
+    assert harness.is_error and harness.subtype == "error_during_execution"
+    assert harness.error == "error_during_execution" and not harness.limit_hit and harness.raw["is_error"]

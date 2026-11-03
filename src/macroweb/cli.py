@@ -568,29 +568,31 @@ def normalize(date: str | None = typer.Option(None, "--date")) -> None:
     _not_yet("normalize")
 
 
-@app.command()
-def extract(
-    date: str | None = typer.Option(None, "--date", help="KST 날짜 (기본 오늘)"),
-    limit: int | None = typer.Option(
-        None, "--limit", help="이번 실행 호출 상한 (기본 extract.yaml headless.calls_per_tick)"
-    ),
-    dry_run: bool = typer.Option(False, "--dry-run", help="선별 결과만 출력, 모델 호출 없음"),
-    story: list[str] | None = typer.Option(None, "--story", help="특정 story_id 만"),
-) -> None:
-    """L3 추출 (Phase 2, ADR-0007): Story 선별 → claude -p(구독) → claim/entity 저장. 호출 상한·한도 가드 적용."""
-    from macroweb.config import load_extract
+def _extract_run(*, limit: int | None, story: list[str] | None, force: bool, dry_run: bool) -> int:
+    """Shared by `extract` and `tick`: select → fetch missing bodies → claude -p → persist. Returns the exit
+    code (0 ok, 1 bad arguments, 2 subscription limit hit → caller backs off)."""
+    from macroweb.config import load_extract, load_sources
     from macroweb.db import repo
+    from macroweb.extract.bodies import ensure_bodies
     from macroweb.extract.runner import HeadlessExtractor
     from macroweb.extract.select import select_candidates
 
+    if force and not story:
+        console.print("[red]--force 는 --story 와 함께만 쓴다[/]")
+        return 1
     repo.init_db()
     conn = repo.connect()
     try:
         ecfg = load_extract()
         cap = limit if limit is not None else ecfg.headless.calls_per_tick
-        cands = select_candidates(conn, prompt_version=ecfg.prompt.version, limit=max(cap * 2, 10), cfg=ecfg)
-        if story:
-            cands = [c for c in cands if c.story.story_id in set(story)]
+        cands = select_candidates(
+            conn,
+            prompt_version=ecfg.prompt.version,
+            limit=max(cap * 2, 10),
+            cfg=ecfg,
+            only=story or None,
+            force=force,
+        )
         if dry_run:
             table = Table(title=f"extract --dry-run: {len(cands)} candidates (cap {cap})")
             for col in ("story_id", "tier", "stratum", "impact", "lang", "title"):
@@ -605,7 +607,14 @@ def extract(
                     c.story.title[:70],
                 )
             console.print(table)
-            return
+            return 0
+        cands, body_report = ensure_bodies(
+            conn, cands, {s.id: s for s in load_sources().sources}, max_fetch=10
+        )
+        if body_report.attempted:
+            console.print(
+                f"bodies: fetched={body_report.fetched} robots={body_report.robots_disallow} failed={body_report.failed} dropped={len(body_report.still_empty)}"
+            )
         run_id = repo.start_run(conn, "extract", {ecfg.prompt.name: f"v{ecfg.prompt.version}"})
         report = HeadlessExtractor(conn, extract_cfg=ecfg).run(cands, max_calls=cap)
         repo.finish_run(
@@ -619,9 +628,59 @@ def extract(
             cost_usd=0.0,
         )
         console.print(report.render())
-        raise typer.Exit(2 if report.limit_hit else 0)
+        return 2 if report.limit_hit else 0
     finally:
         conn.close()
+
+
+@app.command()
+def extract(
+    date: str | None = typer.Option(None, "--date", help="KST 날짜 (기본 오늘)"),
+    limit: int | None = typer.Option(
+        None, "--limit", help="이번 실행 호출 상한 (기본 extract.yaml headless.calls_per_tick)"
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run", help="선별 결과만 출력, 모델 호출 없음"),
+    story: list[str] | None = typer.Option(None, "--story", help="특정 story_id 만"),
+    force: bool = typer.Option(
+        False,
+        "--force",
+        help="--story 와 함께: 이미 추출(성공·실패)된 Story 도 다시 보낸다 (claim id 는 내용 주소라 중복 없음)",
+    ),
+) -> None:
+    """L3 추출 (Phase 2, ADR-0007): Story 선별 → claude -p(구독) → claim/entity 저장. 호출 상한·한도 가드 적용."""
+    raise typer.Exit(_extract_run(limit=limit, story=story, force=force, dry_run=dry_run))
+
+
+@app.command()
+def tick(
+    date: str | None = typer.Option(None, "--date", help="KST 날짜 (통계 파일 기준, 기본 오늘)"),
+    extract_cap: int | None = typer.Option(
+        None, "--extract-cap", help="이 틱의 추출 호출 상한 (기본 extract.yaml headless.calls_per_tick)"
+    ),
+    no_extract: bool = typer.Option(
+        False, "--no-extract", help="수집만 (extract.yaml tick_extract 와 같은 효과)"
+    ),
+) -> None:
+    """30분 틱 진입점(launchd): collect → extract(≤ calls_per_tick, 한도 가드) → verify(Phase 2 후반). 수집 실패만
+    실패로 돌려준다 — 구독 한도 백오프는 정상 동작이라 exit 0."""
+    from macroweb.collect.pipeline import run_collect
+    from macroweb.config import load_extract
+
+    summary = run_collect(date)
+    console.print(summary.render())
+    rc = summary.exit_code()
+    if no_extract or not load_extract().headless.tick_extract:
+        console.print("extract: skipped (tick_extract off)")
+    else:
+        try:
+            erc = _extract_run(limit=extract_cap, story=None, force=False, dry_run=False)
+        except Exception as exc:  # the model stage must never take the collector down with it
+            console.print(f"[red]extract: {type(exc).__name__}: {exc}[/]")
+            rc = rc or 1
+        else:
+            if erc == 2:
+                console.print("extract: subscription limit — backing off (see logs/claude_limit.stamp)")
+    raise typer.Exit(rc)
 
 
 @app.command()

@@ -295,6 +295,7 @@ class ExtractHeadless(Strict):
     max_calls_per_day: int = Field(ge=1)
     concurrency: int = Field(ge=1, le=4)
     max_turns: int = Field(ge=1, le=3)
+    tick_extract: bool = True  # False = the 30-min tick only collects; `macroweb extract` stays manual
     setting_sources: Literal["user", "project", "local", "none"] = "user"
     limit_backoff_s: int = Field(ge=60)
     realtime_cutoff_kst: str

@@ -208,6 +208,7 @@ sources:
     stratum: S-T0-STMT
     select_policy: title_regex
     select_regex: "(monetary policy|Governing Council|interest rate|inflation|deposit facility|decision|Lagarde|press conference)"
+    fetch_body: true
   # ---------------- T1 통신사·주요지 ----------------
   - id: yna_economy
     name: 연합뉴스 경제
@@ -252,6 +253,40 @@ sources:
     lang: ko
     country: KR
     topics: [macro, korea, semis]
+    parent_org: chosun
+    parser: rss_default
+    stratum: S-T1-KO
+    enabled: false               # 2026-11-03: 사이트 전체 피드(연예·스포츠 60%+). 아래 섹션 피드 3개로 대체
+  - id: chosunbiz_stock
+    name: 조선비즈 증권
+    tier: 1
+    kind: rss
+    url: https://biz.chosun.com/arc/outboundfeeds/rss/category/stock/?outputType=xml
+    lang: ko
+    country: KR
+    topics: [korea, flows, macro]
+    parent_org: chosun
+    parser: rss_default
+    stratum: S-T1-KO
+  - id: chosunbiz_international
+    name: 조선비즈 국제
+    tier: 1
+    kind: rss
+    url: https://biz.chosun.com/arc/outboundfeeds/rss/category/international/?outputType=xml
+    lang: ko
+    country: KR
+    topics: [macro, geopolitics, fed]
+    parent_org: chosun
+    parser: rss_default
+    stratum: S-T1-KO
+  - id: chosunbiz_itsci
+    name: 조선비즈 IT·과학
+    tier: 1
+    kind: rss
+    url: https://biz.chosun.com/arc/outboundfeeds/rss/category/it-science/?outputType=xml
+    lang: ko
+    country: KR
+    topics: [semis, ai]
     parent_org: chosun
     parser: rss_default
     stratum: S-T1-KO

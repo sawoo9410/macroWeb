@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from macroweb.config import ExtractConfig, ModelsConfig, TierName, load_extract, load_models
@@ -72,6 +72,9 @@ class HeadlessResult:
     error: str | None
     duration_ms: int | None
     session_id: str | None
+    subtype: str | None = None
+    raw: dict[str, Any] = field(default_factory=dict)
+    stderr: str = ""
 
 
 def parse_claude_json(stdout: str, stderr: str = "", returncode: int = 0) -> HeadlessResult:
@@ -96,7 +99,20 @@ def parse_claude_json(stdout: str, stderr: str = "", returncode: int = 0) -> Hea
             structured = json.loads(text)
         except json.JSONDecodeError:
             structured = None
-    err_text = " ".join(x for x in (text if is_error else "", stderr, str(d.get("error") or "")) if x)
+    subtype = d.get("subtype") if isinstance(d.get("subtype"), str) else None
+    pieces: list[str] = []
+    if is_error:
+        if subtype and subtype != "success":
+            pieces.append(subtype)
+        if text:
+            pieces.append(text)
+        if d.get("error"):
+            pieces.append(str(d["error"]))
+        if not d and stdout.strip():
+            pieces.append(stdout.strip()[:200])
+    if stderr.strip():
+        pieces.append(stderr.strip())
+    err_text = " ".join(pieces)
     limit_hit = bool(LIMIT_PATTERNS.search(err_text)) if (is_error or stderr) else False
     return HeadlessResult(
         ok=not is_error and structured is not None,
@@ -110,4 +126,7 @@ def parse_claude_json(stdout: str, stderr: str = "", returncode: int = 0) -> Hea
         error=(err_text.strip()[:300] or None) if is_error else None,
         duration_ms=d.get("duration_ms"),
         session_id=d.get("session_id"),
+        subtype=subtype,
+        raw=d,
+        stderr=stderr[-4000:],
     )

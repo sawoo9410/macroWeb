@@ -2,7 +2,7 @@
 themes:
   - id: ai-capex-sustainability
     name: AI capex 지속성
-    keywords: [capex, 데이터센터, hyperscaler, FCF, GPU 수요, 데이터센터 취소, 지연]
+    keywords: [capex, 데이터센터, hyperscaler, FCF, GPU 수요, 데이터센터 취소, 데이터센터 지연, AI 투자, AI 수익성, 엔비디아, Nvidia, 빅테크 투자]
     seed_entities: [nvidia, sk-hynix, theme-ai-capex]
   - id: fed-independence
     name: 연준 독립성
@@ -10,11 +10,11 @@ themes:
     seed_entities: [fed, kevin-warsh, donald-trump]
   - id: memory-supercycle
     name: 메모리 슈퍼사이클 / 피크아웃 논쟁
-    keywords: [HBM, DRAM 계약가, 메모리 피크아웃, 하이닉스, 삼성전자 반도체, KV캐시 압축]
+    keywords: [HBM, DRAM 계약가, 메모리 피크아웃, 하이닉스, 삼성전자 반도체, KV캐시 압축, SK하이닉스, D램, 낸드, 마이크론, Micron, 반도체 수출, 메모리 가격]
     seed_entities: [hbm, sk-hynix, turboquant]
   - id: rate-path-dec-hike
     name: 12월 FOMC 인상 가능성
-    keywords: [FOMC, 12월 인상, 점도표, FedWatch, 기준금리]
+    keywords: [FOMC, 12월 인상, 점도표, FedWatch, 기준금리, 연준, 금리 인상, 금리 동결, 금리 인하, 파월, Powell]
     seed_entities: [fomc-2026-12-09, ust10y]
   - id: us-midterm-2026
     name: 미국 중간선거와 재정
@@ -22,21 +22,21 @@ themes:
     seed_entities: [us-midterm-2026, donald-trump]
   - id: iran-hormuz-oil
     name: 이란·호르무즈·유가
-    keywords: [이란, Hormuz, 호르무즈, Brent, 유가, 파병]
+    keywords: [이란, Hormuz, 호르무즈, Brent, 유가, 파병, 국제유가, WTI, 원유, OPEC, 중동]
     seed_entities: [iran-conflict, oil]
   - id: korea-foreign-flows
     name: 한국 외국인 수급과 원화
-    keywords: [외국인 순매수, KOSPI, 원달러, 환율, 한미 금리차]
+    keywords: [외국인 순매수, 외국인 순매도, 외국인 매도, 외국인 자금, KOSPI, 코스피, 원달러, 원/달러, 환율, 한미 금리차, 외환시장]
     seed_entities: [kospi, usdkrw]
   - id: global-central-banks
     name: 글로벌 중앙은행 결정
-    keywords: [ECB, 유럽중앙은행, Governing Council, deposit facility, BOJ, 일본은행, 금리 결정, rate decision, 금통위, 통화정책방향, 기준금리]
+    keywords: [ECB, 유럽중앙은행, Governing Council, deposit facility, BOJ, 일본은행, 금리 결정, rate decision, 금통위, 통화정책방향, 기준금리, 한국은행, 한은, Lagarde, 라가르드, 중앙은행]
     seed_entities: []
   - id: us-fiscal
     name: 미국 재정·부채
-    keywords: [deficit, 적자, debt limit, 부채한도, Treasury auction, 국채 발행, CBO, budget, appropriations, 관세 수입, tariff revenue]
+    keywords: [deficit, 재정적자, debt limit, 부채한도, Treasury auction, 국채 발행, CBO, budget, appropriations, 관세 수입, tariff revenue, 국가부채, 셧다운, shutdown, 재정]
     seed_entities: [donald-trump]
   - id: dollar-liquidity
     name: 달러·유동성 레짐
-    keywords: [DXY, 달러지수, RRP, TGA, 준비금, HY 스프레드, QT]
+    keywords: [DXY, 달러지수, RRP, TGA, 준비금, HY 스프레드, QT, 달러 강세, 달러 약세, 유동성, 국채 금리, 미 국채, Treasury yield]
     seed_entities: [fed]

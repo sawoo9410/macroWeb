@@ -7,14 +7,15 @@ selection:                     # 선별 = 테마 유사도 × 출처 tier (§0.3
   theme_weight: 0.6
   tier_weight: 0.4
   min_independent_to_force: 3  # 독립 출처 ≥ 3 이면 자동 승격
-  min_theme_score: 0.25        # 테마 키워드 1개 이상 일치해야 모델에 보낸다 (select_policy all / title_regex 소스 제외)
+  min_theme_score: 0.5         # 같은 테마 키워드 2개 이상(= 2/4) 일치해야 모델에 보낸다 (select_policy all / title_regex 소스 제외). 0.25 는 연예·스포츠 기사를 통과시켰다(2026-11-03)
   t0_share: 0.5                # 한 실행에서 T0 문서가 차지할 수 있는 최대 몫 — T0 백로그가 T1/T2 를 굶기지 않게
-headless:                      # ADR-0007 (기본): claude -p 구독 경로. 하네스 프롬프트를 --system-prompt 로 대체, 도구 없음, 1턴
+headless:                      # ADR-0007 (기본): claude -p 구독 경로. 하네스 프롬프트를 --system-prompt 로 대체, 도구 없음
   model_flag_by_tier: {small: haiku, mid: sonnet, large: opus}
-  calls_per_tick: 15           # 30분 틱마다 새 Story 를 조금씩 처리 — 5시간 사용 창에 몰리지 않게
-  max_calls_per_day: 150       # 80 Story + T0 전량 + 승급 ≤ 8 + 여유
+  calls_per_tick: 6            # 30분 틱마다 새 Story 를 조금씩 처리 — 5시간 사용 창에 몰리지 않게 (ADR-0007 설계값 15)
+  max_calls_per_day: 60        # 소크 기간 보수 값. /usage 로 구독 소모 확인 뒤 150 (80 Story + T0 전량 + 승급 ≤ 8 + 여유) 으로 올린다
+  tick_extract: true           # false 면 30분 틱은 수집만 하고 추출은 수동(`macroweb extract`)
   concurrency: 2
-  max_turns: 1
+  max_turns: 2                 # 1턴 = 구조화 출력 호출. 스키마 검증 실패 시 하네스가 한 번 고쳐 다시 내게 2 (도구가 없어 루프 위험 없음)
   setting_sources: user        # 프로젝트 훅·CLAUDE.md 제외 (토큰·지연 절약)
   limit_backoff_s: 3600        # 구독 한도(429/limit) 감지 시 LLM 작업 중단, 이 시간 뒤 재시도
   realtime_cutoff_kst: "07:20" # 일일 잡이 남은 Story 를 마감 처리하는 시각
@@ -24,7 +25,7 @@ batch:                         # track_a_runner.mode == api 일 때만: Message 
   realtime_cutoff_kst: "07:20"
   poll_interval_s: 300
   custom_id_prefix: ext
-prompt: {name: extract, version: 1}
+prompt: {name: extract, version: 2}
 language_rubric_prompt: {name: verify, version: 1}
 review_queue:
   high_impact: 0.7

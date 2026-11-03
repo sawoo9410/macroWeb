@@ -1,0 +1,30 @@
+{
+ "n_items": 100,
+ "n_market": 0,
+ "market_keys": [],
+ "first_items": [
+  {
+   "title": "‘공모주 단타’ 막는다… ‘장기 보유’ 약속한 기관에 물량 미리 배정",
+   "url": "https://biz.chosun.com/stock/stock_general/2026/11/03/MJIXRQS3ONED5EN3I6ITA3AOYE/",
+   "published_at": "2026-11-03T11:42:28+00:00",
+   "lang": "ko",
+   "has_summary": true
+  },
+  {
+   "title": "삼성생명, 에스원 지분 135억원어치 매각…금산법 위반 우려 해소",
+   "url": "https://biz.chosun.com/stock/finance/2026/11/03/J47LW6IWTJATTMVXDKBD25NLE4/",
+   "published_at": "2026-11-03T10:39:17+00:00",
+   "lang": "ko",
+   "has_summary": true
+  },
+  {
+   "title": "호반의 한진칼 지분 공시 ‘패싱’… 깜깜이 지분 매집에 제재 가능성은",
+   "url": "https://biz.chosun.com/stock/stock_general/2026/11/03/KFJNIXJLKJDGJORNONRE7YBWBE/",
+   "published_at": "2026-11-03T06:42:33+00:00",
+   "lang": "ko",
+   "has_summary": true
+  }
+ ],
+ "feed_window_known": true,
+ "notes": []
+}

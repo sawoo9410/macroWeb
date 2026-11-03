@@ -1,6 +1,6 @@
 {
   "current_phase": 2,
-  "updated": "2026-11-02",
+  "updated": "2026-11-03",
   "phases": {
     "0": {
       "name": "스캐폴딩 (D1–2)",
@@ -148,12 +148,14 @@
         {
           "id": "extract-v1",
           "text": "추출 프롬프트 v1 + 배치 파이프 (롤링 제출·06:30 마감·실시간 보충)",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03"
         },
         {
           "id": "claim-entity-tables",
           "text": "claim/entity 테이블 채움, extracted_by·stratum 기록",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03"
         },
         {
           "id": "verify-signals-v1",

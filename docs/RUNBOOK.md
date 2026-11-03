@@ -24,10 +24,18 @@ make doctor                             # 전부 PASS/WARN 이어야 한다 (FAI
 - 키가 필요한 소스(FRED·ECOS·DART)는 `private/.env` 에 키가 없으면 `skip … not set` 으로 건너뛴다(오류 아님).
 - 시장 데이터 확인: `uv run macroweb market latest` (key 별 최신값·보유 일수) · `uv run macroweb market get UST:10Y --limit 10`. 키 없이 들어오는 것은 `UST:*`(재무부)·`ECB:*`·`NAVER:*`·`KRAKEN:XBTUSD` (ADR-0005). `NAVER:KOSPI` 는 장 마감 후 틱에서만 1점 쌓이고, Kraken 은 확정 캔들만 들어온다.
 
+## 3c. 추출 (Phase 2, ADR-0007 — claude -p 구독 경로)
+- 30분 틱(`bin/run_collect.sh` → `macroweb tick`)이 수집 뒤 새 Story 를 `calls_per_tick`(extract.yaml) 건까지 추출한다. 하루 상한 `max_calls_per_day`. 끄려면 `headless.tick_extract: false`.
+- 수동: `uv run macroweb extract --dry-run` (무엇이 뽑히는지) · `uv run macroweb extract --limit 3` · 특정 Story 재추출 `--story st-… --force` (claim id 는 내용 주소라 중복 없음).
+- 확인: `uv run macroweb extractions` (최근 ledger) · `uv run macroweb claim search 금리` · `uv run macroweb claim get <id>`.
+- 실패 원문은 `logs/extract_failures/<story>_<tier>_<ts>.json` (`subtype`·usage·stderr). `harness:` 접두 오류(API 끊김 등)는 30분 뒤 자동 재시도(최대 2회), `schema:` 는 승급 사다리 끝에서 종결 → `--force` 로만 재시도.
+- 구독 한도: `logs/claude_limit.stamp` 가 있으면 1시간 동안 추출을 건너뛴다(수집은 계속). 사용자 세션에서 `/usage` 로 창을 확인.
+- 선별이 이상하면(연예·스포츠 기사 등) `config/themes.yaml` 키워드와 `extract.yaml selection.min_theme_score` 를 보고, 소스 피드가 섹션 전체면 `sources.yaml` 의 URL 을 섹션 피드로 바꾼다.
+
 ## 4. 재실행(복구)
 모든 단계는 같은 인자로 다시 돌려도 결과가 같다.
 ```bash
-bin/run_collect.sh                 # 또는 uv run macroweb collect --date 2026-11-05
+bin/run_collect.sh                 # = uv run macroweb tick --date 2026-11-05 (수집 + 추출 ≤ calls_per_tick)
 bin/run_daily.sh                   # uv run macroweb extract --date … ; verify ; graph update ; digest
 bin/run_weekly.sh                  # uv run macroweb weekly run --week 2026-W45  (ADR-0002: claude -p)
 bin/run_monthly.sh

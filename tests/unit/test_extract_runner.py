@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import httpx
@@ -140,7 +140,12 @@ def test_runner_persists_claims_and_is_idempotent(tmp_path: Path) -> None:
     conn = repo.connect()
     try:
         ecfg = load_extract()
-        cands = select_candidates(conn, prompt_version=ecfg.prompt.version, limit=3, now=NOW)
+        cands = [
+            c
+            for c in select_candidates(conn, prompt_version=ecfg.prompt.version, limit=40, now=NOW)
+            if len(c.story.text) >= 60  # title-only items are left for the body fetcher, not the model
+        ][:3]
+        assert len(cands) == 3, "need three text-bearing candidates from the fixtures"
         calls: list = []
         ex = HeadlessExtractor(
             conn,
@@ -161,7 +166,7 @@ def test_runner_persists_claims_and_is_idempotent(tmp_path: Path) -> None:
         assert warsh and warsh["id"] == "kevin-warsh"  # resolved through config/aliases.yaml
         row = conn.execute("SELECT extracted_by, stratum, label, status FROM claim LIMIT 1").fetchone()
         assert (
-            row["extracted_by"].startswith("claude-haiku-5-5@extract@v1")
+            row["extracted_by"] == f"claude-haiku-5-5@{ex.prompt.version_tag}"
             and row["stratum"]
             and row["label"] is None
             and row["status"] == "active"
@@ -182,7 +187,11 @@ def test_runner_limit_guard_and_schema_escalation(tmp_path: Path) -> None:
     conn = repo.connect()
     try:
         ecfg = load_extract()
-        cands = select_candidates(conn, prompt_version=ecfg.prompt.version, limit=40, now=NOW)
+        cands = [
+            c
+            for c in select_candidates(conn, prompt_version=ecfg.prompt.version, limit=40, now=NOW)
+            if len(c.story.text) >= 60
+        ]
         stamp = tmp_path / "limit.stamp"
         limited = HeadlessExtractor(
             conn,
@@ -249,5 +258,97 @@ def test_runner_limit_guard_and_schema_escalation(tmp_path: Path) -> None:
             ("mid", "succeeded"),
         }
         assert any(r["escalation_reason"] == "schema_fail" for r in rows)
+    finally:
+        conn.close()
+
+
+def _harness_error(subtype: str):
+    def run(argv: list[str]) -> tuple[str, str, int]:
+        return (
+            json.dumps(
+                {
+                    "type": "result",
+                    "subtype": subtype,
+                    "is_error": True,
+                    "result": "",
+                    "usage": {"input_tokens": 2, "output_tokens": 4198, "cache_creation_input_tokens": 8675},
+                    "modelUsage": {"claude-sonnet-5-5": {}},
+                }
+            ),
+            "",
+            1,
+        )
+
+    return run
+
+
+def test_transient_failures_are_retried_after_cooldown_and_capped(tmp_path: Path) -> None:
+    _collect_fixtures()
+    conn = repo.connect()
+    try:
+        ecfg = load_extract()
+        kw = dict(prompt_version=ecfg.prompt.version, limit=40, now=NOW)
+        cands = [c for c in select_candidates(conn, **kw) if len(c.story.text) >= 60]
+        one = cands[:1]
+        sid = one[0].story.story_id
+        stamp = tmp_path / "limit.stamp"
+        # 1) a harness error (e.g. the API dropped the stream) is not a schema failure: no escalation, attempts=1
+        ex = HeadlessExtractor(
+            conn,
+            extract_cfg=ecfg,
+            run_cmd=_harness_error("error_during_execution"),
+            now=NOW,
+            limit_stamp=stamp,
+        )
+        rep = ex.run(one, max_calls=4)
+        assert rep.calls == 2 and rep.failed == 1 and rep.escalated == 0
+        row = conn.execute(
+            "SELECT status, error, attempts FROM extraction WHERE story_id = ?", (sid,)
+        ).fetchone()
+        assert row["status"] == "failed" and row["error"].startswith("harness: error_during_execution")
+        assert row["attempts"] == 1
+        # 2) not re-selected inside the cooldown, re-selected after it
+        assert sid not in {c.story.story_id for c in select_candidates(conn, **kw)}
+        later = {**kw, "now": NOW + timedelta(minutes=31)}
+        assert sid in {c.story.story_id for c in select_candidates(conn, **later)}
+        # 3) second transient failure reaches RETRY_MAX_ATTEMPTS → no more automatic retries
+        ex2 = HeadlessExtractor(
+            conn,
+            extract_cfg=ecfg,
+            run_cmd=_harness_error("error_during_execution"),
+            now=later["now"],
+            limit_stamp=stamp,
+        )
+        ex2.run(one, max_calls=4)
+        row = conn.execute("SELECT attempts FROM extraction WHERE story_id = ?", (sid,)).fetchone()
+        assert row["attempts"] == 2
+        much_later = {**kw, "now": NOW + timedelta(hours=5)}
+        assert sid not in {c.story.story_id for c in select_candidates(conn, **much_later)}
+        # 4) the operator can still force it (claim ids are content-addressed, so a re-run cannot duplicate)
+        forced = select_candidates(conn, **much_later, only=[sid], force=True)
+        assert [c.story.story_id for c in forced] == [sid]
+        assert select_candidates(conn, **much_later, only=[sid]) == []
+        # 5) structured-output exhaustion counts as a schema failure → escalation ladder applies
+        two = [c for c in cands if c.story.tier == 1 and c.story.story_id != sid][:1]
+        assert two, "need a T1 story"
+        seen: list[str] = []
+
+        def exhausted_then_ok(argv: list[str]) -> tuple[str, str, int]:
+            model = argv[argv.index("--model") + 1]
+            seen.append(model)
+            if model == "haiku":
+                return _harness_error("error_max_structured_output_retries")(argv)
+            return _fake_cmd(FAKE_RESULT)(argv)
+
+        ex3 = HeadlessExtractor(conn, extract_cfg=ecfg, run_cmd=exhausted_then_ok, now=NOW, limit_stamp=stamp)
+        rep3 = ex3.run(two, max_calls=5)
+        assert seen == ["haiku", "haiku", "sonnet"] and rep3.escalated == 1 and rep3.succeeded == 1
+        small = conn.execute(
+            "SELECT status, error FROM extraction WHERE story_id = ? AND model_tier = 'small'",
+            (two[0].story.story_id,),
+        ).fetchone()
+        assert small["status"] == "escalated" and small["error"].startswith(
+            "schema: error_max_structured_output_retries"
+        )
     finally:
         conn.close()

@@ -5,6 +5,7 @@ subscription-limit backoff, schema retry + one escalation (PLAN §6.2.2 rule 1),
 
 from __future__ import annotations
 
+import json
 import os
 import sqlite3
 import subprocess
@@ -110,10 +111,15 @@ class HeadlessExtractor:
         self.mcfg = models_cfg or load_models()
         self.router = ModelRouter(self.mcfg)
         self.run_cmd = run_cmd or _DEFAULT_SENTINEL
+        self._fixed_clock = now is not None
         self.now = now or datetime.now(UTC)
         self.limit_stamp = limit_stamp or LIMIT_STAMP
         self.prompt: PromptSpec = load_prompt(self.ecfg.prompt.name, self.ecfg.prompt.version)
         self.aliases = alias_index()
+
+    def _clock(self) -> datetime:
+        """Injected `now` is honoured everywhere (tests, replays); otherwise the wall clock."""
+        return self.now if self._fixed_clock else datetime.now(UTC)
 
     # --- caps & guards -------------------------------------------------------------------------------
     def calls_today(self) -> int:
@@ -154,7 +160,7 @@ class HeadlessExtractor:
         self.conn.execute(
             """UPDATE llm_batch SET ended_at = ?, status = ?, n_requests = ?, n_succeeded = ?, n_errored = ?, cost_usd = ?, note = ? WHERE id = ?""",
             (
-                datetime.now(UTC).isoformat(timespec="seconds"),
+                self._clock().isoformat(timespec="seconds"),
                 "limit" if report.limit_hit else "ended",
                 report.calls,
                 report.succeeded,
@@ -170,7 +176,7 @@ class HeadlessExtractor:
         self, req: ExtractionRequest, batch_id: str, status: str, **fields: object
     ) -> None:
         cid = req.custom_id(self.ecfg.batch.custom_id_prefix)
-        now_iso = datetime.now(UTC).isoformat(timespec="seconds")
+        now_iso = self._clock().isoformat(timespec="seconds")
         self.conn.execute(
             """INSERT INTO extraction(story_id, prompt_version, model_tier, custom_id, batch_id, status, stratum, escalation_reason, created_at, updated_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -197,6 +203,30 @@ class HeadlessExtractor:
         self.conn.commit()
 
     # --- one story ---------------------------------------------------------------------------------------
+    def _dump_failure(self, req: ExtractionRequest, res: HeadlessResult, err: str) -> None:
+        """Keep the raw harness output of a failed call under logs/extract_failures/ (gitignored) so schema and
+        harness errors can be inspected without spending another call."""
+        try:
+            out_dir = self.limit_stamp.parent / "extract_failures"  # logs/ in production, tmp_path in tests
+            out_dir.mkdir(parents=True, exist_ok=True)
+            stamp = self._clock().strftime("%Y%m%dT%H%M%S")
+            payload = {
+                "story_id": req.story_id,
+                "prompt_version": req.prompt_version,
+                "model_tier": req.model_tier,
+                "error": err,
+                "subtype": res.subtype,
+                "usage": res.usage,
+                "structured": res.structured,
+                "raw": res.raw,
+                "stderr": res.stderr,
+            }
+            (out_dir / f"{req.story_id}_{req.model_tier}_{stamp}.json").write_text(
+                json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8"
+            )
+        except OSError:
+            pass
+
     def _call(self, story: StoryInput, tier: TierName) -> HeadlessResult:
         argv, _user = build_extract_cmd(story, self.prompt, tier, extract_cfg=self.ecfg, models_cfg=self.mcfg)
         cmd = default_run_cmd() if self.run_cmd is _DEFAULT_SENTINEL else self.run_cmd
@@ -215,6 +245,7 @@ class HeadlessExtractor:
         self._upsert_extraction(req, batch_id, "submitted")
         attempts = 0
         last: HeadlessResult | None = None
+        last_err: str | None = None
         while attempts < 2:
             attempts += 1
             report.calls += 1
@@ -234,11 +265,22 @@ class HeadlessExtractor:
                 self._upsert_extraction(req, batch_id, "failed", error="limit", model=model)
                 return ExtractionOutcome(req, "failed", error="limit")
             if res.is_error or res.structured is None:
+                # The harness could not deliver a schema-valid object (max turns, structured-output retries,
+                # transport error). Structured-output exhaustion counts as a schema failure for escalation.
+                sub = res.subtype or "no_structured_output"
+                prefix = "schema" if "structured_output" in sub or "max_turns" in sub else "harness"
+                last_err = f"{prefix}: {res.error or sub}"
+                self._dump_failure(req, res, last_err)
+                self._upsert_extraction(req, batch_id, "submitted", error=last_err[:300])
                 continue
             try:
                 parsed = ExtractionResult.model_validate(res.structured)
             except ValidationError as exc:
-                last_err = f"schema: {str(exc)[:200]}"
+                detail = "; ".join(
+                    f"{'.'.join(str(x) for x in e['loc'])}: {e['msg']}" for e in exc.errors()[:4]
+                )
+                last_err = f"schema: {detail}"[:300]
+                self._dump_failure(req, res, last_err)
                 self._upsert_extraction(req, batch_id, "submitted", error=last_err)
                 continue
             stats: PersistStats = persist_result(
@@ -273,10 +315,13 @@ class HeadlessExtractor:
                 tokens_out=report.tokens_out,
                 model=model,
             )
-        err = (
-            (last.error if last and last.error else "schema validation failed twice") if last else "no result"
-        )
+        err = last_err or (last.error if last and last.error else None) or "no result"
         self._upsert_extraction(req, batch_id, "failed", error=err[:300])
+        self.conn.execute(
+            "UPDATE extraction SET attempts = attempts + 1 WHERE story_id = ? AND prompt_version = ? AND model_tier = ?",
+            (req.story_id, str(req.prompt_version), req.model_tier),
+        )
+        self.conn.commit()
         report.failed += 1
         return ExtractionOutcome(req, "failed", error=err[:300])
 
@@ -301,6 +346,9 @@ class HeadlessExtractor:
                 )
                 break
             story = cand.story
+            if len(story.text or "") < 60:
+                report.skipped["no_text"] = report.skipped.get("no_text", 0) + 1
+                continue
             tier = self.router.tier_for_stratum(story.stratum)
             if tier is None:
                 report.skipped["no_llm_stratum"] = report.skipped.get("no_llm_stratum", 0) + 1

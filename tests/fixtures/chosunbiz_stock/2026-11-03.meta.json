@@ -1,0 +1,10 @@
+{
+ "source_id": "chosunbiz_stock",
+ "url": "https://biz.chosun.com/arc/outboundfeeds/rss/category/stock/?outputType=xml",
+ "final_url": "https://biz.chosun.com/arc/outboundfeeds/rss/category/stock/?outputType=xml",
+ "status": 200,
+ "content_type": "application/xml; charset=utf-8",
+ "fetched_at": "2026-11-03T13:16:03+00:00",
+ "size": 374019,
+ "parser": "rss_default"
+}
