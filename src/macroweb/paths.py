@@ -34,3 +34,8 @@ def raw_dir() -> Path:
 def digests_dir() -> Path:
     """`MACROWEB_DIGESTS_DIR` overrides `<repo>/digests` (tests point it at a temp dir)."""
     return Path(os.environ.get("MACROWEB_DIGESTS_DIR", ROOT / "digests")).expanduser()
+
+
+def review_dir() -> Path:
+    """`MACROWEB_REVIEW_DIR` overrides `<repo>/review` (human review queue markdown, PLAN §7.3)."""
+    return Path(os.environ.get("MACROWEB_REVIEW_DIR", ROOT / "review")).expanduser()

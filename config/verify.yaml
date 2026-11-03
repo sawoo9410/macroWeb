@@ -14,7 +14,7 @@ weights:                       # logit(conf) = bias + Σ w·x   (x 는 0–1 또
   debunked: -2.0
 rules:
   independent_source: {max_body_similarity: 0.8, require_different_parent_org: true, exclude_citing_each_other: true}
-  recycled: {min_cosine: 0.9, min_age_days: 90}
+  recycled: {min_cosine: 0.9, min_age_days: 90, max_hamming: 3}   # v1: 임베딩 전엔 제목 SimHash 해밍 ≤ 3 (ADR-0009)
   rumor_grace_business_days: 2
   numeric_tolerances: config/tolerances.yaml
   high_impact: 0.7
@@ -30,6 +30,24 @@ labels:
     DEBUNKED: notes_only
     RECYCLED: notes_only
     SPAM_SATIRE: quarantine
+numeric_keys:                  # 신호 4 (v1, ADR-0009): claim 주어·문장 패턴 → market 키. 수준(level)만 비교, 변화폭(bp·%p·YoY)은 건너뛴다
+  "UST:10Y": {patterns: ["10-year treasury", "10-year yield", "10년물 미 국채", "미 국채 10년", "미국 10년물", "US 10Y", "10년물 국채 금리"], unit: "%"}
+  "UST:2Y": {patterns: ["2-year treasury", "2-year yield", "2년물 미 국채", "미국 2년물", "US 2Y"], unit: "%"}
+  "UST:30Y": {patterns: ["30-year treasury", "30-year yield", "30년물 미 국채", "미국 30년물"], unit: "%"}
+  "NAVER:KOSPI": {patterns: ["코스피", "KOSPI"], unit: index}
+  "NAVER:KOSDAQ": {patterns: ["코스닥", "KOSDAQ"], unit: index}
+  "NAVER:.DXY": {patterns: ["달러인덱스", "달러 인덱스", "달러지수", "dollar index", "DXY"], unit: index}
+  "NAVER:.VIX": {patterns: ["VIX", "공포지수", "변동성지수"], unit: index}
+  "NAVER:.SOX": {patterns: ["필라델피아 반도체", "SOX", "PHLX Semiconductor"], unit: index}
+  "NAVER:.INX": {patterns: ["S&P 500", "S&P500", "스탠더드앤드푸어스", "S&P지수"], unit: index}
+  "NAVER:.IXIC": {patterns: ["나스닥 종합", "나스닥지수", "나스닥 지수", "Nasdaq Composite"], unit: index}
+  "NAVER:.DJI": {patterns: ["다우존스", "다우 지수", "다우지수", "Dow Jones"], unit: index}
+  "ECB:USD_KRW_CROSS": {patterns: ["원/달러", "원·달러", "원달러", "달러당", "USD/KRW", "달러-원"], unit: KRW, note: "ECB 14:15 CET 교차환율 — 서울 종가와 ±0.5% 차이 가능"}
+  "KRAKEN:XBTUSD": {patterns: ["비트코인", "bitcoin", "BTC"], unit: USD}
+language_proxy:                # 신호 6 (v1, ADR-0009): LLM 루브릭(prompts/verify/v1.md) 대신 추출 red_flags + 결정론 특징. 가중 합을 0–1 로 자른다
+  weights: {sensational_title: 0.3, anonymous_source: 0.25, no_author: 0.1, forecast_as_fact: 0.2, hedging: 0.1, no_source_link: 0.15, unsourced_numbers: 0.15}
+  sensational_title_regex: "(충격|경악|폭락 임박|대폭락|멘붕|초비상|!{2,}|\\?!)"
+  hedging_regex: "(할 수도|가능성|전망|관측|것으로 보|예상|\\bmay\\b|\\bmight\\b|\\bcould\\b|likely|expected to|reportedly)"
 signals_phase:                 # 신호 번호 → 구현 Phase (§14: v1 = 1·2·4·5·6, v2 = 3·7·8·9·10·11, 12 는 선택)
   "1": 2
   "2": 2

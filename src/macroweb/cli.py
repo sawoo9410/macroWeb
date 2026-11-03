@@ -680,13 +680,42 @@ def tick(
         else:
             if erc == 2:
                 console.print("extract: subscription limit — backing off (see logs/claude_limit.stamp)")
+    try:
+        console.print(_verify_run(day=date, since_hours=72, story=None, relabel=False).render())
+    except Exception as exc:  # labelling is derived data; never fail the tick on it
+        console.print(f"[red]verify: {type(exc).__name__}: {exc}[/]")
+        rc = rc or 1
     raise typer.Exit(rc)
 
 
+def _verify_run(*, day: str | None, since_hours: int, story: list[str] | None, relabel: bool):  # type: ignore[no-untyped-def]
+    """Shared by `verify` and `tick` (ADR-0009): deterministic v1 signals → confidence/label → review queue."""
+    from macroweb.config import load_verify
+    from macroweb.db import repo
+    from macroweb.verify.run import run_verify
+
+    repo.init_db()
+    conn = repo.connect()
+    try:
+        run_id = repo.start_run(conn, "verify", {"verify": f"v{load_verify().version}"})
+        report = run_verify(conn, since_hours=since_hours, story_ids=story or None, relabel=relabel, day=day)
+        repo.finish_run(conn, run_id, "ok", report.as_dict())
+        return report
+    finally:
+        conn.close()
+
+
 @app.command()
-def verify(date: str | None = typer.Option(None, "--date")) -> None:
-    """L4 검증 신호·라벨 (Phase 2)."""
-    _not_yet("verify")
+def verify(
+    date: str | None = typer.Option(None, "--date", help="review/<date>.md 의 날짜 (KST, 기본 오늘)"),
+    since_hours: int = typer.Option(
+        72, "--since-hours", help="이 시간 안에 추출·갱신된 claim 을 재검증 (라벨 없는 claim 은 항상 포함)"
+    ),
+    story: list[str] | None = typer.Option(None, "--story", help="특정 story_id 의 claim 만"),
+    all_claims: bool = typer.Option(False, "--all", help="모든 active claim 재라벨 (idempotent)"),
+) -> None:
+    """L4 검증 v1 (ADR-0009): 신호 1·2·4·5·6 → confidence/라벨 → 고영향·저신뢰 claim 을 review 큐 + review/<date>.md 로."""
+    console.print(_verify_run(day=date, since_hours=since_hours, story=story, relabel=all_claims).render())
 
 
 @app.command()

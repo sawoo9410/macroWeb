@@ -160,7 +160,8 @@
         {
           "id": "verify-signals-v1",
           "text": "검증 신호 1·2·4·5·6 + 라벨 + review 큐",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03"
         },
         {
           "id": "digest",

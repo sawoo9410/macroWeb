@@ -32,6 +32,12 @@ make doctor                             # 전부 PASS/WARN 이어야 한다 (FAI
 - 구독 한도: `logs/claude_limit.stamp` 가 있으면 1시간 동안 추출을 건너뛴다(수집은 계속). 사용자 세션에서 `/usage` 로 창을 확인.
 - 선별이 이상하면(연예·스포츠 기사 등) `config/themes.yaml` 키워드와 `extract.yaml selection.min_theme_score` 를 보고, 소스 피드가 섹션 전체면 `sources.yaml` 의 URL 을 섹션 피드로 바꾼다.
 
+## 3d. 검증 v1 (Phase 2, ADR-0009 — 결정론 신호, 모델 호출 없음)
+- 틱이 추출 뒤 `verify` 를 돌린다(최근 72시간에 추출·갱신된 claim + 라벨 없는 claim). 수동: `uv run macroweb verify` · 전부 재라벨 `--all`(idempotent) · 한 Story `--story st-…`.
+- 라벨 근거는 `uv run macroweb claim get <id>` 의 `signals_json.verify` (prior·독립 출처 수·1차 문서·수치 비교 키/값/오차·재탕 근거·언어 특징·결정적 신호 문장).
+- 수치 검증(신호 4)은 `config/verify.yaml numeric_keys` 의 패턴 → `market` 키로만 비교한다. 새 지표가 들어오면 거기에 패턴을 추가. 허용 오차는 `config/tolerances.yaml by_unit`.
+- 고영향(≥ 0.7)·저신뢰(< 0.5) claim 은 `review/<KST날짜>.md` 에 쌓인다. 안 읽어도 파이프라인은 돈다. decision 반영 명령(`verify apply`)은 Phase 2 후반.
+
 ## 4. 재실행(복구)
 모든 단계는 같은 인자로 다시 돌려도 결과가 같다.
 ```bash

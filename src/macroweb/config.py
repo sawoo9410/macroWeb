@@ -265,12 +265,30 @@ class VerifyLabels(Strict):
         return self
 
 
+class NumericKey(Strict):
+    """Signal 4 (v1): which `market` series a numeric claim is compared with, matched by text patterns."""
+
+    patterns: list[str]
+    unit: Literal["%", "index", "KRW", "USD"]
+    note: str | None = None
+
+
+class LanguageProxy(Strict):
+    """Signal 6 (v1): deterministic stand-in for the LLM language rubric (ADR-0009)."""
+
+    weights: dict[str, float]
+    sensational_title_regex: str
+    hedging_regex: str
+
+
 class VerifyConfig(Strict):
     version: int
     weights: VerifyWeights
     rules: dict[str, Any]
     labels: VerifyLabels
     signals_phase: dict[str, int]
+    numeric_keys: dict[str, NumericKey] = Field(default_factory=dict)
+    language_proxy: LanguageProxy | None = None
 
 
 class ExtractSelection(Strict):
