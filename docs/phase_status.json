@@ -1,5 +1,5 @@
 {
-  "current_phase": 5,
+  "current_phase": 7,
   "updated": "2026-11-03",
   "phases": {
     "0": {
@@ -341,7 +341,9 @@
         {
           "id": "verify-signals-v2",
           "text": "신호 3·7·8·9·10·11",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010/0012): v1 부분: #7(HTTPS·미등록)·#9(정정 후보 큐)·#10·#11 + 함정; #8 은 T4 수집 전, WHOIS·#12 는 뒤"
         },
         {
           "id": "eval-verify-200",
@@ -351,7 +353,9 @@
         {
           "id": "traps-redteam",
           "text": "traps.yaml 가동 + 레드팀 검증 토론",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010/0012): traps.yaml 적용(결정 가능한 6개); 레드팀 토론 실동작은 pingpong 이월과 함께"
         },
         {
           "id": "person-cards-30",
@@ -361,12 +365,16 @@
         {
           "id": "verification-notes",
           "text": "검증 노트 섹션 가동",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010/0012): verification_notes → pack/리포트 섹션"
         },
         {
           "id": "quality-v2",
           "text": "품질 검토 v2 (Q3·Q5·Q7) + 정정 섹션",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010/0012): Q3·Q5 구현, Q7 은 감사 샘플(모델 호출) 전 ⚪"
         }
       ]
     },
@@ -376,12 +384,16 @@
         {
           "id": "monthly-run",
           "text": "월간 회고 run",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010/0012): run_monthly: 논제·신뢰도·그래프·비용·품질·거시 배경·회고 md"
         },
         {
           "id": "credibility-update",
           "text": "출처 credibility 갱신 (층별 오류율 할인)",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010/0012): 베이지안 prior 20; 층별 오류율 할인은 e=0 (Q7 전)"
         },
         {
           "id": "verifier-retrain",
@@ -391,17 +403,23 @@
         {
           "id": "graph-prune",
           "text": "그래프 정리",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010/0012): 만료·stale candidate·PageRank 월간"
         },
         {
           "id": "macro-background",
           "text": "투자일기 '거시 배경' 생성",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010/0012): digests/monthly-macro-YYYY-MM.md"
         },
         {
           "id": "calibration-cost",
           "text": "캘리브레이션 곡선 + 비용 리포트 + 품질 임계 재보정",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010/0012): thesis calibration + 비용 리포트; 품질 임계 재보정은 8주 뒤"
         },
         {
           "id": "runbook",
@@ -437,6 +455,21 @@
       "launchd-weekly",
       "auto-publish-1",
       "telegram"
+    ],
+    "5": [
+      "pingpong",
+      "history-5",
+      "auto-publish-2"
+    ],
+    "6": [
+      "eval-verify-200",
+      "person-cards-30",
+      "quality-v2:Q7"
+    ],
+    "7": [
+      "verifier-retrain",
+      "runbook",
+      "success-metrics"
     ]
   }
 }

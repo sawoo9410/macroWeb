@@ -28,7 +28,9 @@ class QualityResult:
     week: str
     q1: dict[str, Any] = field(default_factory=dict)
     q2: dict[str, Any] = field(default_factory=dict)
+    q3: dict[str, Any] = field(default_factory=dict)
     q4: dict[str, Any] = field(default_factory=dict)
+    q5: dict[str, Any] = field(default_factory=dict)
     q6: dict[str, Any] = field(default_factory=dict)
     lights: dict[str, str] = field(default_factory=dict)
     actions: list[str] = field(default_factory=list)
@@ -39,6 +41,10 @@ class QualityResult:
         for q in ("Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7"):
             light = self.lights.get(q, "na")
             extra = ""
+            if q == "Q3" and self.q3.get("open"):
+                extra = f"({self.q3['open']})"
+            if q == "Q5" and self.q5.get("count"):
+                extra = f" 정정 {self.q5['count']}"
             if q == "Q2":
                 extra = f"({self.q2.get('expired_claims', 0) + self.q2.get('superseded', 0) + self.q2.get('expired_edges', 0)})"
             if q == "Q4" and self.q4.get("flood"):
@@ -74,13 +80,15 @@ def run_quality(
     res.q1 = _q1_evidence(conn, apply=apply, actions=res.actions)
     res.q2 = _q2_expiry(conn, now=now, apply=apply, actions=res.actions)
     res.q4 = _q4_duplicates(conn, start=start, end=end, now=now, cfg=cfg, apply=apply, actions=res.actions)
+    res.q3 = _q3_contradictions(conn, now=now, apply=apply, actions=res.actions, cfg=cfg)
+    res.q5 = _q5_errata(conn)
     res.q6 = _q6_coverage(conn, start=start, end=end, cfg=cfg)
     res.lights = {
         "Q1": "red" if res.q1["fail"] else "green",
         "Q2": "green",
-        "Q3": "na",
+        "Q3": "yellow" if res.q3.get("open_over_7d") else "green",
         "Q4": "yellow" if (res.q4.get("flood") or res.q4.get("stale_candidates")) else "green",
-        "Q5": "na",
+        "Q5": "yellow" if res.q5.get("count") else "green",
         "Q6": "yellow"
         if (res.q6.get("drops") or res.q6.get("silent") or res.q6.get("t0_share_low"))
         else "green",
@@ -88,16 +96,18 @@ def run_quality(
     }
     conn.execute(
         """INSERT INTO quality_run(week, q1_fail, q2_expired, q2_superseded, q3_open, q4_merged, q4_flood_source, q5_errata, q6_json, q7_json, status_json)
-           VALUES (?, ?, ?, ?, NULL, ?, ?, NULL, ?, NULL, ?)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)
            ON CONFLICT(week) DO UPDATE SET q1_fail = excluded.q1_fail, q2_expired = excluded.q2_expired, q2_superseded = excluded.q2_superseded,
-             q4_merged = excluded.q4_merged, q4_flood_source = excluded.q4_flood_source, q6_json = excluded.q6_json, status_json = excluded.status_json""",
+             q3_open = excluded.q3_open, q4_merged = excluded.q4_merged, q4_flood_source = excluded.q4_flood_source, q5_errata = excluded.q5_errata, q6_json = excluded.q6_json, status_json = excluded.status_json""",
         (
             week,
             res.q1["fail"],
             res.q2["expired_claims"] + res.q2["expired_edges"],
             res.q2["superseded"],
+            int(res.q3.get("open", 0)),
             len(res.q4.get("merged", [])),
             (res.q4.get("flood") or [None])[0],
+            int(res.q5.get("count", 0)),
             json.dumps(res.q6, ensure_ascii=False),
             json.dumps(
                 {"lights": res.lights, "actions": res.actions, "ran_at": now.isoformat(timespec="seconds")},
@@ -258,7 +268,11 @@ def _q4_duplicates(
         top, n = counts.most_common(1)[0]
         if n / total >= share_limit and total >= 10:
             out["flood"] = [top, round(n / total, 3)]
-            if apply:
+            already = conn.execute(
+                "SELECT 1 FROM review_queue WHERE kind = 'source_flood' AND decided_at IS NULL AND reason LIKE ?",
+                (f"{top} made %",),
+            ).fetchone()
+            if apply and not already:
                 conn.execute(
                     "INSERT INTO review_queue(kind, reason, payload_json, created_at) VALUES ('source_flood', ?, ?, ?)",
                     (
@@ -269,6 +283,105 @@ def _q4_duplicates(
                 )
     conn.commit()
     return out
+
+
+# --- Q3 / Q5 -----------------------------------------------------------------------------------------------
+def _q3_contradictions(
+    conn: sqlite3.Connection, *, now: datetime, apply: bool, actions: list[str], cfg: QualityConfig
+) -> dict[str, Any]:
+    """Two fact-labelled claims with the same subject, predicate and period but different values; two active
+    edges src→dst of the same type with opposite signs (confidence > 0.5). Queued for data-steward, never auto-fixed."""
+    out: dict[str, Any] = {
+        "claim_pairs": 0,
+        "edge_pairs": 0,
+        "queued": 0,
+        "open": 0,
+        "open_over_7d": 0,
+        "examples": [],
+    }
+    groups: dict[tuple[str, str, str], list[sqlite3.Row]] = defaultdict(list)
+    for r in conn.execute(
+        """SELECT id, subject_eid, predicate, time_ref, value, label FROM claim WHERE status = 'active' AND label IN ('VERIFIED', 'CORROBORATED')
+           AND subject_eid IS NOT NULL AND predicate IS NOT NULL AND value IS NOT NULL"""
+    ):
+        groups[(r["subject_eid"], (r["predicate"] or "").strip().lower(), (r["time_ref"] or "")[:7])].append(
+            r
+        )
+    pairs: list[tuple[str, str | None, str]] = []
+    for key, rows in groups.items():
+        vals = sorted({float(r["value"]) for r in rows})
+        if len(vals) >= 2 and (vals[-1] - vals[0]) > 0.01 * max(abs(vals[-1]), 1e-9):
+            ids = sorted(r["id"] for r in rows)
+            pairs.append(
+                (f"claim:{key[0]}|{key[1]}|{key[2]}", ids[0], f"{key[0]} {key[1]} {key[2] or ''}: {vals}")
+            )
+    out["claim_pairs"] = len(pairs)
+    edge_groups: dict[tuple[str, str, str], set[int]] = defaultdict(set)
+    for r in conn.execute(
+        "SELECT src_eid, dst_eid, type, sign FROM relation WHERE status IN ('candidate','confirmed') AND confidence > 0.5"
+    ):
+        edge_groups[(r["src_eid"], r["dst_eid"], r["type"])].add(int(r["sign"] or 0))
+    for key, signs in edge_groups.items():
+        if {1, -1} <= signs:
+            out["edge_pairs"] += 1
+            pairs.append(
+                (
+                    f"edge:{key[0]}>{key[1]}|{key[2]}",
+                    None,
+                    f"{key[0]} → {key[1]} {key[2]} both +1 and −1 active",
+                )
+            )
+    out["examples"] = [p[2] for p in pairs[:5]]
+    if apply:
+        for pkey, cid, reason in pairs:
+            exists = conn.execute(
+                "SELECT 1 FROM review_queue WHERE kind = 'contradiction' AND decided_at IS NULL AND payload_json LIKE ?",
+                (f'%"{pkey}"%',),
+            ).fetchone()
+            if exists:
+                continue
+            conn.execute(
+                "INSERT INTO review_queue(kind, claim_id, reason, payload_json, created_at) VALUES ('contradiction', ?, ?, ?, ?)",
+                (
+                    cid,
+                    reason[:200],
+                    json.dumps({"key": pkey}, ensure_ascii=False),
+                    now.isoformat(timespec="seconds"),
+                ),
+            )
+            out["queued"] += 1
+        if out["queued"]:
+            actions.append(f"Q3: queued {out['queued']} contradictions for data-steward")
+    out["open"] = int(
+        conn.execute(
+            "SELECT COUNT(*) FROM review_queue WHERE kind = 'contradiction' AND decided_at IS NULL"
+        ).fetchone()[0]
+    )
+    limit_days = int((cfg.checks["Q3"].alert or {}).get("yellow_if_open_days_over", 7))
+    out["open_over_7d"] = int(
+        conn.execute(
+            "SELECT COUNT(*) FROM review_queue WHERE kind = 'contradiction' AND decided_at IS NULL AND created_at < ?",
+            ((now - timedelta(days=limit_days)).isoformat(timespec="seconds"),),
+        ).fetchone()[0]
+    )
+    conn.commit()
+    return out
+
+
+def _q5_errata(conn: sqlite3.Connection) -> dict[str, Any]:
+    """Claims cited by a published report whose label or status has since turned (DEBUNKED/DISPUTED, superseded,
+    quarantined, retracted, expired) → the report's errata list (indicator revisions need ALFRED, Q12)."""
+    rows = conn.execute(
+        """SELECT rc.report_week, rc.claim_id, c.label, c.status, substr(c.text, 1, 90) AS text FROM report_citation rc
+           JOIN claim c ON c.id = rc.claim_id
+           WHERE c.label IN ('DEBUNKED', 'DISPUTED') OR c.status IN ('superseded', 'quarantined', 'retracted', 'expired')
+           ORDER BY rc.report_week DESC"""
+    ).fetchall()
+    return {
+        "count": len(rows),
+        "errata": [dict(r) for r in rows[:20]],
+        "note": "지표 수정치(ALFRED) 는 Q12 뒤",
+    }
 
 
 # --- Q6 ----------------------------------------------------------------------------------------------------
@@ -351,9 +464,9 @@ def write_report(res: QualityResult, conn: sqlite3.Connection, *, reports_dir: P
         "|---|---|---|",
         f"| Q1 근거 무결성 | {LIGHTS[res.lights['Q1']]} | 실패 {res.q1['fail']} (격리 엣지 {res.q1['quarantined_edges']}, 격리 claim {res.q1['quarantined_claims']}, raw 누락 {res.q1['missing_raw']}) · 시드/통계 엣지 evidence 대기 {res.q1['seed_pending']} |",
         f"| Q2 시효 | {LIGHTS[res.lights['Q2']]} | 만기 forecast {res.q2['expired_claims']} · superseded {res.q2['superseded']} · 만료 엣지 {res.q2['expired_edges']} |",
-        "| Q3 모순 | ⚪ | Phase 6 |",
+        f"| Q3 모순 | {LIGHTS[res.lights['Q3']]} | claim 쌍 {res.q3.get('claim_pairs', 0)} · 엣지 쌍 {res.q3.get('edge_pairs', 0)} · 큐 +{res.q3.get('queued', 0)} · 7일 넘게 미해결 {res.q3.get('open_over_7d', 0)} (판정은 data-steward/사람) |",
         f"| Q4 중복·오염 | {LIGHTS[res.lights['Q4']]} | 별칭 병합 {len(res.q4.get('merged', []))} · 오래된 candidate 비활성 {len(res.q4.get('stale_candidates', []))} · 소스 쏠림 {res.q4.get('flood') or '없음'} |",
-        "| Q5 소급 정정 | ⚪ | Phase 6 |",
+        f"| Q5 소급 정정 | {LIGHTS[res.lights['Q5']]} | 과거 리포트가 인용한 claim 중 라벨·상태가 바뀐 것 {res.q5.get('count', 0)} → 비어 있지 않으면 리포트 '정정' 섹션 필수 |",
         f"| Q6 커버리지 | {LIGHTS[res.lights['Q6']]} | 급감 소스 {len(res.q6.get('drops', []))} · 침묵 소스 {len(res.q6.get('silent', []))} · 상위 claim T0 비율 {res.q6.get('t0_share')} · 기준 주 {res.q6.get('history_weeks')} {('— ' + res.q6['note']) if res.q6.get('note') else ''} |",
         "| Q7 추출 감사 | ⚪ | Phase 6 |",
         "",

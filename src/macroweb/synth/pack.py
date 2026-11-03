@@ -22,6 +22,7 @@ from macroweb.digest.daily import SNAPSHOT_KEYS, upcoming_events
 from macroweb.graph.analysis import hubs, propagate, week_bounds, weekly_diff
 from macroweb.graph.store import active_edges, entity_rows
 from macroweb.paths import CONFIG_DIR, data_dir
+from macroweb.verify.notes import verification_notes
 
 FACT_LABELS = ("VERIFIED", "CORROBORATED")
 DESKS: dict[str, tuple[str, ...]] = {  # theme ids (config/themes.yaml) → analyst slice
@@ -231,6 +232,7 @@ def build_pack(conn: sqlite3.Connection, week: str, *, now: datetime | None = No
             or [(ev.id, 1) for ev in cal.events if ev.id in ents][:3],
             as_of=as_of,
         ).as_dict(),
+        "verification_notes": verification_notes(conn, week),
         "theses_open": [t.as_dict() for t in list_theses(conn, status="open")][:10],
         "theses_due": [t.as_dict() for t in list_theses(conn, status="due")][:10],
         "rules": {

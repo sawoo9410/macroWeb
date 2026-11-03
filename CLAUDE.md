@@ -1,7 +1,7 @@
 # MacroWeb — 거미줄
 
 목적: 매일 수집·검증·그래프 갱신, 매주 거시 인사이트 리포트 발행. **`PLAN.md`(v0.3)가 단일 진실원(SSOT)**이다.
-현재 Phase: **5 토론·논제·캘린더 v1** — ADR-0010 "다 구축하고 손본다" 모드. 이월 항목(Phase 1: 3일 무인 실행·launchd daily / Phase 2: T0 diff·라우팅 실험·첫 수동 리포트·평가셋 라벨)은 `docs/phase_status.json` 의 `carry_over` 가 단일 TODO 다. 사람용 요약은 `docs/PLAN_DIGEST.md`(세션 시작 시 먼저 읽을 것).
+현재 Phase: **7 학습 루프 v1 (전 Phase MVP 구축 완료, 2026-11-03)** — ADR-0010 "다 구축하고 손본다" 모드. 이제부터는 `carry_over` 순서대로 손본다. 이월 항목(Phase 1: 3일 무인 실행·launchd daily / Phase 2: T0 diff·라우팅 실험·첫 수동 리포트·평가셋 라벨)은 `docs/phase_status.json` 의 `carry_over` 가 단일 TODO 다. 사람용 요약은 `docs/PLAN_DIGEST.md`(세션 시작 시 먼저 읽을 것).
 PLAN과 ADR(`docs/decisions/`)이 충돌하면 ADR이 이긴다(충돌 사실을 ADR에 명시).
 
 ## 명령어
@@ -28,7 +28,7 @@ PLAN과 ADR(`docs/decisions/`)이 충돌하면 ADR이 이긴다(충돌 사실을
 | **주간 품질 검토 v1** | `uv run macroweb quality run [--week] [--no-apply]` → Q1·Q2·Q4·Q6 + `reports/quality/<week>.md` (Q3·Q5·Q7 은 Phase 6) |
 | **주간 편집국 (Phase 4 v1)** | `uv run macroweb weekly pack --week` · `weekly run --week [--dry-run]` (quality → pack → `claude -p /weekly-report` → gate → publish) · `weekly gate --week` · `weekly publish --week` · `weekly record` |
 | **레짐·정합성·논제·차트 (Phase 5 v1, ADR-0011)** | `uv run macroweb regime [--week]` · `thesis add "…" --horizon --prob [--auto '{…}']` · `thesis list|score|auto-score` · `charts --week` (정합성은 pack/digest 안에서 계산) |
-| 이후 단계 (Phase 7 스텁) | `uv run macroweb monthly` |
+| **검토·검증 노트·월간 (Phase 6–7 v1, ADR-0012)** | `uv run macroweb review open` · `review apply --review review/<날짜>.md` · `verification-notes --week` · `monthly --month YYYY-MM` (논제 채점·출처 신뢰도·그래프 정리·비용·`digests/monthly-macro-<월>.md`) |
 
 ## 세션 운영 규칙 (PLAN §0.1 요약)
 

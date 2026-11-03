@@ -70,6 +70,12 @@ make doctor                             # 전부 PASS/WARN 이어야 한다 (FAI
 - 논제: `uv run macroweb thesis add "2026-12-10까지 FOMC 25bp 인상 확률 0.45. 틀렸다면 11월 CPI 코어 ≤0.2%" --horizon 2026-12-10 --prob 0.45 --auto '{"market_key":"KALSHI:KXFEDDECISION-26DEC-H25","op":">=","threshold":0.5}'` · 만기 뒤 `thesis auto-score`(자동) 또는 `thesis score <id> 0|1`(사람). Brier 누적은 `auto-score` 출력의 calibration.
 - 차트: `uv run macroweb charts --week 2026-W45` → `charts/2026-W45/*.png` + `data/weekly/2026-W45/chart_captions.json`. 60일 안에 5점 미만인 시계열은 건너뛰고 그렇다고 적는다.
 
+## 3j. 검증 v2·검토 큐·월간 루프 (Phase 6–7 v1, ADR-0012)
+- 검증기는 v1 신호에 더해 도메인 위험(#7: HTTPS·미등록 소스), 정정·반박 감시(#9: 후속 기사 제목의 정정 단서 + 주어 일치 → `review open` 의 `debunk_candidate`, 자동 DEBUNKED 는 없음), 시장 반응(#10: "급등/급락" claim vs 당일 market 변화), 생성 콘텐츠(#11: 같은 문장이 24시간 안에 3개 소스 이상), `config/traps.yaml` 함정 8개 중 결정 가능한 것을 기록한다. 근거는 `claim get <id>` 의 `signals_json.verify.v2`.
+- 품질 검토에 Q3(모순: 같은 주어·술어·기간의 값 불일치, 반대 부호 엣지 → `contradiction` 큐, 7일 넘게 미해결이면 노랑)·Q5(과거 리포트가 인용한 claim 의 라벨·상태 변화 → 정정 목록, 비어 있지 않으면 리포트 '정정' 섹션 필수)가 들어갔다. Q7(감사 샘플)은 모델 호출이 필요해 아직 ⚪.
+- 사람 검토: `review/<날짜>.md` 의 decision 열을 채우고 `uv run macroweb review apply --review review/<날짜>.md`. approve/reject 는 `source_stats` 확인/반박 카운트와 `eval/verify/decisions.jsonl`(학습셋)에 쌓인다. 라벨은 바꾸지 않는다.
+- 월간(매월 1일 08:00 `launchd/com.sawoo.macroweb.monthly.plist` → `macroweb monthly`): 논제 자동 채점·캘리브레이션, 출처 신뢰도 베이지안 갱신(prior 강도 20; 반박 할인 e 는 Q7 전까지 0), 엣지 만료·오래된 candidate 집계·PageRank, 비용(API 환산)·품질 추세, 추출 오류 상위(프롬프트 제안 후보), `digests/monthly-macro-YYYY-MM.md`(투자일기 배경 10줄), `reports/monthly/YYYY-MM.md`. 검증기 재학습은 eval/verify 200 라벨 전까지 "미해결" 로 적힌다.
+
 ## 4. 재실행(복구)
 모든 단계는 같은 인자로 다시 돌려도 결과가 같다.
 ```bash

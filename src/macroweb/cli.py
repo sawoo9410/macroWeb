@@ -1424,9 +1424,83 @@ def charts(
 
 
 @app.command()
-def monthly(month: str | None = typer.Option(None, "--month", help="YYYY-MM")) -> None:
-    """월간 회고·학습 루프 (Phase 7)."""
-    _not_yet("monthly")
+def monthly(month: str | None = typer.Option(None, "--month", help="YYYY-MM (기본 지난달)")) -> None:
+    """월간 학습 루프 v1 (PLAN §12): 논제 채점·캘리브레이션, 출처 신뢰도 갱신, 그래프 정리, 비용·품질 추세,
+    투자일기 '거시 배경' 10줄, reports/monthly/<month>.md."""
+    from datetime import UTC, datetime
+
+    from macroweb.db import repo
+    from macroweb.monthly.run import run_monthly
+
+    if not month:
+        today = datetime.now(UTC).date()
+        first = today.replace(day=1)
+        prev = (first - __import__("datetime").timedelta(days=1)).replace(day=1)
+        month = prev.strftime("%Y-%m")
+    repo.init_db()
+    conn = repo.connect()
+    try:
+        run_id = repo.start_run(conn, "monthly")
+        res = run_monthly(conn, month)
+        repo.finish_run(conn, run_id, "ok", res.as_dict())
+    finally:
+        conn.close()
+    console.print_json(json.dumps(res.as_dict(), ensure_ascii=False))
+
+
+review_app = typer.Typer(help="사람 검토 큐 (PLAN §7.3): open · apply", no_args_is_help=True)
+app.add_typer(review_app, name="review")
+
+
+@review_app.command("open")
+def review_open(limit: int = typer.Option(30, "--limit")) -> None:
+    """미결 검토 항목 (고영향·저신뢰, 모순, 반박 후보, 소스 쏠림)."""
+    from macroweb.db import repo
+    from macroweb.verify.review import open_items
+
+    conn = repo.connect()
+    try:
+        rows = open_items(conn, limit)
+    finally:
+        conn.close()
+    for r in rows:
+        console.print(
+            f"#{r['id']} {r['kind']:<22} {r['claim_id'] or '-'} [{r['label'] or '-'}] {r['reason'] or ''} | {r['text'] or ''}"
+        )
+    console.print(f"{len(rows)} open")
+
+
+@review_app.command("apply")
+def review_apply(
+    file: Path = typer.Option(..., "--review", help="decision 열을 채운 review/<date>.md"),
+    by: str = typer.Option("sangwoo", "--by"),
+) -> None:
+    """review md 의 decision(approve|reject|unsure) 반영 → 큐 종결, source_stats 확인/반박 카운트, eval/verify/decisions.jsonl."""
+    from macroweb.db import repo
+    from macroweb.verify.review import apply_review
+
+    repo.init_db()
+    conn = repo.connect()
+    try:
+        res = apply_review(conn, file, by=by)
+    finally:
+        conn.close()
+    console.print(
+        f"applied {res.applied} {res.by_decision} · unknown {res.unknown_claims} · already decided {res.already_decided} · sources {res.sources_updated}"
+    )
+
+
+@app.command("verification-notes")
+def verification_notes_cmd(week: str | None = typer.Option(None, "--week")) -> None:
+    """리포트 '검증 노트' 섹션: 이번 주 걸러낸 claim 3건과 걸러낸 신호 (PLAN §7.6)."""
+    from macroweb.db import repo
+    from macroweb.verify.notes import verification_notes
+
+    conn = repo.connect()
+    try:
+        console.print(verification_notes(conn, _week_or_now(week)))
+    finally:
+        conn.close()
 
 
 if __name__ == "__main__":

@@ -271,6 +271,7 @@ class ClaimVerdict:
     decisive: str
     verified_at: str
     missing: list[str] = field(default_factory=list)
+    v2: dict[str, Any] = field(default_factory=dict)
 
     def signals_dict(self) -> dict[str, Any]:
         return {
@@ -290,6 +291,7 @@ class ClaimVerdict:
                 "unverifiable": self.sv.unverifiable,
             },
             "missing": self.missing,
+            "v2": self.v2,
             "confidence": self.confidence,
             "label": self.label.value,
             "decisive": self.decisive,
@@ -355,6 +357,11 @@ def verify_claim(
     flags = [str(f).lower() for f in (signals.get("red_flags") or [])]
     sv.spam_satire = any(c in f for f in flags for c in SPAM_CUES)
     sv.unverifiable = bool(signals.get("anonymous_source")) and claim["type"] in UNVERIFIABLE_TYPES
+    from macroweb.verify.signals_v2 import compute_v2  # local import: v2 depends on helpers defined above
+
+    v2 = compute_v2(
+        conn, claim, article, sv, signals, cfg=cfg, source_tier=source_tier, known_sources=_known_sources()
+    )
     confidence = round(score(sv, cfg), 4)
     label = decide_label(sv, cfg)
     return ClaimVerdict(
@@ -368,4 +375,17 @@ def verify_claim(
         decisive=_decisive(sv, nc, label),
         verified_at=now.isoformat(timespec="seconds"),
         missing=list(sv.missing),
+        v2=v2,
     )
+
+
+_KNOWN_SOURCES: set[str] | None = None
+
+
+def _known_sources() -> set[str]:
+    global _KNOWN_SOURCES
+    if _KNOWN_SOURCES is None:
+        from macroweb.config import load_sources
+
+        _KNOWN_SOURCES = {s.id for s in load_sources().sources}
+    return _KNOWN_SOURCES

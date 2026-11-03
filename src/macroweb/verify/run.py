@@ -33,6 +33,7 @@ class VerifyReport:
     review_open: int = 0
     review_md: Path | None = None
     escalations_queued: int = 0
+    debunk_candidates: int = 0
     elapsed_s: float = 0.0
 
     def render(self) -> str:
@@ -202,6 +203,28 @@ def _enqueue_escalation(
     return True
 
 
+def _enqueue_flag(
+    conn: sqlite3.Connection, claim: sqlite3.Row, kind: str, reason: str, payload: object, now_iso: str
+) -> bool:
+    if conn.execute(
+        "SELECT 1 FROM review_queue WHERE claim_id = ? AND kind = ? AND decided_at IS NULL",
+        (claim["id"], kind),
+    ).fetchone():
+        return False
+    conn.execute(
+        "INSERT INTO review_queue(kind, claim_id, story_id, reason, payload_json, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        (
+            kind,
+            claim["id"],
+            claim["story_id"],
+            reason[:200],
+            json.dumps(payload, ensure_ascii=False),
+            now_iso,
+        ),
+    )
+    return True
+
+
 def run_verify(
     conn: sqlite3.Connection,
     *,
@@ -256,6 +279,9 @@ def run_verify(
         reason = escalation_reason(claim, verdict, impact, key_names)
         if reason and _enqueue_escalation(conn, claim, reason, router, now_iso):
             report.escalations_queued += 1
+        cands = (verdict.v2.get("correction") or {}).get("candidates") or []
+        if cands and _enqueue_flag(conn, claim, "debunk_candidate", cands[0]["title"], cands, now_iso):
+            report.debunk_candidates += 1
     conn.commit()
     report.review_open = int(
         conn.execute("SELECT COUNT(*) FROM review_queue WHERE decided_at IS NULL").fetchone()[0]
