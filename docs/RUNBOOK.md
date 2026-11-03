@@ -38,6 +38,11 @@ make doctor                             # 전부 PASS/WARN 이어야 한다 (FAI
 - 수치 검증(신호 4)은 `config/verify.yaml numeric_keys` 의 패턴 → `market` 키로만 비교한다. 새 지표가 들어오면 거기에 패턴을 추가. 허용 오차는 `config/tolerances.yaml by_unit`.
 - 고영향(≥ 0.7)·저신뢰(< 0.5) claim 은 `review/<KST날짜>.md` 에 쌓인다. 안 읽어도 파이프라인은 돈다. decision 반영 명령(`verify apply`)은 Phase 2 후반.
 
+## 3e. 일일 다이제스트 (Phase 2)
+- 틱 끝에 `digests/<KST날짜>.md` 를 다시 쓴다(그날 마지막 틱이 최종본). 수동: `uv run macroweb digest --date 2026-11-03` · 값만 보기 `--json`.
+- 줄 1(레짐)·6(시장 정합성)·2 의 diff 수는 Phase 3 엔진이 없어 "미구현" 으로 적힌다 — 숫자를 지어 넣지 않는다. 줄 3–5 는 **그날 추출된** VERIFIED/CORROBORATED claim 중 impact 순, 각주는 claim_id.
+- 줄 9 의 비용은 `llm_batch.cost_usd` 합(API 환산 추정, 구독이라 청구 아님). 줄 10 은 `config/calendar.yaml` 의 14일 내 이벤트(미확정 표시).
+
 ## 4. 재실행(복구)
 모든 단계는 같은 인자로 다시 돌려도 결과가 같다.
 ```bash

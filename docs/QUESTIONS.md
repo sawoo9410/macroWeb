@@ -22,3 +22,4 @@
 - [ ] **Q20 S-DATA 일별 소스 주기.** 재무부·ECB·Naver·Kraken 은 하루 1번 갱신인데 스케줄러 기본(api 1시간)으로 돈다(Naver 6요청/시간 — 예절 범위 안). 기본값: 그대로 두고 Phase 1 끝 피드 창 실측 때 소스별 `interval` 파라미터로 6시간으로 늘린다(ADR-0005 후속 a).
 - [x] **Q19 `ANTHROPIC_API_KEY` (Track A).** 2026-11-02 결정: **필요 없음** — Max 구독의 `claude -p` 로 일일 추출도 돌린다(ADR-0007). 키는 선택 사항(`track_a_runner.mode: api` 로 되돌릴 때만).
 - [ ] **Q20 추출 평가셋 라벨링 (Phase 2 DoD).** 층별 Story 20개 중 10개는 상우가 직접 claim 라벨을 단다(§6.2.4). Phase 2 첫 세션이 `eval/extraction/` 에 후보 Story 와 라벨 양식을 만들어 두면 30분쯤 걸리는 작업이다 — 시간을 내줄 수 있는지.
+- [ ] **Q21 한국은행 보도자료 본문 수집 불가 (robots).** `bok.or.kr/portal/bbs/.../view.do` 는 robots.txt 가 막아 본문을 가져오지 않는다(수집기는 48건을 `robots_disallow` 로 표시). RSS `summary`(평균 ~700자)로만 추출하므로 금통위 의결문 **전문 diff(T0 diff)** 는 BOK 에선 불가능. 선택지: (a) summary 만 쓴다(기본값), (b) 한국은행 공식 Open API/ECOS 보도자료 엔드포인트가 있는지 확인해 어댑터 추가, (c) 사용자가 의결문 PDF 를 `data/manual/` 에 넣으면 읽는다. 기본값 (a). (2026-11-03)

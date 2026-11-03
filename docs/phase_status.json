@@ -166,7 +166,8 @@
         {
           "id": "digest",
           "text": "일일 다이제스트 10줄",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03"
         },
         {
           "id": "eval-extract-30",

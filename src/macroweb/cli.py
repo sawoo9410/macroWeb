@@ -685,7 +685,29 @@ def tick(
     except Exception as exc:  # labelling is derived data; never fail the tick on it
         console.print(f"[red]verify: {type(exc).__name__}: {exc}[/]")
         rc = rc or 1
+    try:
+        console.print(f"digest: {_digest_run(date)}")
+    except Exception as exc:
+        console.print(f"[red]digest: {type(exc).__name__}: {exc}[/]")
+        rc = rc or 1
     raise typer.Exit(rc)
+
+
+def _digest_run(day: str | None) -> Path:
+    """digests/<KST day>.md — rewritten on every tick (idempotent), closed by the last tick of the day."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    from macroweb.db import repo
+    from macroweb.digest.daily import write_digest
+
+    kst_day = day or datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat()
+    repo.init_db()
+    conn = repo.connect()
+    try:
+        return write_digest(conn, kst_day)
+    finally:
+        conn.close()
 
 
 def _verify_run(*, day: str | None, since_hours: int, story: list[str] | None, relabel: bool):  # type: ignore[no-untyped-def]
@@ -725,9 +747,26 @@ def graph(action: str = typer.Argument("update", help="update|export-vault|propa
 
 
 @app.command()
-def digest(date: str | None = typer.Option(None, "--date")) -> None:
-    """일일 다이제스트 10줄 (Phase 2)."""
-    _not_yet("digest")
+def digest(
+    date: str | None = typer.Option(None, "--date", help="KST 날짜 (기본 오늘)"),
+    json_out: bool = typer.Option(False, "--json", help="채운 값만 JSON 으로"),
+) -> None:
+    """일일 다이제스트 10줄 (Phase 2): digests/<date>.md — DB·설정에서 잰 값만, 미구현 엔진은 그렇다고 쓴다."""
+    if json_out:
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+
+        from macroweb.db import repo
+        from macroweb.digest.daily import build_digest, digest_json
+
+        kst_day = date or datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat()
+        conn = repo.connect()
+        try:
+            console.print(digest_json(build_digest(conn, kst_day)))
+        finally:
+            conn.close()
+        return
+    console.print(str(_digest_run(date)))
 
 
 @app.command()
