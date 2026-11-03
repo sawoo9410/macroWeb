@@ -166,6 +166,20 @@ class QualityConfig(Strict):
     recalibrate_after_weeks: int = 8
 
 
+class RegimeAxis(Strict):
+    inputs: list[str]
+    rule: str
+    thresholds: dict[str, float]
+    states: list[str]
+
+
+class RegimeConfig(Strict):
+    version: int
+    window_days: int = Field(ge=7, le=120)
+    axes: dict[Literal["rates", "liquidity", "dollar", "risk", "ai", "kr_flow"], RegimeAxis]
+    alert_on_change: bool = True
+
+
 # --- small registries -----------------------------------------------------------------------------
 class Trap(Strict):
     id: str
@@ -373,6 +387,10 @@ def load_sources(path: Path | None = None) -> SourcesFile:
 
 def load_models(path: Path | None = None) -> ModelsConfig:
     return ModelsConfig.model_validate(load_yaml(path or CONFIG_DIR / "models.yaml"))
+
+
+def load_regime(path: Path | None = None) -> RegimeConfig:
+    return RegimeConfig.model_validate(load_yaml(path or CONFIG_DIR / "regime.yaml"))
 
 
 def load_quality(path: Path | None = None) -> QualityConfig:

@@ -11,6 +11,8 @@ from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from macroweb.analysis.consistency import cross_asset_check
+from macroweb.analysis.regime import compute_regime
 from macroweb.collect import store
 from macroweb.config import CalendarConfig, load_models, load_yaml
 from macroweb.paths import CONFIG_DIR, ROOT, digests_dir
@@ -72,7 +74,8 @@ def build_digest(conn: sqlite3.Connection, day: str) -> DigestData:
     start, end = kst_day_bounds(day)
     v: dict[str, str] = {"date": day}
     # 1 regime (Phase 3) → market snapshot with dates, nothing interpreted
-    v["regime_line"] = f"레짐 탐지기는 Phase 3 — 시장 스냅샷(기준일): {market_snapshot(conn)}"
+    regime = compute_regime(conn, as_of=day)
+    v["regime_line"] = f"{regime.line()} · 스냅샷: {market_snapshot(conn)}"
     # 2 T0 primary documents seen today
     t0 = conn.execute(
         """SELECT s.id, s.title_rep, a.source_id FROM story s
@@ -122,7 +125,7 @@ def build_digest(conn: sqlite3.Connection, day: str) -> DigestData:
             v[f"claim_{i}_label"] = "-"
             v[f"claim_{i}_id"] = "-"
     # 6 cross-asset consistency (Phase 3)
-    v["market_consistency"] = "교차자산 정합성 검사는 Phase 3 — 아직 계산하지 않음"
+    v["market_consistency"] = cross_asset_check(conn, _digest_shocks(day), as_of=day).line()
     # 7 review queue created today
     n_review = conn.execute(
         "SELECT COUNT(*) FROM review_queue WHERE created_at >= ? AND created_at < ?", (start, end)
@@ -171,6 +174,21 @@ def build_digest(conn: sqlite3.Connection, day: str) -> DigestData:
     # 10 next calendar events
     v["tomorrow"] = upcoming_events(day)
     return DigestData(day=day, values=v, top_claims=list(claims))
+
+
+def _digest_shocks(day: str) -> list[tuple[str, int]]:
+    """Calendar events within 14 days that exist as graph nodes, shocked +1 (the digest's cross-asset line)."""
+    cal = CalendarConfig.model_validate(load_yaml(CONFIG_DIR / "calendar.yaml"))
+    d0 = date.fromisoformat(day)
+    out = []
+    for ev in cal.events:
+        try:
+            d = date.fromisoformat(ev.date)
+        except ValueError:
+            continue
+        if d0 <= d <= d0 + timedelta(days=14):
+            out.append((ev.id, 1))
+    return out[:3]
 
 
 def _monthly_cap_usd() -> float:

@@ -63,6 +63,13 @@ make doctor                             # 전부 PASS/WARN 이어야 한다 (FAI
 - 알림: `TELEGRAM_BOT_TOKEN`·`MACROWEB_TELEGRAM_CHAT_ID`(private/.env, 별도 채팅방 권장) 가 있으면 텔레그램, 없으면 stdout+macOS 알림만.
 - v1 한계: 에이전트 6+4 는 Phase 0 정의 그대로(첫 실전은 일요일 자동 실행 또는 사용자의 `/weekly-report`), 차트 캡션 삽입·토론 로그 채점은 Phase 5.
 
+## 3i. 레짐·정합성·논제·차트 (Phase 5 v1, ADR-0011)
+- `uv run macroweb regime` — 6축 상태와 입력값(값·날짜). 규칙·임계값은 `config/regime.yaml`. 유동성은 FRED 키 전까지 "자료 없음", 한국 수급은 가격·환율 대리 지표.
+- 주간 팩이 `regime_week` 스냅샷을 남기고 지난주와 핵심 상태가 다르면 경보 문구를 만든다(리포트 맨 위).
+- 교차자산 정합성은 팩(`consistency`)과 다이제스트 6번 줄에: 캘린더 이벤트 전파 예측 부호 vs 자산 7일 실제 변화 → 확인/불일치/무반응. 불일치는 편집장 필수 입력.
+- 논제: `uv run macroweb thesis add "2026-12-10까지 FOMC 25bp 인상 확률 0.45. 틀렸다면 11월 CPI 코어 ≤0.2%" --horizon 2026-12-10 --prob 0.45 --auto '{"market_key":"KALSHI:KXFEDDECISION-26DEC-H25","op":">=","threshold":0.5}'` · 만기 뒤 `thesis auto-score`(자동) 또는 `thesis score <id> 0|1`(사람). Brier 누적은 `auto-score` 출력의 calibration.
+- 차트: `uv run macroweb charts --week 2026-W45` → `charts/2026-W45/*.png` + `data/weekly/2026-W45/chart_captions.json`. 60일 안에 5점 미만인 시계열은 건너뛰고 그렇다고 적는다.
+
 ## 4. 재실행(복구)
 모든 단계는 같은 인자로 다시 돌려도 결과가 같다.
 ```bash

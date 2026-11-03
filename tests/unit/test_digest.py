@@ -50,7 +50,8 @@ def test_digest_is_filled_from_db(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
         assert (
             int(v["n_review"]) == 1 and v["n_stories"].isdigit() and v["n_articles"].isdigit()
         )  # fixture stories predate the day; counts are still rendered
-        assert "Phase 3" in v["regime_line"] and "Phase 3" in v["market_consistency"]
+        assert "금리" in v["regime_line"] and "유동성 자료 없음" in v["regime_line"]
+        assert v["market_consistency"]  # computed (or says why not), never a placeholder
         path = write_digest(conn, "2026-11-02")
         text = path.read_text(encoding="utf-8")
         assert path.name == "2026-11-02.md" and "{{" not in text and "}}" not in text

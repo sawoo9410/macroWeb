@@ -1,0 +1,36 @@
+# 레짐 탐지기 v1 (PLAN §9.2, ADR-0011). 지금 들어오는 키 없는 데이터(ADR-0005)만으로 판정한다 —
+# FRED(WALCL·RRP·TGA·HY)·KRX 외국인 수급이 들어오면 입력을 바꾼다. 임계값은 시작값(§0.4 로 보정).
+version: 1
+window_days: 28                  # 비교 창(달력일 ≈ 20 거래일)
+axes:
+  rates:
+    inputs: ["UST:2Y", "UST:10Y"]
+    rule: "2Y 28일 변화 ≥ +0.15pp → 인상 압력 · ≤ −0.15pp → 인하 기대 · 그 외 동결 구간. 다음 FOMC 의 Kalshi 25bp 인상 시장(KXFEDDECISION-<YYMON>-H25) ≥ 0.5 면 '인상 우세' 를 붙인다"
+    thresholds: {hike_pp: 0.15, cut_pp: -0.15, kalshi_hike_prob: 0.5}
+    states: ["인상 압력", "동결 구간", "인하 기대"]
+  liquidity:
+    inputs: ["FRED:WALCL", "FRED:RRPONTSYD", "FRED:WTREGEN", "FRED:BAMLH0A0HYM2"]
+    rule: "FRED 키 입력 전에는 판정하지 않는다 (자료 없음)"
+    thresholds: {}
+    states: ["긴축", "중립", "완화"]
+  dollar:
+    inputs: ["NAVER:.DXY", "ECB:USD_KRW_CROSS"]
+    rule: "DXY 28일 변화 ≥ +1.5% → 강 · ≤ −1.5% → 약 · 그 외 중립 (USD/KRW 방향을 부기)"
+    thresholds: {strong_pct: 1.5, weak_pct: -1.5}
+    states: ["강", "중립", "약"]
+  risk:
+    inputs: ["NAVER:.VIX", "KRAKEN:XBTUSD"]
+    rule: "VIX ≥ 25 → risk-off · ≤ 15 → risk-on · 그 외 중립 (BTC 28일 변화 부기)"
+    thresholds: {vix_off: 25, vix_on: 15}
+    states: ["risk-on", "중립", "risk-off"]
+  ai:
+    inputs: ["NAVER:.SOX"]
+    rule: "SOX 28일 변화 ≥ +5% → 확장 · ≤ −8% → 조정 · 그 외 정점 논쟁 (capex 가이던스·TSMC 월매출·DRAM 계약가는 Phase 6 입력)"
+    thresholds: {expand_pct: 5.0, correct_pct: -8.0}
+    states: ["확장", "정점 논쟁", "조정"]
+  kr_flow:
+    inputs: ["NAVER:KOSPI", "ECB:USD_KRW_CROSS"]
+    rule: "KOSPI 28일 ↑ 이고 원화 강세(USD/KRW ↓) → 유입 · KOSPI ↓ 이고 원화 약세 → 유출 · 그 외 중립 (KRX 외국인 순매수는 키 입력 후)"
+    thresholds: {kospi_pct: 1.0, krw_pct: 1.0}
+    states: ["유입", "중립", "유출"]
+alert_on_change: true             # 지난주 레짐과 축 하나라도 다르면 리포트 맨 위 경보

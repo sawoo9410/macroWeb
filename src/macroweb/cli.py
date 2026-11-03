@@ -1287,6 +1287,143 @@ def weekly_run(
 
 
 @app.command()
+def regime(
+    as_of: str | None = typer.Option(None, "--as-of", help="YYYY-MM-DD (기본 오늘)"),
+    week: str | None = typer.Option(
+        None, "--week", help="주면 regime_week 에 스냅샷 저장 + 지난주 대비 경보"
+    ),
+    json_out: bool = typer.Option(False, "--json"),
+) -> None:
+    """레짐 탐지기 v1 (ADR-0011): 6축 상태 + 입력값·날짜. 자료 없는 축은 그렇다고 말한다."""
+    from macroweb.analysis.regime import compute_regime, snapshot_regime
+    from macroweb.db import repo
+
+    repo.init_db()
+    conn = repo.connect()
+    try:
+        table = snapshot_regime(conn, week, as_of=as_of) if week else compute_regime(conn, as_of=as_of)
+    finally:
+        conn.close()
+    if json_out:
+        console.print_json(json.dumps(table.as_dict(), ensure_ascii=False))
+        return
+    console.print(table.line())
+    console.print(table.alert())
+    for a, r in table.axes.items():
+        console.print(f"  {a:<9} {r.state or '-':<22} {r.note}")
+
+
+thesis_app = typer.Typer(
+    help="논제 원장 (PLAN §9.7): add · list · score · auto-score · calibration", no_args_is_help=True
+)
+app.add_typer(thesis_app, name="thesis")
+
+
+@thesis_app.command("add")
+def thesis_add(
+    text: str = typer.Argument(..., help='"[기간]까지 [사건] 확률 p. 틀렸다면 [신호]"'),
+    week: str | None = typer.Option(None, "--week"),
+    horizon: str = typer.Option(..., "--horizon", help="YYYY-MM-DD"),
+    prob: float = typer.Option(..., "--prob", min=0.0, max=1.0),
+    falsifier: str | None = typer.Option(None, "--falsifier"),
+    claims: str | None = typer.Option(None, "--claims", help="claim_id 쉼표 구분"),
+    auto: str | None = typer.Option(
+        None, "--auto", help='자동 채점: \'{"market_key":"UST:2Y","op":">=","threshold":4.5}\''
+    ),
+) -> None:
+    """논제 등록 (같은 주·같은 문장이면 갱신)."""
+    from macroweb.analysis.thesis import add_thesis
+    from macroweb.db import repo
+
+    repo.init_db()
+    conn = repo.connect()
+    try:
+        t = add_thesis(
+            conn,
+            week=_week_or_now(week),
+            text=text,
+            horizon_date=horizon,
+            probability=prob,
+            falsifier=falsifier,
+            claim_ids=[c.strip() for c in claims.split(",")] if claims else None,
+            auto=json.loads(auto) if auto else None,
+        )
+    finally:
+        conn.close()
+    console.print(f"{t.id} {t.status} p={t.probability} horizon={t.horizon_date}")
+
+
+@thesis_app.command("list")
+def thesis_list(
+    week: str | None = typer.Option(None, "--week"), status: str | None = typer.Option(None, "--status")
+) -> None:
+    """논제 목록."""
+    from macroweb.analysis.thesis import list_theses
+    from macroweb.db import repo
+
+    conn = repo.connect()
+    try:
+        rows = list_theses(conn, week=week, status=status)
+    finally:
+        conn.close()
+    for t in rows:
+        console.print(
+            f"{t.id} [{t.week}] {t.status:<12} p={t.probability:.2f} → {t.horizon_date} brier={t.brier} | {t.text}"
+        )
+
+
+@thesis_app.command("score")
+def thesis_score(tid: str = typer.Argument(...), outcome: int = typer.Argument(..., min=0, max=1)) -> None:
+    """사람 채점: outcome 1(맞음)/0(틀림) → Brier."""
+    from macroweb.analysis.thesis import score_thesis
+    from macroweb.db import repo
+
+    conn = repo.connect()
+    try:
+        t = score_thesis(conn, tid, outcome)
+    finally:
+        conn.close()
+    console.print(f"{t.id} {t.status} outcome={t.outcome} brier={t.brier}")
+
+
+@thesis_app.command("auto-score")
+def thesis_auto_score() -> None:
+    """만기 지난 논제: auto_json 있으면 market 값으로 채점, 없으면 due 표시."""
+    from macroweb.analysis.thesis import auto_score, calibration
+    from macroweb.db import repo
+
+    conn = repo.connect()
+    try:
+        res = auto_score(conn)
+        cal = calibration(conn)
+    finally:
+        conn.close()
+    console.print_json(json.dumps({"result": res, "calibration": cal}, ensure_ascii=False))
+
+
+@app.command()
+def charts(
+    week: str | None = typer.Option(None, "--week"),
+    as_of: str | None = typer.Option(None, "--as-of"),
+    days: int = typer.Option(60, "--days"),
+) -> None:
+    """리포트 차트 v1: 시장 스냅샷 시계열 → charts/<week>/<nn>-<slug>.png + chart_captions.json (chart 스킬 규약)."""
+    from macroweb.db import repo
+    from macroweb.publish.charts import make_week_charts
+
+    conn = repo.connect()
+    try:
+        res = make_week_charts(conn, _week_or_now(week), as_of=as_of, days=days)
+    finally:
+        conn.close()
+    for c in res.charts:
+        console.print(f"{c.path}  {c.caption[:90]}")
+    if res.skipped:
+        console.print(f"[yellow]skipped: {res.skipped}[/]")
+    console.print(f"captions: {res.captions_file}")
+
+
+@app.command()
 def monthly(month: str | None = typer.Option(None, "--month", help="YYYY-MM")) -> None:
     """월간 회고·학습 루프 (Phase 7)."""
     _not_yet("monthly")

@@ -13,6 +13,9 @@ from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from macroweb.analysis.consistency import cross_asset_check
+from macroweb.analysis.regime import snapshot_regime
+from macroweb.analysis.thesis import auto_score, list_theses
 from macroweb.collect import store
 from macroweb.config import CalendarConfig, load_yaml
 from macroweb.digest.daily import SNAPSHOT_KEYS, upcoming_events
@@ -112,6 +115,7 @@ def build_pack(conn: sqlite3.Connection, week: str, *, now: datetime | None = No
     now = now or datetime.now(UTC)
     start, end = week_bounds(week)
     as_of = min(end[:10], now.date().isoformat())
+    auto_score(conn, today=now.date())  # theses past their horizon get scored (or marked due) before packing
     marks = ",".join("?" * len(FACT_LABELS))
     claims = conn.execute(
         f"""SELECT c.*, a.url, a.published_at FROM claim c
@@ -169,7 +173,7 @@ def build_pack(conn: sqlite3.Connection, week: str, *, now: datetime | None = No
     ]
     cal = CalendarConfig.model_validate(load_yaml(CONFIG_DIR / "calendar.yaml"))
     horizon = date.fromisoformat(as_of) + timedelta(days=14)
-    shocks = []
+    shocks: list[dict[str, Any]] = []
     for ev in cal.events:
         try:
             d = date.fromisoformat(ev.date)
@@ -220,6 +224,15 @@ def build_pack(conn: sqlite3.Connection, week: str, *, now: datetime | None = No
         "calendar_14d": upcoming_events(as_of),
         "review_open": [dict(r) for r in review_rows],
         "past_theses": _past_theses(conn, week),
+        "regime": snapshot_regime(conn, week, as_of=as_of).as_dict(),
+        "consistency": cross_asset_check(
+            conn,
+            [(s["shock"], s["sign"]) for s in shocks]
+            or [(ev.id, 1) for ev in cal.events if ev.id in ents][:3],
+            as_of=as_of,
+        ).as_dict(),
+        "theses_open": [t.as_dict() for t in list_theses(conn, status="open")][:10],
+        "theses_due": [t.as_dict() for t in list_theses(conn, status="due")][:10],
         "rules": {
             "fact_labels": list(FACT_LABELS),
             "cite": "[F] 문장마다 [claim_id] 각주 — 이 pack 의 claims 밖의 사실은 쓰지 않는다",

@@ -1,5 +1,5 @@
 {
-  "current_phase": 4,
+  "current_phase": 5,
   "updated": "2026-11-03",
   "phases": {
     "0": {
@@ -305,12 +305,16 @@
         {
           "id": "thesis-ledger",
           "text": "논제 원장 + 자동 채점",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010/0011): 규칙 기반 레짐·정합성·논제 원장·시계열 차트; 역사 사례·토론 실동작은 이월"
         },
         {
           "id": "calendar-regime",
           "text": "캘린더 엔진 + 레짐 탐지기 + 교차자산 정합성",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010/0011): 규칙 기반 레짐·정합성·논제 원장·시계열 차트; 역사 사례·토론 실동작은 이월"
         },
         {
           "id": "history-5",
@@ -320,7 +324,9 @@
         {
           "id": "charts-blog",
           "text": "chart-maker + 블로그 초안 + 포트폴리오 렌즈",
-          "done": false
+          "done": true,
+          "done_at": "2026-11-03",
+          "note": "v1 (ADR-0010/0011): 규칙 기반 레짐·정합성·논제 원장·시계열 차트; 역사 사례·토론 실동작은 이월"
         },
         {
           "id": "auto-publish-2",
@@ -425,6 +431,12 @@
     "3": [
       "seed-graph",
       "escalation"
+    ],
+    "4": [
+      "agents-6",
+      "launchd-weekly",
+      "auto-publish-1",
+      "telegram"
     ]
   }
 }
