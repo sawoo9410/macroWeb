@@ -60,6 +60,9 @@ def test_build_and_score_round_trip(tmp_path: Path) -> None:
     try:
         t0 = _story_for(conn, "fed_press", tier=0, stratum="S-T0-STMT", impact=0.9)
         t1 = _story_for(conn, "yna_economy", tier=1, stratum="S-T1-KO", impact=0.95)
+        # three independent outlets force a story past the theme gate (extract.yaml min_independent_to_force)
+        conn.execute("UPDATE story SET n_independent = 3 WHERE id = ?", (t1.story_id,))
+        conn.commit()
         persist_result(
             conn, t0, ExtractionResult.model_validate(T0_RESULT), extracted_by="test@extract@v2", now=NOW
         )

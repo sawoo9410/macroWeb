@@ -1,11 +1,11 @@
 # 라벨 지침: eval/extraction/README.md — 원문 문장 그대로, 한 항목 = 한 사실, 기사가 말하지 않은 것은 쓰지 않는다.
-# 본문 보기: uv run macroweb eval extract show st-637fb7f8f7b57f04
-story_id: st-637fb7f8f7b57f04
-source_id: tomshardware
-stratum: S-T2
-lang: en
-title: "Brazilian lawyers busted for attempting to manipulate court's AI with prompt injection hidden in filing"
-url: "https://www.tomshardware.com/tech-industry/artificial-intelligence/brazilian-lawyers-busted-for-attempting-to-manipulate-courts-ai-with-prompt-injection-hidden-in-filing-courts-ai-flags-hidden-text-that-demanded-superficial-legal-scrutiny-lawyers-fined-usd16-000"
+# 본문 보기: uv run macroweb eval extract show st-9abbb84dc6e57de5
+story_id: st-9abbb84dc6e57de5
+source_id: chosunbiz_itsci
+stratum: S-T1-KO
+lang: ko
+title: "엔비디아, 네이버 투자금 1조3412억원 확정…지분율 4.13% 전망"
+url: "https://biz.chosun.com/it-science/ict/2026/11/03/ABUENHNIHVBLREUIDQDRAJREMM/"
 labeler: null            # "sangwoo" | "opus" — null 이면 채점에서 제외
 claims: []               # 예시 (주석을 풀어 채운다)
 #  - text: "The Governing Council decided to keep the three key ECB interest rates unchanged."

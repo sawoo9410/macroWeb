@@ -1,11 +1,11 @@
 # 라벨 지침: eval/extraction/README.md — 원문 문장 그대로, 한 항목 = 한 사실, 기사가 말하지 않은 것은 쓰지 않는다.
-# 본문 보기: uv run macroweb eval extract show st-5b9af7135e231976
-story_id: st-5b9af7135e231976
-source_id: chosunbiz
+# 본문 보기: uv run macroweb eval extract show st-47027afdbfb17604
+story_id: st-47027afdbfb17604
+source_id: chosunbiz_itsci
 stratum: S-T1-KO
 lang: ko
-title: "‘K리그 자존심 세웠다!’ 전북, ‘무늬만 아챔’ 외국선수 9명 뛴 조호르에 2-0 완승 [오!쎈 전주]"
-url: "https://biz.chosun.com/sports/football/2026/11/03/GBSTMZJTGVSGMNTCMFTGGYRUGQ/"
+title: "“삼성·SK하이닉스 HBM, 서버칩에 실려 中에 밀수…화웨이에도 팔린다\""
+url: "https://biz.chosun.com/it-science/ict/2026/11/03/TE65XKVXVFEHRKB3KO3FL7ORXM/"
 labeler: null            # "sangwoo" | "opus" — null 이면 채점에서 제외
 claims: []               # 예시 (주석을 풀어 채운다)
 #  - text: "The Governing Council decided to keep the three key ECB interest rates unchanged."

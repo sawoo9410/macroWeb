@@ -1,11 +1,11 @@
 # 라벨 지침: eval/extraction/README.md — 원문 문장 그대로, 한 항목 = 한 사실, 기사가 말하지 않은 것은 쓰지 않는다.
-# 본문 보기: uv run macroweb eval extract show st-d7ea9534330d2d3f
-story_id: st-d7ea9534330d2d3f
-source_id: tomshardware
-stratum: S-T2
-lang: en
-title: "Apple finally has a touchscreen MacBook. Why now?"
-url: "https://www.tomshardware.com/laptops/macbooks/apple-finally-has-a-touchscreen-macbook-why-now"
+# 본문 보기: uv run macroweb eval extract show st-1158e0f3d47e99e6
+story_id: st-1158e0f3d47e99e6
+source_id: chosunbiz_stock
+stratum: S-T1-KO
+lang: ko
+title: "한화운용, K방산·제조업 ETF 중동 진출…아부다비 증시 상장"
+url: "https://biz.chosun.com/stock/stock_general/2026/11/03/OMFYIXOBL5DU3A63OF37OYAXTU/"
 labeler: null            # "sangwoo" | "opus" — null 이면 채점에서 제외
 claims: []               # 예시 (주석을 풀어 채운다)
 #  - text: "The Governing Council decided to keep the three key ECB interest rates unchanged."

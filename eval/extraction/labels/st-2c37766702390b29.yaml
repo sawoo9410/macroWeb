@@ -1,11 +1,11 @@
 # 라벨 지침: eval/extraction/README.md — 원문 문장 그대로, 한 항목 = 한 사실, 기사가 말하지 않은 것은 쓰지 않는다.
-# 본문 보기: uv run macroweb eval extract show st-f6656398d3db815e
-story_id: st-f6656398d3db815e
-source_id: chosunbiz
+# 본문 보기: uv run macroweb eval extract show st-2c37766702390b29
+story_id: st-2c37766702390b29
+source_id: chosunbiz_stock
 stratum: S-T1-KO
 lang: ko
-title: "\"자유로워서 좋아\" 황신혜, 韓서 못 입는 시스루 패션 소화"
-url: "https://biz.chosun.com/entertainment/enter_general/2026/11/02/GQ2WENJRMI3TIMDEMI2TIYRZMI/"
+title: "이익 늘었는데 주가는 내리막… 현대차·기아에 쏟아지는 경고"
+url: "https://biz.chosun.com/stock/stock_general/2026/11/03/QGPTHB4EUJB4HF2X6GVMZAS4MU/"
 labeler: null            # "sangwoo" | "opus" — null 이면 채점에서 제외
 claims: []               # 예시 (주석을 풀어 채운다)
 #  - text: "The Governing Council decided to keep the three key ECB interest rates unchanged."

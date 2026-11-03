@@ -1,11 +1,11 @@
 # 라벨 지침: eval/extraction/README.md — 원문 문장 그대로, 한 항목 = 한 사실, 기사가 말하지 않은 것은 쓰지 않는다.
-# 본문 보기: uv run macroweb eval extract show st-e3e9fd1c8941589c
-story_id: st-e3e9fd1c8941589c
-source_id: chosunbiz
-stratum: S-T1-KO
-lang: ko
-title: "'건강이상설' 고현정, 파리서 반전 먹방"
-url: "https://biz.chosun.com/entertainment/enter_general/2026/11/02/GJRGGZTGMJSDIMJYGM4DGZDFMU/"
+# 본문 보기: uv run macroweb eval extract show st-44ed9cc8ffb540d9
+story_id: st-44ed9cc8ffb540d9
+source_id: calculated_risk
+stratum: S-T2
+lang: en
+title: "Sunday Night Futures"
+url: "http://www.calculatedriskblog.com/2026/01/sunday-night-futures_11.html"
 labeler: null            # "sangwoo" | "opus" — null 이면 채점에서 제외
 claims: []               # 예시 (주석을 풀어 채운다)
 #  - text: "The Governing Council decided to keep the three key ECB interest rates unchanged."

@@ -16,6 +16,8 @@ from typing import Any
 
 import yaml
 
+from macroweb.config import load_extract
+from macroweb.extract.select import _themes, theme_similarity
 from macroweb.paths import ROOT
 
 EVAL_DIR = ROOT / "eval" / "extraction"
@@ -54,13 +56,15 @@ def _candidates(conn: sqlite3.Connection) -> list[sqlite3.Row]:
         """SELECT s.id, s.title_rep, s.first_seen, src.id AS source_id, src.stratum, src.lang AS src_lang,
                   a.lang, a.url, a.published_at,
                   LENGTH(COALESCE(NULLIF(a.text, ''), a.summary, '')) AS n_chars,
+                  SUBSTR(COALESCE(NULLIF(a.text, ''), a.summary, ''), 1, 1500) AS probe,
+                  s.n_independent,
                   (s.selected_at IS NOT NULL) AS selected,
                   (SELECT COUNT(*) FROM claim c WHERE c.story_id = s.id) AS n_claims
            FROM story s
            JOIN article a ON a.id = COALESCE(s.rep_article_id,
                 (SELECT sa.article_id FROM story_article sa WHERE sa.story_id = s.id ORDER BY sa.is_syndicated LIMIT 1))
            JOIN source src ON src.id = a.source_id
-           WHERE src.stratum IS NOT NULL
+           WHERE src.stratum IS NOT NULL AND src.enabled = 1
            ORDER BY n_claims DESC, selected DESC, a.published_at DESC"""
     ).fetchall()
 
@@ -75,6 +79,8 @@ def pick_stories(
     """Fill each (stratum, lang) bucket: already-extracted stories first (so labels can be scored at once), then
     stories the selector passed (theme gate), then newest; at most `per_source_cap` per source per bucket."""
     quota = dict(quota or QUOTA)
+    themes = _themes()
+    sel = load_extract().selection
     taken: dict[tuple[str, str], int] = defaultdict(int)
     per_source: dict[tuple[str, str, str], int] = defaultdict(int)
     out: list[dict[str, Any]] = []
@@ -93,6 +99,12 @@ def pick_stories(
             continue
         if per_source[(key[0], key[1], r["source_id"])] >= per_source_cap:
             continue
+        if not r["stratum"].startswith(
+            "S-T0"
+        ):  # same theme gate the live selector applies to news (not primary docs)
+            sim, _theme = theme_similarity(f"{r['title_rep']} {r['probe'] or ''}", themes)
+            if sim < sel.min_theme_score and int(r["n_independent"] or 1) < sel.min_independent_to_force:
+                continue
         taken[key] += 1
         per_source[(key[0], key[1], r["source_id"])] += 1
         out.append(
