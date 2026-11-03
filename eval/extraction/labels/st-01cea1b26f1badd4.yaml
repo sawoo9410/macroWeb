@@ -1,0 +1,18 @@
+# 라벨 지침: eval/extraction/README.md — 원문 문장 그대로, 한 항목 = 한 사실, 기사가 말하지 않은 것은 쓰지 않는다.
+# 본문 보기: uv run macroweb eval extract show st-01cea1b26f1badd4
+story_id: st-01cea1b26f1badd4
+source_id: chosunbiz_itsci
+stratum: S-T1-KO
+lang: ko
+title: "“용량당 제조원가 HBM4의 10% 수준”… HBF, 낸드플래시 시장 구세주 될까"
+url: "https://biz.chosun.com/it-science/ict/2026/11/03/EJVFIIYN5ZFM5H2XLINZ3A7HNI/"
+labeler: null            # "sangwoo" | "opus" — null 이면 채점에서 제외
+claims: []               # 예시 (주석을 풀어 채운다)
+#  - text: "The Governing Council decided to keep the three key ECB interest rates unchanged."
+#    type: event           # numeric | event | quote | forecast | attribution
+#    value: null           # 숫자 claim 만: 3.75 (단위는 unit 에)
+#    unit: null            # "%", bp, 조원, USD, QoQ, YoY ...
+#    time_ref: "2026-10-29"
+#    anonymous_source: false
+relations: []            # 선택: - {src: Lagarde, dst: ECB, type: reports_to, sign: 0}
+notes: ""

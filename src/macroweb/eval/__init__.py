@@ -1,1 +1,1 @@
-"""L8 평가·학습 루프: 논제 채점, 신뢰도 갱신, 검증기 재학습 (Phase 7)."""
+"""Evaluation sets (PLAN §6.3 extraction, §7.5 verify)."""

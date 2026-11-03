@@ -1,7 +1,7 @@
 # 수집 통계 2026-11-03 (KST)
 
-- 기사 신규 **415** · 본문 수집 6 · Story 신규 374 · market 누적 2853
-- fetch 57회 / 소스 31개 · 오류 1 · 304 4
+- 기사 신규 **616** · 본문 수집 58 · Story 신규 487 · market 누적 2853
+- fetch 60회 / 소스 34개 · 오류 1 · 304 4
 - degraded: 없음 · 48h 침묵(enabled): fred_api, ecos_api, dart_api
 
 | source | T | fetch | new | seen | mkt | err | 304 | interval | health | last error |
@@ -18,6 +18,9 @@
 | treasury_yield_curve | T0 | 2 | 0 | 0 | 220 | 0 | 0 | 360m | ok |  |
 | whitehouse_news | T0 | 1 | 3 | 30 | 0 | 0 | 0 | 360m | ok |  |
 | chosunbiz | T1 | 1 | 100 | 100 | 0 | 0 | 0 | 32m | ok |  |
+| chosunbiz_international | T1 | 1 | 42 | 46 | 0 | 0 | 0 | 360m | ok |  |
+| chosunbiz_itsci | T1 | 1 | 59 | 62 | 0 | 0 | 0 | 360m | ok |  |
+| chosunbiz_stock | T1 | 1 | 100 | 100 | 0 | 0 | 0 | 360m | ok |  |
 | cnbc_economy | T1 | 1 | 1 | 30 | 0 | 0 | 0 | 360m | ok |  |
 | gnews_reuters_macro | T1 | 1 | 36 | 100 | 0 | 0 | 0 | 360m | ok |  |
 | hankyung_economy | T1 | 1 | 50 | 50 | 0 | 0 | 0 | 130m | ok |  |

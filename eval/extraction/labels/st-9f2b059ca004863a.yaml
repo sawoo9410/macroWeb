@@ -1,0 +1,18 @@
+# 라벨 지침: eval/extraction/README.md — 원문 문장 그대로, 한 항목 = 한 사실, 기사가 말하지 않은 것은 쓰지 않는다.
+# 본문 보기: uv run macroweb eval extract show st-9f2b059ca004863a
+story_id: st-9f2b059ca004863a
+source_id: marketwatch_top
+stratum: S-T1
+lang: en
+title: "Oil has had a massive run, but a prominent bull sees a turning point on midterm eve"
+url: "https://www.marketwatch.com/story/oil-has-had-a-massive-run-but-a-prominent-bull-sees-a-turning-point-on-midterm-eve-be2c5fa7?mod=mw_rss_topstories"
+labeler: null            # "sangwoo" | "opus" — null 이면 채점에서 제외
+claims: []               # 예시 (주석을 풀어 채운다)
+#  - text: "The Governing Council decided to keep the three key ECB interest rates unchanged."
+#    type: event           # numeric | event | quote | forecast | attribution
+#    value: null           # 숫자 claim 만: 3.75 (단위는 unit 에)
+#    unit: null            # "%", bp, 조원, USD, QoQ, YoY ...
+#    time_ref: "2026-10-29"
+#    anonymous_source: false
+relations: []            # 선택: - {src: Lagarde, dst: ECB, type: reports_to, sign: 0}
+notes: ""

@@ -1,0 +1,18 @@
+# 라벨 지침: eval/extraction/README.md — 원문 문장 그대로, 한 항목 = 한 사실, 기사가 말하지 않은 것은 쓰지 않는다.
+# 본문 보기: uv run macroweb eval extract show st-3ef794ed88b3fa9b
+story_id: st-3ef794ed88b3fa9b
+source_id: ecb_press
+stratum: S-T0-STMT
+lang: en
+title: "Decisions taken by the Governing Council of the ECB (in addition to decisions setting interest rates)"
+url: "https://www.ecb.europa.eu//press/govcdec/otherdec/2026/html/ecb.gc261030~e40f864093.en.html"
+labeler: null            # "sangwoo" | "opus" — null 이면 채점에서 제외
+claims: []               # 예시 (주석을 풀어 채운다)
+#  - text: "The Governing Council decided to keep the three key ECB interest rates unchanged."
+#    type: event           # numeric | event | quote | forecast | attribution
+#    value: null           # 숫자 claim 만: 3.75 (단위는 unit 에)
+#    unit: null            # "%", bp, 조원, USD, QoQ, YoY ...
+#    time_ref: "2026-10-29"
+#    anonymous_source: false
+relations: []            # 선택: - {src: Lagarde, dst: ECB, type: reports_to, sign: 0}
+notes: ""

@@ -54,8 +54,8 @@ launchd-install:
 launchd-uninstall:
 	bash launchd/uninstall.sh
 
-eval-extract:
-	@echo "Phase 2 에서 구현: eval/extraction/ 30 Story 라벨 후 추출 회귀 (PLAN §6.3)"; exit 3
+eval-extract:  ## 추출 평가셋 채점 (eval/extraction/labels/*.yaml vs DB claims; --tier 는 CLI 로)
+	uv run macroweb eval extract score
 
 eval-verify:
 	@echo "Phase 6 에서 구현: eval/verify/ 200 claim, F1 >= 0.85 (PLAN §7.5)"; exit 3

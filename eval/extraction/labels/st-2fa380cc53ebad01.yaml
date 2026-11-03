@@ -1,0 +1,18 @@
+# 라벨 지침: eval/extraction/README.md — 원문 문장 그대로, 한 항목 = 한 사실, 기사가 말하지 않은 것은 쓰지 않는다.
+# 본문 보기: uv run macroweb eval extract show st-2fa380cc53ebad01
+story_id: st-2fa380cc53ebad01
+source_id: bok_press
+stratum: S-T0-STMT
+lang: ko
+title: "2026년 8월 국제수지(잠정)"
+url: "https://www.bok.or.kr/portal/bbs/B0000501/view.do?nttId=11065371&menuNo=200690"
+labeler: null            # "sangwoo" | "opus" — null 이면 채점에서 제외
+claims: []               # 예시 (주석을 풀어 채운다)
+#  - text: "The Governing Council decided to keep the three key ECB interest rates unchanged."
+#    type: event           # numeric | event | quote | forecast | attribution
+#    value: null           # 숫자 claim 만: 3.75 (단위는 unit 에)
+#    unit: null            # "%", bp, 조원, USD, QoQ, YoY ...
+#    time_ref: "2026-10-29"
+#    anonymous_source: false
+relations: []            # 선택: - {src: Lagarde, dst: ECB, type: reports_to, sign: 0}
+notes: ""

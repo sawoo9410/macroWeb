@@ -1,0 +1,18 @@
+# 라벨 지침: eval/extraction/README.md — 원문 문장 그대로, 한 항목 = 한 사실, 기사가 말하지 않은 것은 쓰지 않는다.
+# 본문 보기: uv run macroweb eval extract show st-da94bc36e8ae0945
+story_id: st-da94bc36e8ae0945
+source_id: chosunbiz_international
+stratum: S-T1-KO
+lang: ko
+title: "중간선거 유세서 알래스카 LNG 꺼낸 트럼프… “한·중·일로 운송”"
+url: "https://biz.chosun.com/international/international_general/2026/11/02/IUEWJL5B3BDO3EQHQBU5F2KZ3U/"
+labeler: null            # "sangwoo" | "opus" — null 이면 채점에서 제외
+claims: []               # 예시 (주석을 풀어 채운다)
+#  - text: "The Governing Council decided to keep the three key ECB interest rates unchanged."
+#    type: event           # numeric | event | quote | forecast | attribution
+#    value: null           # 숫자 claim 만: 3.75 (단위는 unit 에)
+#    unit: null            # "%", bp, 조원, USD, QoQ, YoY ...
+#    time_ref: "2026-10-29"
+#    anonymous_source: false
+relations: []            # 선택: - {src: Lagarde, dst: ECB, type: reports_to, sign: 0}
+notes: ""

@@ -727,6 +727,86 @@ def _verify_run(*, day: str | None, since_hours: int, story: list[str] | None, r
         conn.close()
 
 
+eval_app = typer.Typer(help="평가셋 (Phase 2: 추출 30 Story · Phase 6: 검증 200 claim)", no_args_is_help=True)
+app.add_typer(eval_app, name="eval")
+eval_extract_app = typer.Typer(help="추출 평가셋 — eval/extraction/ (PLAN §6.3·§6.2.4)", no_args_is_help=True)
+eval_app.add_typer(eval_extract_app, name="extract")
+
+
+@eval_extract_app.command("build")
+def eval_extract_build(
+    force: bool = typer.Option(
+        False, "--force", help="stories.jsonl 을 다시 뽑는다 (라벨 파일은 절대 덮어쓰지 않음)"
+    ),
+) -> None:
+    """30개 Story(한/영 반반, 층별 할당) 선택 + labels/<story_id>.yaml 템플릿 생성."""
+    from macroweb.db import repo
+    from macroweb.eval.extraction import build, status
+
+    conn = repo.connect()
+    try:
+        stories = build(conn, force=force)
+    finally:
+        conn.close()
+    st = status()
+    console.print(f"stories={len(stories)} labeled={st['labeled']} buckets={st['buckets']}")
+    console.print(
+        "다음: `uv run macroweb eval extract show <story_id>` 로 본문을 보고 labels/<story_id>.yaml 을 채운다 (README)."
+    )
+
+
+@eval_extract_app.command("status")
+def eval_extract_status() -> None:
+    """층별 라벨 진행률."""
+    from macroweb.eval.extraction import status
+
+    console.print_json(json.dumps(status(), ensure_ascii=False))
+
+
+@eval_extract_app.command("show")
+def eval_extract_show(story_id: str = typer.Argument(..., help="stories.jsonl 의 story_id")) -> None:
+    """라벨할 Story 의 제목·URL·본문(DB) 을 출력한다 — 저장소에는 본문을 넣지 않는다."""
+    from macroweb.db import repo
+    from macroweb.eval.extraction import story_text
+
+    conn = repo.connect()
+    try:
+        d = story_text(conn, story_id)
+    finally:
+        conn.close()
+    if not d:
+        console.print(f"[red]no story {story_id}[/]")
+        raise typer.Exit(1)
+    console.print(f"# {d['title_rep']}\n{d['source_id']} · {d['published_at']} · {d['url']}\n")
+    console.print(d["text"])
+
+
+@eval_extract_app.command("score")
+def eval_extract_score(
+    tier: str | None = typer.Option(
+        None, "--tier", help="small|mid|large — 해당 등급의 ledger 결과와 비교 (라우팅 실험)"
+    ),
+    prompt_version: int | None = typer.Option(None, "--prompt-version"),
+    json_out: bool = typer.Option(False, "--json"),
+) -> None:
+    """라벨(labeler 가 채워진 파일)과 추출 결과를 비교해 층별 P/R/F1·수치 오류율을 낸다. 결과는 eval/extraction/results/."""
+    from macroweb.db import repo
+    from macroweb.eval.extraction import score
+
+    conn = repo.connect()
+    try:
+        report = score(conn, tier=tier, prompt_version=prompt_version)
+    finally:
+        conn.close()
+    if json_out:
+        console.print_json(json.dumps(report.as_dict(), ensure_ascii=False))
+    else:
+        console.print(report.render())
+    if not report.stories:
+        console.print("[yellow]채점할 라벨이 없다 — labels/*.yaml 의 labeler 와 claims 를 채운다 (Q20).[/]")
+        raise typer.Exit(3)
+
+
 @app.command()
 def verify(
     date: str | None = typer.Option(None, "--date", help="review/<date>.md 의 날짜 (KST, 기본 오늘)"),
